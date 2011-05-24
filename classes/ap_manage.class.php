@@ -200,7 +200,7 @@ class ap_manage {
      * checks to see if a valid cache exists, if it doesnot, makes one
      */
     function check_load_cache() {
-        if(!$this->repo_cache->useCache(array('age'=>172800)) {
+        if(!$this->repo_cache->useCache(array('age'=>172800))) {
             $this->reload_cache();
         }
     }
@@ -209,17 +209,18 @@ class ap_manage {
      * Downloads and reloads cache
      */
      function reload_cache() {
-        $dhc = new DokuHttpClient();
+        $dhc = new DokuHTTPClient();
         $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php');
         if($data)
         try {
-            if(class_exists('SimpleXMLElement')
+            if(class_exists('SimpleXMLElement'))
                 new SimpleXMLElement($data);
             else
-                throw new Exception('Cannot find class \'SimpleXMLElement\'')
+                throw new Exception('Cannot find class \'SimpleXMLElement\'');
             $this->repo_cache->storeCache($data);
         }
         catch(Exception $e) {
+        echo $e->getMessage();
             // do some debugging actions if necessary?
         }
      }
