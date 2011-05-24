@@ -6,11 +6,14 @@ class ap_manage {
     var $lang = array();
     var $plugin = '';
     var $downloaded = array();
+    var $repo_cache = NULL;
 
     function ap_manage(&$manager, $plugin) {
         $this->manager = & $manager;
         $this->plugin = $plugin;
         $this->lang = & $manager->lang;
+        $this->repo_cache = new cache('plugin_manager', 'xml');
+        //$this->check_load_cache();
     }
 
     function process() {
@@ -192,6 +195,22 @@ class ap_manage {
 
         return false;
     }
-
+    
+    /**
+     * checks to see if a valid cache exists, if it doesnot, makes one
+     */
+    function check_load_cache() {
+        if(!$this->repo_cache->useCache(array('age'=>172800)) {
+            function reload_cache();
+        }
+    }
+    
+    /**
+     * Downloads and reloads cache
+     */
+     function reload_cache() {
+        $dhc = new DokuHttpClient();
+        $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php');
+     }
 
 }
