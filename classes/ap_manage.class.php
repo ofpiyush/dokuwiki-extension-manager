@@ -13,7 +13,7 @@ class ap_manage {
         $this->plugin = $plugin;
         $this->lang = & $manager->lang;
         $this->repo_cache = new cache('plugin_manager', 'xml');
-        //$this->check_load_cache();
+        $this->check_load_cache();
     }
 
     function process() {
