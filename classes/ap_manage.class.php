@@ -211,6 +211,17 @@ class ap_manage {
      function reload_cache() {
         $dhc = new DokuHttpClient();
         $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php');
+        if($data)
+        try {
+            if(class_exists('SimpleXMLElement')
+                new SimpleXMLElement($data);
+            else
+                throw new Exception('Cannot find class \'SimpleXMLElement\'')
+            $this->repo_cache->storeCache($data);
+        }
+        catch(Exception $e) {
+            // do some debugging actions if necessary?
+        }
      }
 
 }
