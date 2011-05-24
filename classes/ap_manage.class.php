@@ -220,7 +220,6 @@ class ap_manage {
             $this->repo_cache->storeCache($data);
         }
         catch(Exception $e) {
-        echo $e->getMessage();
             // do some debugging actions if necessary?
         }
      }
