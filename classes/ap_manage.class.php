@@ -201,7 +201,7 @@ class ap_manage {
      */
     function check_load_cache() {
         if(!$this->repo_cache->useCache(array('age'=>172800)) {
-            function reload_cache();
+            $this->reload_cache();
         }
     }
     
