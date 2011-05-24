@@ -8,10 +8,10 @@ class ap_manage {
     var $downloaded = array();
     var $repo_cache = NULL;
 
-    function ap_manage(&$manager, $plugin) {
-        $this->manager = & $manager;
+    function __construct($manager, $plugin) {
+        $this->manager = $manager;
         $this->plugin = $plugin;
-        $this->lang = & $manager->lang;
+        $this->lang = $manager->lang;
         $this->repo_cache = new cache('plugin_manager', 'sa');
         $this->check_load_cache();
     }
@@ -197,7 +197,7 @@ class ap_manage {
     }
     
     /**
-     * checks to see if a valid cache exists, if it doesnot, makes one
+     * checks to see if a valid cache exists, if it doesnot, makes one...
      */
     function check_load_cache() {
         if(!$this->repo_cache->useCache(array('age'=>172800)))
@@ -206,6 +206,7 @@ class ap_manage {
     
     /**
      * Downloads and reloads cache. may be moving to serialized result directly from server would work better?
+     * FIXME Last updated time to prevent calls on every pageload (offline / behind firewalls)
      */
     function reload_cache() {
         $dhc = new DokuHTTPClient();
@@ -265,7 +266,7 @@ class ap_manage {
         $levels = array();
         $current = &$xml;
         foreach($struct as $single) {
-            $value =null;
+            $value = null;
             extract($single);
             if(in_array($type,array('open','complete'))) {
                 $levels[$level-1] = &$current;

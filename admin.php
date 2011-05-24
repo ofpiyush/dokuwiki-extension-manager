@@ -42,7 +42,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $msg = '';
     var $error = '';
 
-    function admin_plugin_plugin() {
+    function __construct() {
         global $conf;
         $this->disabled = plugin_isdisabled('plugin');
     }
