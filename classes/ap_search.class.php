@@ -46,8 +46,8 @@ class ap_search extends ap_manage {
                     $result = array_diff_key($result, $tmp);
                     $result = array_merge($result,$tmp); 
                 }
+                return $this->result = $result;
             }
-            return $this->result = $result;
         }
     }
 }
