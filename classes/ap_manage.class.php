@@ -27,7 +27,7 @@ class ap_manage {
 
     // build our standard menu
     function html_menu($listPlugins = true) {
-        global $ID;
+        global $ID,$lang;
 
         ptln('<div class="pm_menu">');
 
@@ -43,6 +43,11 @@ class ap_manage {
         ptln('      <legend>'.$this->lang['download'].'</legend>');
         ptln('      <label for="dw__url">'.$this->lang['url'].'<input name="url" id="dw__url" class="edit" type="text" maxlength="200" /></label>');
         ptln('      <input type="submit" class="button" name="fn[download]" value="'.$this->lang['btn_download'].'" />');
+        ptln('    </fieldset>');
+        ptln('    <fieldset>');
+        ptln('      <legend>'.$lang['btn_search'].'</legend>');
+        ptln('      <label for="dw__search">'.$lang['btn_search'].'<input name="term" id="dw__search" class="edit" type="text" maxlength="200" /></label>');
+        ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
         ptln('    </fieldset>');
         ptln('  </form>');
         ptln('</div>');
