@@ -19,7 +19,9 @@ class ap_search extends ap_manage {
     
     function html() {
         if(is_array($this->result) && count($this->result)) {
+            //ptln('<pre>');
             //print_r($this->result);
+            //ptln('</pre>');
         }
         parent::html();
     }
@@ -35,31 +37,29 @@ class ap_search extends ap_manage {
             else
                 $filters = $this->filter_array;
             $result = array();
+            $tmp=array();
             if(!is_null($this->repo)) {
                 foreach($filters as $filter) {
-                    foreach ($this->repo as $single) {
+                    foreach ($this->repo as $index=> $single) {
                         if($filter == 'tag') {
                             if(is_array($single['tags'])) {
                                 if(is_array($single['tags']['tag'])) {
                                     foreach($single['tags']['tag'] as $tag)
-                                        if(preg_match("/.*$keyword.*/ism",$tag))
+                                        if(preg_match("/.*$this->term.*/ism",$tag))
                                             $tmp[$single['id']] = $single;
                                 }
                                 else {
-                                     if(preg_match("/.*$keyword.*/ism",$single['tags']['tag']))
+                                     if(preg_match("/.*$this->term.*/ism",$single['tags']['tag']))
                                         $tmp[$single['id']] = $single;
                                 }
                             }
                         }
-                        elseif(preg_match("/.*$keyword.*/ism",$single[$filter]))
-                        {
-                            echo $single['id'];
+                        elseif(preg_match("/.*$this->term.*/ism",$single[$filter]))
                             $tmp[$single['id']] = $single;
-                        }
+                        $intersect = array_intersect_key($result,$tmp);
+                        $result = array_diff_key($tmp, $result);
+                        $result = array_merge($intersect,$result);
                     }
-                    $intersect = array_intersect_key($result,$tmp);
-                    $result = array_diff_key($result, $tmp);
-                    $result = array_merge($intersect,$result);
                 }
                 return $this->result = $result;
             }
