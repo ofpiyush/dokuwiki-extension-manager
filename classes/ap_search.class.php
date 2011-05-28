@@ -6,6 +6,8 @@ class ap_search extends ap_manage {
     var $filter_array = array('id','name','description','tag','type','author');
     var $result = array();
     var $repo = NULL;
+    var $versions = array();
+
     function process() {
         if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0)
             $this->term = $_REQUEST['term'];
@@ -16,16 +18,16 @@ class ap_search extends ap_manage {
             $this->lookup();
         }
     }
-    
+
     function html() {
         if(is_array($this->result) && count($this->result)) {
-            //ptln('<pre>');
-            //print_r($this->result);
-            //ptln('</pre>');
+            ptln('<pre>');
+            print_r($this->result);
+            ptln('</pre>');
         }
-        parent::html();
+        //parent::html();
     }
-    
+
     /**
      * Looks up the term in the repository cache according to filters set. Basic searching.
      * TODO advanced searching options (case-sensitive, for exact term etc) is it necessary??
@@ -40,21 +42,15 @@ class ap_search extends ap_manage {
             $tmp=array();
             if(!is_null($this->repo)) {
                 foreach($filters as $filter) {
-                    foreach ($this->repo as $index=> $single) {
+                    foreach ($this->repo as $single) {
+                        if($this->check($single)) continue;
                         if($filter == 'tag') {
                             if(is_array($single['tags'])) {
-                                if(is_array($single['tags']['tag'])) {
-                                    foreach($single['tags']['tag'] as $tag)
-                                        if(preg_match("/.*$this->term.*/ism",$tag))
-                                            $tmp[$single['id']] = $single;
-                                }
-                                else {
-                                     if(preg_match("/.*$this->term.*/ism",$single['tags']['tag']))
+                                foreach((array)$single['tags']['tag'] as $tag)
+                                    if(preg_match("/.*$this->term.*/ism",$tag))
                                         $tmp[$single['id']] = $single;
-                                }
                             }
-                        }
-                        elseif(preg_match("/.*$this->term.*/ism",$single[$filter]))
+                        } elseif(preg_match("/.*$this->term.*/ism",$single[$filter]))
                             $tmp[$single['id']] = $single;
                         $intersect = array_intersect_key($result,$tmp);
                         $result = array_diff_key($tmp, $result);
@@ -64,5 +60,16 @@ class ap_search extends ap_manage {
                 return $this->result = $result;
             }
         }
+    }
+
+    /**
+     * Checks to figure out if a plugin should be searched, 
+     * based on some settings, version, current context(may be?)
+     */
+    protected function check(array $plugin) {
+        $version_data = getVersionData();
+        if(@$plugin['tags']['tag'][0] == "!bundled") return true;
+        //default case...
+        return false;
     }
 }
