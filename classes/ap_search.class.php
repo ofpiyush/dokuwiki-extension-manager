@@ -20,11 +20,28 @@ class ap_search extends ap_manage {
     }
 
     function html() {
+        $this->html_menu();
+        global $ID,$lang;
+        ptln('<div class="pm_info">');
+        ptln('<div class="common">');
+        ptln('  <h2>'.$this->lang['download'].'</h2>');
+        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post">');
+        ptln('    <fieldset class="hidden">',4);
+        formSecurityToken();
+        ptln('    </fieldset>');
+        ptln('    <fieldset>');
+        ptln('      <legend>'.$this->lang['download'].'</legend>');
+        ptln('      <label for="dw__url">'.$this->lang['url'].'<input name="url" id="dw__url" class="edit" type="text" maxlength="200" /></label>');
+        ptln('      <input type="submit" class="button" name="fn[download]" value="'.$this->lang['btn_download'].'" />');
+        ptln('    </fieldset>');
+        ptln('  </form>');
+        ptln('</div>');
         if(is_array($this->result) && count($this->result)) {
             ptln('<pre>');
             print_r($this->result);
             ptln('</pre>');
         }
+        ptln('</div>');
         //parent::html();
     }
 

@@ -21,28 +21,14 @@ class ap_manage {
     }
 
     function html() {
-        print $this->manager->locale_xhtml('admin_plugin');
-        $this->html_menu();
-    }
-
-    // build our standard menu
-    function html_menu($listPlugins = true) {
         global $ID,$lang;
-
-        ptln('<div class="pm_menu">');
-
+        $this->html_menu();
+        print $this->manager->locale_xhtml('admin_plugin');
         ptln('<div class="common">');
         ptln('  <h2>'.$this->lang['download'].'</h2>');
-        ptln('  <form action="'.wl($ID).'" method="post">');
+        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post">');
         ptln('    <fieldset class="hidden">',4);
-        ptln('      <input type="hidden" name="do"   value="admin" />');
-        ptln('      <input type="hidden" name="page" value="plugin" />');
         formSecurityToken();
-        ptln('    </fieldset>');
-        ptln('    <fieldset>');
-        ptln('      <legend>'.$this->lang['download'].'</legend>');
-        ptln('      <label for="dw__url">'.$this->lang['url'].'<input name="url" id="dw__url" class="edit" type="text" maxlength="200" /></label>');
-        ptln('      <input type="submit" class="button" name="fn[download]" value="'.$this->lang['btn_download'].'" />');
         ptln('    </fieldset>');
         ptln('    <fieldset>');
         ptln('      <legend>'.$lang['btn_search'].'</legend>');
@@ -51,18 +37,15 @@ class ap_manage {
         ptln('    </fieldset>');
         ptln('  </form>');
         ptln('</div>');
-
-        if ($listPlugins) {
+        /**
+         * List plugins
+         */
             ptln('<h2>'.$this->lang['manage'].'</h2>');
-
-            ptln('<form action="'.wl($ID).'" method="post" class="plugins">');
-
+            ptln('<form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post" class="plugins">');
             ptln('  <fieldset class="hidden">');
-            ptln('    <input type="hidden" name="do"     value="admin" />');
-            ptln('    <input type="hidden" name="page"   value="plugin" />');
             formSecurityToken();
             ptln('  </fieldset>');
-
+            
             $this->html_pluginlist();
 
             ptln('  <fieldset class="buttons">');
@@ -71,8 +54,23 @@ class ap_manage {
 
             //            ptln('  </div>');
             ptln('</form>');
-        }
+        //end list plugins
+    }
 
+    // build our standard menu
+    function html_menu() {
+        global $lang;
+        ptln('<div class="pm_menu">');
+        ?>
+        
+		<div class = "bar">
+		    <ul>
+			<li id="selected">Plugins</li>
+			<li>Template</li>
+			<li>Search</li>
+		    </ul>
+		</div> 
+	    <?php
         ptln('</div>');
     }
 
