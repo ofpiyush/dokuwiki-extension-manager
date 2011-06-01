@@ -7,14 +7,13 @@ class ap_manage {
     var $plugin = '';
     var $downloaded = array();
     var $repo_cache = NULL;
-    var $nav_tabs = array();
+    
     function __construct($manager, $plugin) {
         $this->manager = $manager;
         $this->plugin = $plugin;
         $this->lang = $manager->lang;
         $this->repo_cache = new cache('plugin_manager', 'sa');
         $this->check_load_cache();
-        $this->nav_tabs = array( 'plugin', 'template', 'search');
     }
 
     function process() {
@@ -63,9 +62,9 @@ class ap_manage {
         global $lang;
         ptln('<div class="pm_menu">');
 		ptln('    <ul>');
-		ptln('	    <li class="bar selected" >Plugins</li>');
-		ptln('	    <li class="bar">Template</li>');
-		ptln('	    <li class="bar">Search</li>');
+		ptln('	    <li class="'.(($this->manager->tab == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
+		ptln('	    <li class="'.(($this->manager->tab == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
+		ptln('	    <li class="'.(($this->manager->tab == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">'.$lang['btn_search'].'</a></li>');
 		ptln('    </ul>');
         ptln('</div>');
     }

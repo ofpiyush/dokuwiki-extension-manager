@@ -37,14 +37,17 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
     var $functions = array('delete','update',/*'settings',*/'info');  // require a plugin name
     var $commands = array('manage','search','download','enable');              // don't require a plugin name
+    var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
 
+    var $tab = '';
     var $msg = '';
     var $error = '';
 
     function __construct() {
         global $conf;
         $this->disabled = plugin_isdisabled('plugin');
+        $this->tab = (array_key_exists('tab',$_REQUEST) && in_array($_REQUEST['tab'],$this->nav_tabs))? $_REQUEST['tab'] : 'plugin';
     }
 
     /**
@@ -91,24 +94,27 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
         // verify $_REQUEST vars
         if (in_array($this->cmd, $this->commands)) {
-            $this->plugin = '';
-        } else if (!in_array($this->cmd, $this->functions) || !in_array($this->plugin, $this->plugin_list)) {
+            $this->plugin = null;
+        } elseif (!in_array($this->cmd, $this->functions) || !in_array($this->plugin, $this->plugin_list)) {
             $this->cmd = 'manage';
-            $this->plugin = '';
+            $this->plugin = null;
         }
 
         if(($this->cmd != 'manage' || $this->plugin != '') && !checkSecurityToken()){
             $this->cmd = 'manage';
-            $this->plugin = '';
+            $this->plugin = null;
         }
-
+        
+        if($this->cmd == 'manage' && $this->tab != "plugin" && strlen($this->tab)) {
+            $this->cmd = $this->tab;
+        }
         // create object to handle the command
         $class = "ap_".$this->cmd;
         @require_once(DOKU_PLUGIN."/plugin/classes/$class.class.php");
-        if (!class_exists($class)){
+        if (!class_exists($class)) {
             $class = 'ap_manage';
         }
-
+        
         $this->handler = new $class($this, $this->plugin);
         $this->msg = $this->handler->process();
 

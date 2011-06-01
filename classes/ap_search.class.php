@@ -3,16 +3,21 @@ class ap_search extends ap_manage {
 
     var $term = NULL;
     var $filters = array();
-    var $filter_array = array('id','name','description','tag','type','author');
+    var $filter_array = array('id' => NULL,'name' => NULL,'description' => NULL,'tag' => NULL,'type' => NULL, 'author' => NULL);
     var $result = array();
     var $repo = NULL;
+    var $extra = NULL;
     var $versions = array();
-
+    
     function process() {
         if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0)
             $this->term = $_REQUEST['term'];
         if(array_key_exists('filters',$_REQUEST) && is_array($_REQUEST['filters']))
-            $this->filters = $_REQUEST['filters'];
+            $this->filters = array_intersect($_REQUEST['filters'],array_keys($this->filter_array));
+        else
+            $this->filters = array_keys($this->filter_array);
+        if(array_key_exists('ext',$_REQUEST) && is_array($_REQUEST['ext']))
+            $this->extra = array_intersect_key($_REQUEST['ext'],$this->filter_array);
         if(!is_null($this->term)) {
             $this->repo = unserialize($this->repo_cache->retrieveCache());
             $this->lookup();
@@ -20,6 +25,7 @@ class ap_search extends ap_manage {
     }
 
     function html() {
+        $this->manager->tab = "search";
         $this->html_menu();
         global $ID,$lang;
         ptln('<div class="pm_info">');
@@ -51,14 +57,10 @@ class ap_search extends ap_manage {
      */
     protected function lookup() {
         if(!is_null($this->term)) {
-            if(is_array($this->filters) && count($this->filters))
-                $filters =array_intersect($this->filters,$this->filter_array);
-            else
-                $filters = $this->filter_array;
             $result = array();
             $tmp=array();
             if(!is_null($this->repo)) {
-                foreach($filters as $filter) {
+                foreach($this->filters as $filter) {
                     foreach ($this->repo as $single) {
                         if($this->check($single)) continue;
                         if($filter == 'tag') {
@@ -86,6 +88,13 @@ class ap_search extends ap_manage {
     protected function check(array $plugin) {
         $version_data = getVersionData();
         if(@$plugin['tags']['tag'][0] == "!bundled") return true;
+        if(is_array($this->extra) && count($this->extra))
+            foreach($this->extra as $index => $value)
+                if($index == 'tag') {
+                    if( ! @array_search($value,(array)$plugin['tags']['tag'])) return true;
+                } elseif($index == 'type') {
+                    if(!preg_match("/.*$value.*/ism",$plugin['type'])) return true;
+                } elseif(!(array_key_exists($index,$plugin) && $plugin[$index] == $value)) return true;
         //default case...
         return false;
     }
