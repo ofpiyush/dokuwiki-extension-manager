@@ -7,13 +7,14 @@ class ap_manage {
     var $plugin = '';
     var $downloaded = array();
     var $repo_cache = NULL;
-
+    var $nav_tabs = array();
     function __construct($manager, $plugin) {
         $this->manager = $manager;
         $this->plugin = $plugin;
         $this->lang = $manager->lang;
         $this->repo_cache = new cache('plugin_manager', 'sa');
         $this->check_load_cache();
+        $this->nav_tabs = array( 'plugin', 'template', 'search');
     }
 
     function process() {
@@ -61,16 +62,11 @@ class ap_manage {
     function html_menu() {
         global $lang;
         ptln('<div class="pm_menu">');
-        ?>
-        
-		<div class = "bar">
-		    <ul>
-			<li id="selected">Plugins</li>
-			<li>Template</li>
-			<li>Search</li>
-		    </ul>
-		</div> 
-	    <?php
+		ptln('    <ul>');
+		ptln('	    <li class="bar selected" >Plugins</li>');
+		ptln('	    <li class="bar">Template</li>');
+		ptln('	    <li class="bar">Search</li>');
+		ptln('    </ul>');
         ptln('</div>');
     }
 
