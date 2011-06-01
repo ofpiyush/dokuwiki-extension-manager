@@ -45,3 +45,4 @@ $lang['error_decompress']      = 'Viðbótastjórinn gat ekki afþjappað skrán
 $lang['enabled']               = 'Viðbót %s hefur verið  ræst.';
 $lang['notenabled']            = 'Ekki var hægt að ræsa %s viðbótina. Athugaðu stillingar á skráaleyfum.';
 $lang['disabled']              = 'Viðbót %s var gerð óvirk';
+$lang['template']              = 'Mát';

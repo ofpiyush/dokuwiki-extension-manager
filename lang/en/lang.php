@@ -11,7 +11,7 @@ $lang['menu'] = 'Manage Plugins';
 // custom language strings for the plugin
 $lang['download'] = "Download and install a new plugin";
 $lang['manage'] = "Installed Plugins";
-
+$lang['template'] = 'Template';
 $lang['btn_info'] = 'info';
 $lang['btn_update'] = 'update';
 $lang['btn_delete'] = 'delete';

@@ -11,3 +11,4 @@ $lang['type']                  = 'Tipas:';
 $lang['desc']                  = 'Aprašas:';
 $lang['author']                = 'Autorius:';
 $lang['www']                   = 'Tinklapis:';
+$lang['template']              = 'Paruoštukas';

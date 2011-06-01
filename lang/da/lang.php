@@ -56,3 +56,4 @@ $lang['enabled']               = 'Udvidelsen %s blev aktiveret.';
 $lang['notenabled']            = 'Udvidelsen %s kunne ikke aktiveres. Kontroller filtilladelser.';
 $lang['disabled']              = 'Udvidelsen %s blev ikke aktiveret.';
 $lang['notdisabled']           = 'Udvidelsen %s kunne ikke aktiveres. Kontroller filtilladelser.';
+$lang['template']              = 'Skabelon';

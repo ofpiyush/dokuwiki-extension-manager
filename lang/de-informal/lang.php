@@ -53,3 +53,4 @@ $lang['notenabled']            = 'Erweiterung %s konnte nicht aktiviert werden. 
 $lang['disabled']              = 'Erweiterung %s deaktiviert.';
 $lang['notdisabled']           = 'Erweiterung %s konnte nicht deaktiviert werden - überprüfe Dateiberechtigungen';
 $lang['packageinstalled']      = 'Plugin-Paket (%d Plugin%s: %s) erfolgreich installiert.';
+$lang['template']              = 'Vorlage';

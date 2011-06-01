@@ -61,3 +61,4 @@ $lang['enabled']               = 'Tilläggsmodulen %s är aktiverad.';
 $lang['notenabled']            = 'Tilläggsmodulen %s kunde inte aktiveras, kontrollera filrättigheterna.';
 $lang['disabled']              = 'Tiläggsmodulen %s är avaktiverad.';
 $lang['notdisabled']           = 'Tilläggsmodulen %s kunde inte avaktiveras, kontrollera filrättigheterna.';
+$lang['template']              = 'Mall';

@@ -49,3 +49,4 @@ $lang['enabled']               = 'Plug-in %s activate.';
 $lang['notenabled']            = 'Le plug-in %s non poteva esser activate; verifica le permissiones de accesso a files.';
 $lang['disabled']              = 'Plug-in %s disactivate.';
 $lang['notdisabled']           = 'Le plug-in %s non poteva esser disactivate; verifica le permissiones de accesso a files.';
+$lang['template']              = 'Patrono';

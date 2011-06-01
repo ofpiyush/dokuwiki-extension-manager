@@ -48,3 +48,4 @@ $lang['enabled']               = 'Extensión %s activado.';
 $lang['notenabled']            = 'A extensión %s non puido ser activada, comproba os permisos de arquivo.';
 $lang['disabled']              = 'Extensión %s desactivada.';
 $lang['notdisabled']           = 'A extensión %s non puido ser desactivada, comproba os permisos de arquivo.';
+$lang['template']              = 'Sobreplanta';

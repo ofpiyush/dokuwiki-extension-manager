@@ -51,3 +51,4 @@ $lang['enabled']               = 'S\'ha habilitat el connector %s.';
 $lang['notenabled']            = 'No s\'ha pogut habilitar el connector %s. Comproveu els permisos dels fitxers.';
 $lang['disabled']              = 'S\'ha inhabilitat el connector %s.';
 $lang['notdisabled']           = 'No s\'ha pogut inhabilitar el connector %s. Comproveu els permisos dels fitxers.';
+$lang['template']              = 'Plantilla';

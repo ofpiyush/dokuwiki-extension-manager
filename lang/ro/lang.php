@@ -53,3 +53,4 @@ $lang['enabled']               = 'Plugin %s activat.';
 $lang['notenabled']            = 'Plugin-ul %s nu poate fi activat, verificaţi permisiunile fişierului.';
 $lang['disabled']              = 'Plugin %s dezactivat.';
 $lang['notdisabled']           = 'Plugin-ul %s nu poate fi dezactivat, verificaţi permisiunile fişierului.';
+$lang['template']              = 'Şablon';

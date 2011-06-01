@@ -48,3 +48,4 @@ $lang['enabled']               = 'Addenda %s apta facta.';
 $lang['notenabled']            = 'Addenda %s quae apta fieri non possunt.';
 $lang['disabled']              = 'Addenda %s non in usu.';
 $lang['notdisabled']           = 'Addenda %s quae inepta fieri non possunt.';
+$lang['template']              = 'Vicis forma';

@@ -57,3 +57,4 @@ $lang['notenabled']            = 'Plugin %s kon niet worden ingeschakeld, contro
 $lang['disabled']              = 'Plugin %s uitgeschakeld.';
 $lang['notdisabled']           = 'Plugin %s kon niet worden uitgeschakeld, controleer bestandsrechten.';
 $lang['packageinstalled']      = 'Plugin package (%d plugin%s: %s) succesvol geïnstalleerd.';
+$lang['template']              = 'Sjabloon';

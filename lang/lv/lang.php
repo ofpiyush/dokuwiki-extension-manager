@@ -48,3 +48,4 @@ $lang['enabled']               = 'Modulis %s pieslēgts.';
 $lang['notenabled']            = 'Moduli %s nevar pieslēgt, pārbaudi failu tiesības.';
 $lang['disabled']              = 'Modulis %s atslēgts.';
 $lang['notdisabled']           = 'Moduli %s nevar atslēgt, pārbaudi failu tiesības.';
+$lang['template']              = 'Šablons';

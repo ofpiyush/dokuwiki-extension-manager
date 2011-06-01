@@ -57,3 +57,4 @@ $lang['notenabled']            = 'Plugin %s nelze aktivovat, zkontrolujte práva
 $lang['disabled']              = 'Plugin %s deaktivován.';
 $lang['notdisabled']           = 'Plugin %s nelze deaktivovat, zkontrolujte práva k souborům.';
 $lang['packageinstalled']      = 'Plugin package (%d plugin%s: %s) úspěšně nainstalován.';
+$lang['template']              = 'Šablona';

@@ -58,3 +58,4 @@ $lang['enabled']               = 'Plugin %s abilitato.';
 $lang['notenabled']            = 'Impossibile abilitare il plugin %s, verifica i permessi dei file.';
 $lang['disabled']              = 'Plugin %s disabilitato.';
 $lang['notdisabled']           = 'Impossibile disabilitare il plugin %s, verifica i permessi dei file.';
+$lang['template']              = 'Modello';

@@ -57,3 +57,4 @@ $lang['enabled']               = 'Wtyczka %s włączona.';
 $lang['notenabled']            = 'Nie udało się uruchomić wtyczki %s, sprawdź uprawnienia dostępu do plików.';
 $lang['disabled']              = 'Wtyczka % wyłączona.';
 $lang['notdisabled']           = 'Nie udało się wyłączyć wtyczki %s, sprawdź uprawnienia dostępu do plików.';
+$lang['template']              = 'Motyw';

@@ -51,3 +51,4 @@ $lang['enabled']               = 'Plúgin %s activat.';
 $lang['notenabled']            = 'No s\'ha pogut activar el plúgin %s, comprove els permissos dels archius.';
 $lang['disabled']              = 'Plúgin %s desactivat.';
 $lang['notdisabled']           = 'No s\'ha pogut desactivar el plúgin %s, comprove els permissos dels archius.';
+$lang['template']              = 'Plantilla';

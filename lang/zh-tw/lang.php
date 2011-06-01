@@ -55,3 +55,4 @@ $lang['notenabled']            = '插件 %s 無法啟用，請檢查檔案權限
 $lang['disabled']              = '插件 %s 已停用。';
 $lang['notdisabled']           = '插件 %s 無法停用，請檢查檔案權限。';
 $lang['packageinstalled']      = '插件 (%d 插件%s: %s) 已成功地安裝。';
+$lang['template']              = '樣板';

@@ -48,3 +48,4 @@ $lang['enabled']               = 'Plugini %s u aktivizua.';
 $lang['notenabled']            = 'Plugini %s nuk mundi të aktivizohej, kontrollo të drejtat e aksesit për skedarin.';
 $lang['disabled']              = 'Plugin %s është i paaktivizuar.';
 $lang['notdisabled']           = 'Plugini %s nuk mundi të çaktivizohej, kontrollo të drejtat e aksesit për skedarin.';
+$lang['template']              = 'Template';

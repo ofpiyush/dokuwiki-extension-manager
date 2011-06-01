@@ -51,3 +51,4 @@ $lang['enabled']               = '%s eklentisi etkinleştirildi.';
 $lang['notenabled']            = '%s eklentisi etkinleştirilemedi, dosya yetkilerini kontrol edin.';
 $lang['disabled']              = '%s eklentisi devre dışı bırakıldı.';
 $lang['notdisabled']           = '%s eklentisi devre dışı bırakılamadı, dosya yetkilerini kontrol edin.';
+$lang['template']              = 'Şablon (Template)';

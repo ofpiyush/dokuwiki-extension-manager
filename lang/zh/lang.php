@@ -59,3 +59,4 @@ $lang['notenabled']            = '%s插件启用失败，请检查文件权限�
 $lang['disabled']              = '%s 插件禁用';
 $lang['notdisabled']           = '%s插件禁用失败，请检查文件权限。';
 $lang['packageinstalled']      = '插件  (%d plugin%s: %s) 已成功安装。';
+$lang['template']              = '模版';

@@ -52,3 +52,4 @@ $lang['enabled']               = 'Vstavek %s je omogočen.';
 $lang['notenabled']            = 'Vstavka %s ni mogoče omogočiti zaradi neustreznih dovoljen.';
 $lang['disabled']              = 'Vstavek %s je onemogočen.';
 $lang['notdisabled']           = 'Vstavka %s ni mogoče onemogočiti zaradi neustreznih dovoljen.';
+$lang['template']              = 'Predloga';

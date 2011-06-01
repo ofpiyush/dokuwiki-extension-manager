@@ -56,3 +56,4 @@ $lang['enabled']               = 'La kromaĵo %s estas ebligita.';
 $lang['notenabled']            = 'La kromaĵo %s ne povis esti ebligita, kontrolu dosier-permesojn.';
 $lang['disabled']              = 'La kromaĵo %s estas malebligita.';
 $lang['notdisabled']           = 'La kromaĵo %s ne povis esti malebligita, kontrolu dosier-permesojn.';
+$lang['template']              = 'Ŝablono';

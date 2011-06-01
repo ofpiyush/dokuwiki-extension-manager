@@ -61,3 +61,4 @@ $lang['notenabled']            = 'Não foi possível habilitar o plug-in %s. Ver
 $lang['disabled']              = 'O plug-in %s foi desabilitado.';
 $lang['notdisabled']           = 'Não foi possível desabilitar o plug-in %s. Verifique as permissões de acesso.';
 $lang['packageinstalled']      = 'O pacote do plugin (%d plugin%s: %s) foi instalado com sucesso.';
+$lang['template']              = 'Modelo';

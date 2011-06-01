@@ -63,3 +63,4 @@ $lang['notenabled']            = 'Le module %s n\'a pas pu être activé, vérif
 $lang['disabled']              = 'Module %s désactivé.';
 $lang['notdisabled']           = 'Le module %s n\'a pas pu être désactivé, vérifiez le fichier des permissions.';
 $lang['packageinstalled']      = 'Ensemble de modules (%d module(s): %s) installé avec succès.';
+$lang['template']              = 'Modèle';

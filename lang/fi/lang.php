@@ -52,3 +52,4 @@ $lang['notenabled']            = 'Liitännäistä %s ei voitu ottaa käyttöön.
 $lang['disabled']              = 'Liitännäinen %s pois käytössä';
 $lang['notdisabled']           = 'Liitännäistä %s ei voitu ottaa pois käytöstä. Tarkista tiedostojen oikeudet.';
 $lang['packageinstalled']      = 'Pluginpaketti (%d plugin%s: %s:) asennettu onnistuneesti.';
+$lang['template']              = 'Sivumalli';

@@ -54,3 +54,4 @@ $lang['notenabled']            = 'A(z) %s bővítmény engedélyezése nem siker
 $lang['disabled']              = 'A(z) %s bővítmény kikapcsolva.';
 $lang['notdisabled']           = 'A(z) %s bővítmény kikapcsolása nem sikerült. Ellenőrizze a fájl-hozzáférési engedélyeket.';
 $lang['packageinstalled']      = 'A bővítmény csomag(ok) feltelepült(ek): %d plugin%s: %s';
+$lang['template']              = 'Sablon';
