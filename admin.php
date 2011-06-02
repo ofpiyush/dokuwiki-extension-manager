@@ -45,9 +45,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $error = '';
 
     function __construct() {
-        global $conf;
         $this->disabled = plugin_isdisabled('plugin');
-        $this->tab = (array_key_exists('tab',$_REQUEST) && in_array($_REQUEST['tab'],$this->nav_tabs))? $_REQUEST['tab'] : 'plugin';
     }
 
     /**
@@ -63,7 +61,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     function handle() {
         // enable direct access to language strings
         $this->setupLocale();
-
+        $tab = (array_key_exists('tab',$_REQUEST) && in_array($_REQUEST['tab'],$this->nav_tabs))? $_REQUEST['tab'] : 'plugin';
 
         $fn = $_REQUEST['fn'];
         if (is_array($fn)) {
@@ -88,8 +86,8 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->plugin = null;
         }
         
-        if($this->cmd == 'manage' && $this->tab != "plugin" && strlen($this->tab)) {
-            $this->cmd = $this->tab;
+        if($this->cmd == 'manage' && $tab != "plugin" && strlen($tab)) {
+            $this->cmd = $tab;
         }
         // create object to handle the command
         $class = "ap_".$this->cmd;
