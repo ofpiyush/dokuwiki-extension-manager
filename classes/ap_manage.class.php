@@ -62,9 +62,9 @@ class ap_manage {
         global $lang;
         ptln('<div class="pm_menu">');
 		ptln('    <ul>');
-		ptln('	    <li class="'.(($this->manager->tab == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
-		ptln('	    <li class="'.(($this->manager->tab == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
-		ptln('	    <li class="'.(($this->manager->tab == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">'.$lang['btn_search'].'</a></li>');
+		ptln('	    <li class="'.(($this->manager->cmd == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
+		ptln('	    <li class="'.(($this->manager->cmd == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
+		ptln('	    <li class="'.(($this->manager->cmd == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">'.$lang['btn_search'].'</a></li>');
 		ptln('    </ul>');
         ptln('</div>');
     }
@@ -237,7 +237,7 @@ class ap_manage {
         $data = array();
         if (is_object($obj))
             $obj = get_object_vars($obj);
-        if (is_array($data)) {
+        if (is_array($obj) && count($obj)) {
             foreach ($obj as $index => $value) {
                 if (is_object($value) || is_array($value))
                     $value = $this->obj_array($value);

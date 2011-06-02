@@ -114,7 +114,6 @@ class ap_info extends ap_manage {
     function get_plugin_components($plugin) {
 
         global $plugin_types;
-        print_r($plugin_types);
         $components = array();
         $path = DOKU_PLUGIN.plugin_directory($plugin).'/';
 

@@ -6,7 +6,6 @@ class ap_template extends ap_manage {
     }
 
     function html() {
-        $this->manager->tab = "template";
         $this->html_menu();
         global $ID,$lang;
         ptln('<div class="common">');

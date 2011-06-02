@@ -25,7 +25,6 @@ class ap_search extends ap_manage {
     }
 
     function html() {
-        $this->manager->tab = "search";
         $this->html_menu();
         global $ID,$lang;
         ptln('<div class="pm_info">');

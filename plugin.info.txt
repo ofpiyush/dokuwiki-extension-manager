@@ -1,0 +1,7 @@
+base   plugin
+author Christopher Smith, Piyush Mishra
+email  me@piyushmishra.com
+date   2009-11-11
+name   Plugin Manager
+desc   Manage Plugins, including automated plugin installer
+url    http://www.dokuwiki.org/plugin:plugin
