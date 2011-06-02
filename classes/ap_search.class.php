@@ -41,6 +41,27 @@ class ap_search extends ap_manage {
         ptln('      <input type="submit" class="button" name="fn[download]" value="'.$this->lang['btn_download'].'" />');
         ptln('    </fieldset>');
         ptln('  </form>');
+        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'" method="post">');
+        ptln('    <fieldset class="hidden">',4);
+        formSecurityToken();
+        ptln('    </fieldset>');
+        ptln('    <fieldset>');
+        ptln('      <legend>'.$lang['btn_search'].'</legend>');
+        ptln('      <label for="dw__search">'.$lang['btn_search'].'<input name="term" id="dw__search" class="edit" type="text" maxlength="200" /></label>');
+        ptln('      <label>Type');//TODO Add language
+        ptln('        <select name="ext[type]">');//TODO Add language
+        ptln('          <option value="">All</option>');//TODO Add language
+        ptln('          <option value="Syntax">Syntax</option>');//TODO Add language
+        ptln('          <option value="Admin">Admin</option>');//TODO Add language
+        ptln('          <option value="Action">Action</option>');//TODO Add language
+        ptln('          <option value="Renderer">Renderer</option>');//TODO Add language
+        ptln('          <option value="Helper">Helper</option>');//TODO Add language
+        ptln('          <option value="Template">Template</option>');//TODO Add language
+        ptln('        </select>');
+        ptln('      </label>');
+        ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
+        ptln('    </fieldset>');
+        ptln('  </form>');
         ptln('</div>');
         if(is_array($this->result) && count($this->result)) {
             ptln('<pre>');

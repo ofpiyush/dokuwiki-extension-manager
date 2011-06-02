@@ -25,8 +25,8 @@ class ap_manage {
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
         ptln('<div class="common">');
-        ptln('  <h2>'.$this->lang['download'].'</h2>');
-        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post">');
+        ptln('  <h2>Search for a new plugin</h2>');//TODO Add language
+        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'" method="post">');
         ptln('    <fieldset class="hidden">',4);
         formSecurityToken();
         ptln('    </fieldset>');
