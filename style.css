@@ -101,6 +101,10 @@
     margin: 0.5em;
 }
 
+#plugin__manager .common input.tag {
+    width: 10em;
+}
+
 #plugin__manager .plugins fieldset {
     color: #000;
     background: #fff;

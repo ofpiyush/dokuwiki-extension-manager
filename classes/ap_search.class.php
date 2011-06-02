@@ -58,6 +58,7 @@ class ap_search extends ap_manage {
         ptln('          <option value="Template">Template</option>');//TODO Add language
         ptln('        </select>');
         ptln('      </label>');
+        ptln('      <label>Tags: <input name="ext[tag]" class="edit tag" type="text" maxlength="200"/></label>');//TODO Add language
         ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
         ptln('    </fieldset>');
         ptln('  </form>');
