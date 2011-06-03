@@ -18,6 +18,8 @@ class ap_search extends ap_manage {
             $this->filters = array_keys($this->filter_array);
         if(array_key_exists('ext',$_REQUEST) && is_array($_REQUEST['ext']))
             $this->extra = array_intersect_key($_REQUEST['ext'],$this->filter_array);
+        if(array_key_exists('tag',$this->extra))
+            $this->extra['tag'] = explode(',',strtolower($this->extra['tag']));
         if(!is_null($this->term)) {
             $this->repo = unserialize($this->repo_cache->retrieveCache());
             $this->lookup();
@@ -60,7 +62,6 @@ class ap_search extends ap_manage {
         ptln('      </label>');        
         ptln('      <label>Filter by:');//TODO Add language
         ptln('        <select name="filters[]" multiple>');//TODO Add language
-        ptln('          <option value="">None</option>');//TODO Add language
         ptln('          <option value="id">ID</option>');//TODO Add language
         ptln('          <option value="name">Name</option>');//TODO Add language
         ptln('          <option value="description">Description</option>');//TODO Add language
@@ -121,13 +122,16 @@ class ap_search extends ap_manage {
         if(@$plugin['tags']['tag'][0] == "!bundled") return true;
         if(is_array($this->extra) && count($this->extra))
             foreach($this->extra as $index => $value)
-                if($index == 'tag') {
-                    $tags = explode(strtolower($value),',');
-                    foreach($tags as $tag)
-                        if( ! @array_search(trim($tag),(array)$plugin['tags']['tag'])) return true;
-                } elseif($index == 'type') {
-                    if(!preg_match("/.*$value.*/ism",$plugin['type'])) return true;
-                } elseif(!(array_key_exists($index,$plugin) && $plugin[$index] == $value)) return true;
+                if(count($value)) {
+                    if($index == 'type') {
+                        if(!preg_match("/.*$value.*/ism",$plugin['type'])) return true;
+                    } 
+                    elseif($index == 'tag') {
+                        foreach($value as $tag)
+                            if(strlen($tag))
+                                if(@array_search(trim($tag),(array)$plugin['tags']['tag'])===false) return true;
+                    }elseif(!(array_key_exists($index,$plugin) && $plugin[$index] == $value)) return true;
+                }
         //default case...
         return false;
     }
