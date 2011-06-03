@@ -57,6 +57,16 @@ class ap_search extends ap_manage {
         ptln('          <option value="Helper">Helper</option>');//TODO Add language
         ptln('          <option value="Template">Template</option>');//TODO Add language
         ptln('        </select>');
+        ptln('      </label>');        
+        ptln('      <label>Filter by:');//TODO Add language
+        ptln('        <select name="filters[]" multiple>');//TODO Add language
+        ptln('          <option value="">None</option>');//TODO Add language
+        ptln('          <option value="id">ID</option>');//TODO Add language
+        ptln('          <option value="name">Name</option>');//TODO Add language
+        ptln('          <option value="description">Description</option>');//TODO Add language
+        ptln('          <option value="tag">Tag</option>');//TODO Add language
+        ptln('          <option value="type">Type</option>');//TODO Add language
+        ptln('        </select>');
         ptln('      </label>');
         ptln('      <label>Tags: <input name="ext[tag]" class="edit tag" type="text" maxlength="200"/></label>');//TODO Add language
         ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
@@ -112,7 +122,9 @@ class ap_search extends ap_manage {
         if(is_array($this->extra) && count($this->extra))
             foreach($this->extra as $index => $value)
                 if($index == 'tag') {
-                    if( ! @array_search($value,(array)$plugin['tags']['tag'])) return true;
+                    $tags = explode(strtolower($value),',');
+                    foreach($tags as $tag)
+                        if( ! @array_search(trim($tag),(array)$plugin['tags']['tag'])) return true;
                 } elseif($index == 'type') {
                     if(!preg_match("/.*$value.*/ism",$plugin['type'])) return true;
                 } elseif(!(array_key_exists($index,$plugin) && $plugin[$index] == $value)) return true;
