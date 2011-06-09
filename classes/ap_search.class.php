@@ -3,28 +3,28 @@ class ap_search extends ap_manage {
 
     var $term = NULL;
     var $filters = array();
-    var $filter_array = array('id' => NULL,'name' => NULL,'description' => NULL,'tag' => NULL,'type' => NULL, 'author' => NULL);
+    var $filter_array = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
     var $result = array();
     var $repo = NULL;
     var $extra = NULL;
     var $versions = array();
     
     function process() {
-        
         if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0)
             $this->term = $_REQUEST['term'];
         if(!is_null($this->term)) {
             if(array_key_exists('filters',$_REQUEST) && is_array($_REQUEST['filters']))
-                $this->filters = array_intersect($_REQUEST['filters'],array_keys($this->filter_array));
+                $this->filters = array_intersect_key(array_flip($_REQUEST['filters']),$this->filter_array);
             else
-                $this->filters = array_keys($this->filter_array);
+                $this->filters = $this->filter_array;
             if(array_key_exists('ext',$_REQUEST) && is_array($_REQUEST['ext']))
                 $this->extra = array_intersect_key($_REQUEST['ext'],$this->filter_array);
             if(is_array($this->extra) && array_key_exists('tag',$this->extra))
                 $this->extra['tag'] = explode(',',strtolower($this->extra['tag']));
-            $this->repo = unserialize($this->repo_cache->retrieveCache());
-            $this->lookup();
         }
+        $this->repo = unserialize($this->repo_cache->retrieveCache());
+        if(!is_null($this->term) && !is_null($this->repo))
+            $this->lookup();
     }
 
     function html() {
@@ -66,8 +66,7 @@ class ap_search extends ap_manage {
         ptln('          <option value="id">ID</option>');//TODO Add language
         ptln('          <option value="name">Name</option>');//TODO Add language
         ptln('          <option value="description">Description</option>');//TODO Add language
-        ptln('          <option value="tag">Tag</option>');//TODO Add language
-        ptln('          <option value="type">Type</option>');//TODO Add language
+        ptln('          <option value="author">Author</option>');//TODO Add language
         ptln('        </select>');
         ptln('      </label>');
         ptln('      <label>Tags: <input name="ext[tag]" class="edit tag" type="text" maxlength="200"/></label>');//TODO Add language
@@ -88,53 +87,46 @@ class ap_search extends ap_manage {
     /**
      * Looks up the term in the repository cache according to filters set. Basic searching.
      * TODO advanced searching options (case-sensitive, for exact term etc) is it necessary??
+     * TODO assign weights to matches, like id matches highest in ordering
      */
     protected function lookup() {
-        if(!is_null($this->term)) {
-            $result = array();
-            $tmp=array();
-            if(!is_null($this->repo)) {
-                foreach($this->filters as $filter) {
-                    foreach ($this->repo as $single) {
-                        if($this->check($single)) continue;
-                        if($filter == 'tag') {
-                            if(is_array($single['tags'])) {
-                                foreach((array)$single['tags']['tag'] as $tag)
-                                    if(preg_match("/.*$this->term.*/ism",$tag))
-                                        $tmp[$single['id']] = $single;
-                            }
-                        } elseif(preg_match("/.*$this->term.*/ism",$single[$filter]))
-                            $tmp[$single['id']] = $single;
-                        $intersect = array_intersect_key($result,$tmp);
-                        $result = array_diff_key($tmp, $result);
-                        $result = array_merge($intersect,$result);
-                    }
-                }
-                return $this->result = $result;
-            }
+        foreach ($this->repo as $single) {
+            $matches = array_filter($single,array($this,'search'));
+            if(count($matches) && count(array_intersect_key($this->filters,$matches)) && $this->check($single))
+                $this->result[$single['id']] = $single;
         }
+        return $this->result;
+    }
+
+    /**
+     * Search for the term in every plugin and return matches.
+     */
+    protected function search($haystack) {
+        if(is_array($haystack)) return false;
+        return @stripos($haystack,$this->term) !== false;
     }
 
     /**
      * Checks to figure out if a plugin should be searched, 
      * based on some settings, version, current context(may be?)
      */
-    protected function check(array $plugin) {
-        $version_data = getVersionData();
-        if(@$plugin['tags']['tag'][0] == "!bundled") return true;
+    protected function check($plugin) {
+        //$version_data = getVersionData();
+        //print_r($this->extra);
+        if(@$plugin['tags']['tag'][0] == "!bundled") return false;
         if(is_array($this->extra) && count($this->extra))
             foreach($this->extra as $index => $value)
                 if(count($value)) {
                     if($index == 'type') {
-                        if(!preg_match("/.*$value.*/ism",$plugin['type'])) return true;
+                        if(strlen($value) && stripos($plugin['type'],$value) === false) return false;
                     }
                     elseif($index == 'tag') {
                         foreach($value as $tag)
                             if(strlen($tag))
-                                if(@array_search(trim($tag),(array)$plugin['tags']['tag'])===false) return true;
-                    }elseif(!(array_key_exists($index,$plugin) && $plugin[$index] == $value)) return true;
+                                if(@in_array(trim($tag),(array)$plugin['tags']['tag'])===false) return false;
+                    }elseif(!(array_key_exists($index,$plugin) && $plugin[$index] == $value)) return false;
                 }
-        //default case...
-        return false;
+        //All tests passed
+        return true;
     }
 }
