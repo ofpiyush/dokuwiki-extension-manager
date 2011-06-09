@@ -10,17 +10,18 @@ class ap_search extends ap_manage {
     var $versions = array();
     
     function process() {
+        
         if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0)
             $this->term = $_REQUEST['term'];
-        if(array_key_exists('filters',$_REQUEST) && is_array($_REQUEST['filters']))
-            $this->filters = array_intersect($_REQUEST['filters'],array_keys($this->filter_array));
-        else
-            $this->filters = array_keys($this->filter_array);
-        if(array_key_exists('ext',$_REQUEST) && is_array($_REQUEST['ext']))
-            $this->extra = array_intersect_key($_REQUEST['ext'],$this->filter_array);
-        if(array_key_exists('tag',$this->extra))
-            $this->extra['tag'] = explode(',',strtolower($this->extra['tag']));
         if(!is_null($this->term)) {
+            if(array_key_exists('filters',$_REQUEST) && is_array($_REQUEST['filters']))
+                $this->filters = array_intersect($_REQUEST['filters'],array_keys($this->filter_array));
+            else
+                $this->filters = array_keys($this->filter_array);
+            if(array_key_exists('ext',$_REQUEST) && is_array($_REQUEST['ext']))
+                $this->extra = array_intersect_key($_REQUEST['ext'],$this->filter_array);
+            if(is_array($this->extra) && array_key_exists('tag',$this->extra))
+                $this->extra['tag'] = explode(',',strtolower($this->extra['tag']));
             $this->repo = unserialize($this->repo_cache->retrieveCache());
             $this->lookup();
         }
@@ -50,7 +51,7 @@ class ap_search extends ap_manage {
         ptln('      <legend>'.$lang['btn_search'].'</legend>');
         ptln('      <label for="dw__search">'.$lang['btn_search'].'<input name="term" id="dw__search" class="edit" type="text" maxlength="200" /></label>');
         ptln('      <label>Type');//TODO Add language
-        ptln('        <select name="ext[type]">');//TODO Add language
+        ptln('        <select name="ext[type]">');
         ptln('          <option value="">All</option>');//TODO Add language
         ptln('          <option value="Syntax">Syntax</option>');//TODO Add language
         ptln('          <option value="Admin">Admin</option>');//TODO Add language
@@ -61,7 +62,7 @@ class ap_search extends ap_manage {
         ptln('        </select>');
         ptln('      </label>');        
         ptln('      <label>Filter by:');//TODO Add language
-        ptln('        <select name="filters[]" multiple>');//TODO Add language
+        ptln('        <select name="filters[]" multiple>');
         ptln('          <option value="id">ID</option>');//TODO Add language
         ptln('          <option value="name">Name</option>');//TODO Add language
         ptln('          <option value="description">Description</option>');//TODO Add language
@@ -74,11 +75,12 @@ class ap_search extends ap_manage {
         ptln('    </fieldset>');
         ptln('  </form>');
         ptln('</div>');
-        if(is_array($this->result) && count($this->result)) {
-            ptln('<pre>');
+        ptln('<pre>');
+        if(is_array($this->result) && count($this->result))
             print_r($this->result);
-            ptln('</pre>');
-        }
+        else
+            print_r($this->repo);
+        ptln('</pre>');
         ptln('</div>');
         //parent::html();
     }
@@ -125,7 +127,7 @@ class ap_search extends ap_manage {
                 if(count($value)) {
                     if($index == 'type') {
                         if(!preg_match("/.*$value.*/ism",$plugin['type'])) return true;
-                    } 
+                    }
                     elseif($index == 'tag') {
                         foreach($value as $tag)
                             if(strlen($tag))

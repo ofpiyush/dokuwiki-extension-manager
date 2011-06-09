@@ -130,9 +130,3 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     }
 
 }
-
-
-
-
-
-
