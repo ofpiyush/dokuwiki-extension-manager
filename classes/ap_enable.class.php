@@ -1,5 +1,4 @@
 <?php
-
 class ap_enable extends ap_manage {
 
     var $enabled = array();
