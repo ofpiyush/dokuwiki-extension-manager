@@ -92,8 +92,11 @@ class ap_search extends ap_manage {
     protected function lookup() {
         foreach ($this->repo as $single) {
             $matches = array_filter($single,array($this,'search'));
-            if(count($matches) && count(array_intersect_key($this->filters,$matches)) && $this->check($single))
-                $this->result[$single['id']] = $single;
+            if(count($matches)) {
+                $count = count(array_intersect_key($this->filters,$matches));
+                if($count && $this->check($single))
+                    $this->result[$count][$single['id']] = $single;
+            }
         }
         return $this->result;
     }
