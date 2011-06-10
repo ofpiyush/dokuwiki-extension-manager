@@ -106,7 +106,7 @@ class ap_search extends ap_manage {
      */
     protected function search($haystack) {
         if(is_array($haystack) && array_key_exists('tag',$haystack) && in_array('tag',$this->filters)) {
-            return in_array($this->term,(array)$haystack['tag']);
+            return (bool) count(array_filter((array)$haystack['tag'],array($this,'search')));
         }        
         return @stripos($haystack,$this->term) !== false;
     }
