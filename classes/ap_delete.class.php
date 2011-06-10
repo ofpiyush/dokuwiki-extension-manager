@@ -1,5 +1,6 @@
 <?php
-class ap_delete extends ap_manage {
+require_once(DOKU_PLUGIN."/plugin/classes/ap_plugin.class.php");
+class ap_delete extends ap_plugin {
 
     function process() {
 

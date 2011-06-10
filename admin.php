@@ -14,6 +14,7 @@ if(!defined('DOKU_INC')) die();
 // - to images (lib/images/) [ not needed, should go in lib/plugin/images/ ]
 
 require_once(DOKU_PLUGIN."/plugin/classes/ap_manage.class.php");
+require_once(DOKU_PLUGIN."/plugin/classes/ap_plugin.class.php");
 
 //--------------------------[ GLOBALS ]------------------------------------------------
 // note: probably should be dokuwiki wide globals, where they can be accessed by pluginutils.php
@@ -31,8 +32,8 @@ $plugin_protected = array('acl','plugin','config','info','usermanager','revert')
 class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
     var $disabled = 0;
-    var $plugin = '';
-    var $cmd = '';
+    var $plugin = NULL;
+    var $cmd = 'plugin';
     var $handler = NULL;
 
     var $functions = array('delete','update',/*'settings',*/'info');  // require a plugin name
@@ -69,34 +70,27 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->plugin = is_array($fn[$this->cmd]) ? key($fn[$this->cmd]) : null;
         } else {
             $this->cmd = $fn;
-            $this->plugin = null;
         }
         $this->_get_plugin_list();
 
-        // verify $_REQUEST vars
-        if (in_array($this->cmd, $this->commands)) {
-            $this->plugin = null;
-        } elseif (!in_array($this->cmd, $this->functions) || !in_array($this->plugin, $this->plugin_list)) {
-            $this->cmd = 'manage';
+        // verify $_REQUEST vars and check for security token
+        if ((!in_array($this->cmd, $this->commands) && !(in_array($this->cmd, $this->functions) && in_array($this->plugin, $this->plugin_list)))
+            || (!($this->cmd == 'plugin' && is_null($this->plugin)) && !checkSecurityToken())) {
+            $this->cmd = 'plugin';
             $this->plugin = null;
         }
 
-        if(($this->cmd != 'manage' || $this->plugin != '') && !checkSecurityToken()){
-            $this->cmd = 'manage';
-            $this->plugin = null;
-        }
-        
-        if($this->cmd == 'manage' && $tab != "plugin" && strlen($tab)) {
+        if($this->cmd == 'plugin' && strlen($tab)) {
             $this->cmd = $tab;
         }
         // create object to handle the command
         $class = "ap_".$this->cmd;
-        @require_once(DOKU_PLUGIN."/plugin/classes/$class.class.php");
-        if (!class_exists($class)) {
-            $class = 'ap_manage';
-        }
-        
-        $this->handler = new $class($this, $this->plugin);
+        $path = DOKU_PLUGIN."/plugin/classes/$class.class.php";
+        if(file_exists($path) && require_once(DOKU_PLUGIN."/plugin/classes/$class.class.php"))
+            if(class_exists($class) && is_subclass_of($class,'ap_manage'))
+                $this->handler = new $class($this);
+
+        if(is_null($this->handler)) $this->handler = new ap_plugin($this);
         $this->msg = $this->handler->process();
 
     }
@@ -109,7 +103,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         $this->setupLocale();
         $this->_get_plugin_list();
 
-        if ($this->handler === NULL) $this->handler = new ap_manage($this, $this->plugin);
+        if (is_null($this->handler)) $this->handler = new ap_plugin($this);
 
         ptln('<div id="plugin__manager">');
         $this->handler->html();

@@ -1,6 +1,6 @@
 <?php
 
-class ap_manage {
+abstract class ap_manage {
 
     var $manager = NULL;
     var $lang = array();
@@ -8,63 +8,27 @@ class ap_manage {
     var $downloaded = array();
     var $repo_cache = NULL;
     
-    function __construct($manager, $plugin) {
+    final function __construct(DokuWiki_Admin_Plugin $manager) {
         $this->manager = $manager;
-        $this->plugin = $plugin;
+        $this->plugin = $manager->plugin;
         $this->lang = $manager->lang;
         $this->repo_cache = new cache('plugin_manager', 'sa');
         $this->check_load_cache();
     }
 
-    function process() {
-        return '';
-    }
+    abstract function process();
 
-    function html() {
-        global $ID,$lang;
-        $this->html_menu();
-        print $this->manager->locale_xhtml('admin_plugin');
-        ptln('<div class="common">');
-        ptln('  <h2>Search for a new plugin</h2>');//TODO Add language
-        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'" method="post">');
-        ptln('    <fieldset class="hidden">',4);
-        formSecurityToken();
-        ptln('    </fieldset>');
-        ptln('    <fieldset>');
-        ptln('      <legend>'.$lang['btn_search'].'</legend>');
-        ptln('      <label for="dw__search">'.$lang['btn_search'].'<input name="term" id="dw__search" class="edit" type="text" maxlength="200" /></label>');
-        ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
-        ptln('    </fieldset>');
-        ptln('  </form>');
-        ptln('</div>');
-        /**
-         * List plugins
-         */
-            ptln('<h2>'.$this->lang['manage'].'</h2>');
-            ptln('<form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post" class="plugins">');
-            ptln('  <fieldset class="hidden">');
-            formSecurityToken();
-            ptln('  </fieldset>');
-            
-            $this->html_pluginlist();
-
-            ptln('  <fieldset class="buttons">');
-            ptln('    <input type="submit" class="button" name="fn[enable]" value="'.$this->lang['btn_enable'].'" />');
-            ptln('  </fieldset>');
-
-            //            ptln('  </div>');
-            ptln('</form>');
-        //end list plugins
-    }
+    abstract function html();
 
     // build our standard menu
     function html_menu() {
         global $lang;
+        $tab = (in_array($this->manager->cmd,array('plugin','template','search')))? $this->manager->cmd : 'plugin' ;
         ptln('<div class="pm_menu">');
 		ptln('    <ul>');
-		ptln('	    <li class="'.(($this->manager->cmd == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
-		ptln('	    <li class="'.(($this->manager->cmd == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
-		ptln('	    <li class="'.(($this->manager->cmd == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">'.$lang['btn_search'].'</a></li>');
+		ptln('	    <li class="'.(($tab == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
+		ptln('	    <li class="'.(($tab == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
+		ptln('	    <li class="'.(($tab == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">'.$lang['btn_search'].'</a></li>');
 		ptln('    </ul>');
         ptln('</div>');
     }

@@ -44,6 +44,7 @@ class ap_enable extends ap_manage {
             $this->refresh();
         }
     }
+    function html() {}
 
 }
 
