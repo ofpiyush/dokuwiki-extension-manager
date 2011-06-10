@@ -1,5 +1,4 @@
 <?php
-require_once(DOKU_PLUGIN."/plugin/classes/ap_plugin.class.php");
 class ap_info extends ap_plugin {
 
     var $plugin_info = array();        // the plugin itself

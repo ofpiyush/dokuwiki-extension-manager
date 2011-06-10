@@ -13,8 +13,8 @@ if(!defined('DOKU_INC')) die();
 // - allow a plugin to contain extras to be copied to the current template (extra/tpl/)
 // - to images (lib/images/) [ not needed, should go in lib/plugin/images/ ]
 
-require_once(DOKU_PLUGIN."/plugin/classes/ap_manage.class.php");
-require_once(DOKU_PLUGIN."/plugin/classes/ap_plugin.class.php");
+require_once(DOKU_PLUGIN."plugin/classes/ap_manage.class.php");
+require_once(DOKU_PLUGIN."plugin/classes/ap_plugin.class.php");
 
 //--------------------------[ GLOBALS ]------------------------------------------------
 // note: probably should be dokuwiki wide globals, where they can be accessed by pluginutils.php

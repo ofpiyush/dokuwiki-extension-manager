@@ -1,5 +1,5 @@
 <?php
-require_once(DOKU_PLUGIN."/plugin/classes/ap_download.class.php");
+require_once(DOKU_PLUGIN."plugin/classes/ap_download.class.php");
 class ap_update extends ap_download {
 
     var $overwrite = true;
