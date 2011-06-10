@@ -105,7 +105,9 @@ class ap_search extends ap_manage {
      * Search for the term in every plugin and return matches.
      */
     protected function search($haystack) {
-        if(is_array($haystack)) return false;
+        if(is_array($haystack) && array_key_exists('tag',$haystack) && in_array('tag',$this->filters)) {
+            return in_array($this->term,(array)$haystack['tag']);
+        }        
         return @stripos($haystack,$this->term) !== false;
     }
 
