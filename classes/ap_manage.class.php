@@ -22,7 +22,7 @@ abstract class ap_manage {
 
     // build our standard menu
     function html_menu() {
-        global $lang;
+        global $lang, $ID;
         $tab = (in_array($this->manager->cmd,array('plugin','template','search')))? $this->manager->cmd : 'plugin' ;
         ptln('<div class="pm_menu">');
 		ptln('    <ul>');
@@ -40,22 +40,23 @@ abstract class ap_manage {
         foreach ($this->manager->plugin_list as $plugin) {
 
             $disabled = plugin_isdisabled($plugin);
-            $protected = in_array($plugin,$plugin_protected);
+            if(in_array($plugin,$plugin_protected)) {
+                $protected[] = $plugin;
+                continue;
+            }
 
             $checked = ($disabled) ? '' : ' checked="checked"';
-            $check_disabled = ($protected) ? ' disabled="disabled"' : '';
 
             // determine display class(es)
             $class = array();
             if (in_array($plugin, $this->downloaded)) $class[] = 'new';
             if ($disabled) $class[] = 'disabled';
-            if ($protected) $class[] = 'protected';
 
-            $class = count($class) ? ' class="'.join(' ', $class).'"' : '';
+            $class = count($class) ? ' class="'.implode(' ', $class).'"' : '';
 
             ptln('    <fieldset'.$class.'>');
             ptln('      <legend>'.$plugin.'</legend>');
-            ptln('      <input type="checkbox" class="enable" name="enabled[]" value="'.$plugin.'"'.$checked.$check_disabled.' />');
+            ptln('      <input type="checkbox" class="enable" name="enabled[]" value="'.$plugin.'"'.$checked.' />');
             ptln('      <h3 class="legend">'.$plugin.'</h3>');
 
             $this->html_button($plugin, 'info', false, 6);
@@ -63,7 +64,7 @@ abstract class ap_manage {
                 $this->html_button($plugin, 'settings', !@file_exists(DOKU_PLUGIN.$plugin.'/settings.php'), 6);
             }
             $this->html_button($plugin, 'update', !$this->plugin_readlog($plugin, 'url'), 6);
-            $this->html_button($plugin, 'delete', $protected, 6);
+            $this->html_button($plugin, 'delete', false,6);
 
             ptln('    </fieldset>');
         }
@@ -93,9 +94,7 @@ abstract class ap_manage {
      * Write a log entry to the given target directory
      */
     function plugin_writelog($target, $cmd, $data) {
-
         $file = $target.'/manager.dat';
-
         switch ($cmd) {
             case 'install' :
                 $url = $data[0];
@@ -186,7 +185,10 @@ abstract class ap_manage {
                     $array = $this->xml_array($data);
                     $data = $array['repository']['plugin'];
                 }
-                $this->repo_cache->storeCache(serialize($data));
+                foreach($data as $single)
+                    $final[$single['id']] = $single;
+                unset($data);
+                $this->repo_cache->storeCache(serialize($final));
             }
             catch(Exception $e) {
                 // do some debugging actions if necessary?

@@ -41,7 +41,6 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
 
-    var $tab = '';
     var $msg = '';
     var $error = '';
 
@@ -113,10 +112,9 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     /**
      * Returns a list of all plugins, including the disabled ones
      */
-    function _get_plugin_list() {
+    private function _get_plugin_list() {
         if (empty($this->plugin_list)) {
             $list = plugin_list('',true);     // all plugins, including disabled ones
-            sort($list);
             trigger_event('PLUGIN_PLUGINMANAGER_PLUGINLIST',$list);
             $this->plugin_list = $list;
         }

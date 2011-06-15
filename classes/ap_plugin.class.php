@@ -26,19 +26,25 @@ class ap_plugin extends ap_manage {
          * List plugins
          */
             ptln('<h2>'.$this->lang['manage'].'</h2>');
-            ptln('<form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post" class="plugins">');
+            /*ptln('<form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post" class="plugins">');
             ptln('  <fieldset class="hidden">');
             formSecurityToken();
             ptln('  </fieldset>');
-            
-            $this->html_pluginlist();
+            */
 
+            $form = new Doku_Form(array('id'=>'test', 'action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
+            html_form('TEST',$form);
+            print_r($this->manager->plugin_list);
+            //$this->html_pluginlist();
+
+            /*
             ptln('  <fieldset class="buttons">');
             ptln('    <input type="submit" class="button" name="fn[enable]" value="'.$this->lang['btn_enable'].'" />');
             ptln('  </fieldset>');
 
             //            ptln('  </div>');
             ptln('</form>');
+            */
         //end list plugins
     }
 }
