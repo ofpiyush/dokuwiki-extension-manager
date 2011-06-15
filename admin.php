@@ -71,7 +71,6 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->cmd = $fn;
         }
         $this->_get_plugin_list();
-
         // verify $_REQUEST vars and check for security token
         if ((!in_array($this->cmd, $this->commands) && !(in_array($this->cmd, $this->functions) && in_array($this->plugin, $this->plugin_list)))
             || (!($this->cmd == 'plugin' && is_null($this->plugin)) && !checkSecurityToken())) {
