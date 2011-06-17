@@ -1,7 +1,10 @@
 <?php
 class ap_plugin extends ap_manage {
+    var $plugins;
 
     function process() {
+        $this->plugins = $this->_info_list($this->manager->plugin_list);
+        
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
 
@@ -11,44 +14,34 @@ class ap_plugin extends ap_manage {
         print $this->manager->locale_xhtml('admin_plugin');
         ptln('<div class="common">');
         ptln('  <h2>Search for a new plugin</h2>');//TODO Add language
-        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'" method="post">');
-        ptln('    <fieldset class="hidden">',4);
-        formSecurityToken();
-        ptln('    </fieldset>');
-        ptln('    <fieldset>');
-        ptln('      <legend>'.$lang['btn_search'].'</legend>');
-        ptln('      <label for="dw__search">'.$lang['btn_search'].'<input name="term" id="dw__search" class="edit" type="text" maxlength="200" /></label>');
-        ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
-        ptln('    </fieldset>');
-        ptln('  </form>');
+        $search_form = new Doku_Form('search');
+        $search_form->startFieldset($lang['btn_search']);
+        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
+        $search_form->addHidden('page','plugin');
+        $search_form->addHidden('tab','search');
+        $search_form->addHidden('fn[search]',$lang['btn_search']);
+        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
+        $search_form->endFieldset();
+        $search_form->printForm();
         ptln('</div>');
         /**
          * List plugins
          */
             ptln('<h2>'.$this->lang['manage'].'</h2>');
-            $list = $this->_info_list($this->manager->plugin_list);
-            //TODO do some array_intersect_key with the repo cache to get all other necessary variables
-            
-            if(is_array($list) && count($list)) {
-                $form = new Doku_Form(array( 'class' =>'plugins','action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
-                foreach($list as $id => $info) {
+            ptln('<div class="plugins">');
+            if(is_array($this->plugins) && count($this->plugins)) {
+                $form = new Doku_Form(array( 'action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
+                foreach($this->plugins as $id => $info) {
                     $form->startFieldset($id);
                     //for now add the names at least (after filtering, the plugins with no plugin info come at bottom)
                     $form->addElement('<h3 class="legend">'.((!is_null($info))? $info['name'] : $id).'</h3>');
+                    
                     $form->endFieldset();
                 }
-                html_form('TEST',$form);
+                html_form('PLUGIN_MANAGER',$form);
             }
+            ptln('</div>');
             //$this->html_pluginlist();
-
-            /*
-            ptln('  <fieldset class="buttons">');
-            ptln('    <input type="submit" class="button" name="fn[enable]" value="'.$this->lang['btn_enable'].'" />');
-            ptln('  </fieldset>');
-
-            //            ptln('  </div>');
-            ptln('</form>');
-            */
         //end list plugins
     }
     protected function _info_list($list) {

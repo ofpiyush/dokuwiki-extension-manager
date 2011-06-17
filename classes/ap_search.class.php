@@ -33,46 +33,40 @@ class ap_search extends ap_manage {
         ptln('<div class="pm_info">');
         ptln('<div class="common">');
         ptln('  <h2>'.$this->lang['download'].'</h2>');
-        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post">');
-        ptln('    <fieldset class="hidden">',4);
-        formSecurityToken();
-        ptln('    </fieldset>');
-        ptln('    <fieldset>');
-        ptln('      <legend>'.$this->lang['download'].'</legend>');
-        ptln('      <label for="dw__url">'.$this->lang['url'].'<input name="url" id="dw__url" class="edit" type="text" maxlength="200" /></label>');
-        ptln('      <input type="submit" class="button" name="fn[download]" value="'.$this->lang['btn_download'].'" />');
-        ptln('    </fieldset>');
-        ptln('  </form>');
-        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'" method="post">');
-        ptln('    <fieldset class="hidden">',4);
-        formSecurityToken();
-        ptln('    </fieldset>');
-        ptln('    <fieldset>');
-        ptln('      <legend>'.$lang['btn_search'].'</legend>');
-        ptln('      <label for="dw__search">'.$lang['btn_search'].'<input name="term" id="dw__search" class="edit" type="text" maxlength="200" /></label>');
-        ptln('      <label>Type');//TODO Add language
-        ptln('        <select name="ext[type]">');
-        ptln('          <option value="">All</option>');//TODO Add language
-        ptln('          <option value="Syntax">Syntax</option>');//TODO Add language
-        ptln('          <option value="Admin">Admin</option>');//TODO Add language
-        ptln('          <option value="Action">Action</option>');//TODO Add language
-        ptln('          <option value="Renderer">Renderer</option>');//TODO Add language
-        ptln('          <option value="Helper">Helper</option>');//TODO Add language
-        ptln('          <option value="Template">Template</option>');//TODO Add language
-        ptln('        </select>');
-        ptln('      </label>');        
-        ptln('      <label>Filter by:');//TODO Add language
-        ptln('        <select name="filters[]" multiple>');
-        ptln('          <option value="id">ID</option>');//TODO Add language
-        ptln('          <option value="name">Name</option>');//TODO Add language
-        ptln('          <option value="description">Description</option>');//TODO Add language
-        ptln('          <option value="author">Author</option>');//TODO Add language
-        ptln('        </select>');
-        ptln('      </label>');
-        ptln('      <label>Tags: <input name="ext[tag]" class="edit tag" type="text" maxlength="200"/></label>');//TODO Add language
-        ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
-        ptln('    </fieldset>');
-        ptln('  </form>');
+        $url_form = new Doku_Form('search');
+        $url_form->startFieldset($this->lang['download']);
+        $url_form->addElement(form_makeTextField('url','',$this->lang['url'],'dw__url'));
+        $url_form->addHidden('page','plugin');
+        $url_form->addHidden('fn[download]',$this->lang['btn_download']);
+        $url_form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_download'] ));
+        $url_form->endFieldset();
+        $url_form->printForm();
+        $search_form = new Doku_Form('search');
+        $search_form->startFieldset($lang['btn_search']);
+        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
+        $search_form->addElement(form_makeMenuField('ext[type]',array(
+                                                                ''=>'All',//TODO add language
+                                                                'Syntax'=>'Syntax',//TODO add language
+                                                                'Admin'=>'Admin',//TODO add language
+                                                                'Action'=>'Action',//TODO add language
+                                                                'Renderer'=>'Renderer',//TODO add language
+                                                                'Helper'=>'Helper',//TODO add language
+                                                                'Template'=>'Template')//TODO add language
+                                                                ,'','Type'));//TODO add language
+        $search_form->addElement(form_makeListboxField('filters[]',array(
+                                                                'id'=>'ID',//TODO add language
+                                                                'name'=>'Name',//TODO add language
+                                                                'description'=>'Description',//TODO add language
+                                                                'author'=>'Author',//TODO add language
+                                                                'tag'=>'Tag',//TODO add language
+                                                                'type'=>'Type')//TODO add language
+                                                                ,'','Filter by:','','',array('multiple'=>true)));//TODO add language
+        $search_form->addHidden('page','plugin');
+        $search_form->addHidden('tab','search');
+        $search_form->addHidden('fn[search]',$lang['btn_search']);
+        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
+        $search_form->endFieldset();
+        $search_form->printForm();
         ptln('</div>');
         ptln('<pre>');
         if(is_array($this->result) && count($this->result))
