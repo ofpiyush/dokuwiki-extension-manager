@@ -5,7 +5,7 @@ class ap_plugin extends ap_manage {
     function process() {
         $plugins = $this->_info_list($this->manager->plugin_list);
         $unprotected = array_diff_key($plugins,$this->protected);
-        print_r($unprotected);
+        $this->plugins = $unprotected;
         $this->repo = $this->fetch_cache();
         
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
@@ -35,12 +35,15 @@ class ap_plugin extends ap_manage {
         if(is_array($this->plugins) && count($this->plugins)) {
             $form = new Doku_Form(array( 'action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
             $form->startFieldset('top');
-            $form->addElement(form_makeOpenTag('label',array('class'=>'checkbox'));
-            $form->addElement('Select');//TODO Add language
+            $form->addElement(form_makeOpenTag('label',array('class'=>'checkbox')));
+            $form->addElement('Sel');//TODO Add language
             $form->addElement(form_makeCloseTag('label'));
             $form->addElement(form_makeOpenTag('h3',array('class'=>'legend')));
-            $form->addElement(rtrim($this->lang['plugin'],":"));
+            $form->addElement(rtrim($this->lang['name'],":"));
             $form->addElement(form_makeCloseTag('h3'));
+            $form->addElement(form_makeOpenTag('label',array('class'=>'actions')));
+            $form->addElement('Action');//TODO Add language
+            $form->addElement(form_makeCloseTag('label'));
             $form->endFieldset();
             foreach($this->plugins as $id => $info) {
                 $form->startFieldset($id);
