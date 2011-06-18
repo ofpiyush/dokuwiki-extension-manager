@@ -7,20 +7,19 @@ class ap_template extends ap_manage {
 
     function html() {
         $this->html_menu();
-        global $ID,$lang;
+        global $lang;
         ptln('<div class="common">');
-        ptln('  <h2>'.$this->lang['download'].'</h2>');// get to template.
-        ptln('  <form action="'.wl($ID,array('do'=>'admin','page'=>'plugin')).'" method="post">');
-        ptln('    <fieldset class="hidden">',4);
-        formSecurityToken();
-        ptln('      <input type="hidden" name="ext[type]" value="Template" />');
-        ptln('    </fieldset>');
-        ptln('    <fieldset>');
-        ptln('      <legend>'.$lang['btn_search'].'</legend>');
-        ptln('      <label for="dw__search">'.$lang['btn_search'].'<input name="term" id="dw__search" class="edit" type="text" maxlength="200" /></label>');
-        ptln('      <input type="submit" class="button" name="fn[search]" value="'.$lang['btn_search'].'" />');
-        ptln('    </fieldset>');
-        ptln('  </form>');
+        ptln('  <h2>Search for a new Template</h2>');//TODO Add language
+        $template_search = new Doku_Form('search');
+        $template_search->startFieldset($lang['btn_search']);
+        $template_search->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
+        $template_search->addHidden('page','plugin');
+        $template_search->addHidden('tab','search');
+        $template_search->addHidden('ext[type]','Template');
+        $template_search->addHidden('fn[search]',$lang['btn_search']);
+        $template_search->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
+        $template_search->endFieldset();
+        $template_search->printForm();
         ptln('</div>');
         //TODO bring out a decent layout in grid, with screenshots hotlinked form servers?
     }

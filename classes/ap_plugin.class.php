@@ -9,7 +9,7 @@ class ap_plugin extends ap_manage {
     }
 
     function html() {
-        global $ID,$lang;
+        global $lang;
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
         ptln('<div class="common">');
@@ -27,20 +27,20 @@ class ap_plugin extends ap_manage {
         /**
          * List plugins
          */
-            ptln('<h2>'.$this->lang['manage'].'</h2>');
-            ptln('<div class="plugins">');
-            if(is_array($this->plugins) && count($this->plugins)) {
-                $form = new Doku_Form(array( 'action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
-                foreach($this->plugins as $id => $info) {
-                    $form->startFieldset($id);
-                    //for now add the names at least (after filtering, the plugins with no plugin info come at bottom)
-                    $form->addElement('<h3 class="legend">'.((!is_null($info))? $info['name'] : $id).'</h3>');
-                    
-                    $form->endFieldset();
-                }
-                html_form('PLUGIN_MANAGER',$form);
+        ptln('<h2>'.$this->lang['manage'].'</h2>');
+        ptln('<div class="plugins">');
+        if(is_array($this->plugins) && count($this->plugins)) {
+            $form = new Doku_Form(array( 'action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
+            foreach($this->plugins as $id => $info) {
+                $form->startFieldset($id);
+                //for now add the names at least (after filtering, the plugins with no plugin info come at bottom)
+                $form->addElement('<h3 class="legend">'.((!is_null($info))? $info['name'] : $id).'</h3>');
+                
+                $form->endFieldset();
             }
-            ptln('</div>');
+            html_form('PLUGIN_MANAGER',$form);
+        }
+        ptln('</div>');
             //$this->html_pluginlist();
         //end list plugins
     }

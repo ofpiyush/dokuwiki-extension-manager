@@ -29,7 +29,7 @@ class ap_search extends ap_manage {
 
     function html() {
         $this->html_menu();
-        global $ID,$lang;
+        global $lang;
         ptln('<div class="pm_info">');
         ptln('<div class="common">');
         ptln('  <h2>'.$this->lang['download'].'</h2>');
