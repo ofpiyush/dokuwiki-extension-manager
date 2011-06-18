@@ -174,7 +174,7 @@
     background: none;
 }
 
-#plugin__manager .plugins .enable {
+#plugin__manager .plugins .checkbox {
     float: left;
     width: auto;
     margin-right: 0.5em;

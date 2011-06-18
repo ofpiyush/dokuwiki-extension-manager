@@ -33,7 +33,7 @@
     float: right;
 }
 
-#plugin__manager .plugins .enable {
+#plugin__manager .plugins .checkbox {
     float: right;
     margin-right: 0;
     margin-left: 0.5em;

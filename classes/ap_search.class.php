@@ -22,7 +22,7 @@ class ap_search extends ap_manage {
             if(is_array($this->extra) && array_key_exists('tag',$this->extra))
                 $this->extra['tag'] = explode(',',strtolower($this->extra['tag']));
         }
-        $this->repo = unserialize($this->repo_cache->retrieveCache());
+        $this->repo = $this->fetch_cache();
         if(!is_null($this->term) && !is_null($this->repo))
             $this->lookup();
     }

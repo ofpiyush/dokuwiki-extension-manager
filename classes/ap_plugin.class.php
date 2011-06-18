@@ -3,7 +3,10 @@ class ap_plugin extends ap_manage {
     var $plugins;
 
     function process() {
-        $this->plugins = $this->_info_list($this->manager->plugin_list);
+        $plugins = $this->_info_list($this->manager->plugin_list);
+        $unprotected = array_diff_key($plugins,$this->protected);
+        print_r($unprotected);
+        $this->repo = $this->fetch_cache();
         
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
@@ -31,11 +34,21 @@ class ap_plugin extends ap_manage {
         ptln('<div class="plugins">');
         if(is_array($this->plugins) && count($this->plugins)) {
             $form = new Doku_Form(array( 'action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
+            $form->startFieldset('top');
+            $form->addElement(form_makeOpenTag('label',array('class'=>'checkbox'));
+            $form->addElement('Select');//TODO Add language
+            $form->addElement(form_makeCloseTag('label'));
+            $form->addElement(form_makeOpenTag('h3',array('class'=>'legend')));
+            $form->addElement(rtrim($this->lang['plugin'],":"));
+            $form->addElement(form_makeCloseTag('h3'));
+            $form->endFieldset();
             foreach($this->plugins as $id => $info) {
                 $form->startFieldset($id);
                 //for now add the names at least (after filtering, the plugins with no plugin info come at bottom)
-                $form->addElement('<h3 class="legend">'.((!is_null($info))? $info['name'] : $id).'</h3>');
-                
+                $form->addElement(form_makeCheckboxField('checked[]',$id,'','','checkbox'));
+                $form->addElement(form_makeOpenTag('h3',array('class'=>'legend')));
+                $form->addElement((!is_null($info))? $info['name'] : $id);
+                $form->addElement(form_makeCloseTag('h3'));
                 $form->endFieldset();
             }
             html_form('PLUGIN_MANAGER',$form);
