@@ -7,11 +7,8 @@ abstract class ap_manage {
     var $plugin = '';
     var $downloaded = array();
     var $repo_cache = NULL;
-    var $protected = array();
 
     final function __construct(DokuWiki_Admin_Plugin $manager) {
-        global $plugin_protected;
-        $this->protected = array_flip($plugin_protected);
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
         $this->lang = $manager->lang;
@@ -127,7 +124,7 @@ abstract class ap_manage {
     }
 
     function fetch_cache() {
-        return @unserialize($this->repo_cache);
+        return @unserialize($this->repo_cache->retrieveCache());
     }
 
     /**

@@ -28,24 +28,24 @@
 }
 
 
-#plugin__manager .plugins .legend {
+#plugin__manager #plugins .legend {
     text-align: right;
     float: right;
 }
 
-#plugin__manager .plugins .checkbox {
+#plugin__manager #plugins .checkbox {
     float: right;
     margin-right: 0;
     margin-left: 0.5em;
 }
 
-#plugin__manager .plugins .actions {
+#plugin__manager #plugins .actions {
     float: left;
     margin-right: 0.5em;
 }
 
 
-#plugin__manager .plugins fieldset.buttons .button {
+#plugin__manager #plugins fieldset.buttons .button {
     float: right;
 }
 

@@ -3,11 +3,15 @@ class ap_plugin extends ap_manage {
     var $plugins;
 
     function process() {
-        $plugins = $this->_info_list($this->manager->plugin_list);
-        $unprotected = array_diff_key($plugins,$this->protected);
-        $this->plugins = $unprotected;
+        global $plugin_protected;
+        $list = $this->manager->plugin_list;
+        echo "<pre>";
+        $unprotected = array_diff($list,$plugin_protected);
+        $enabled = array_intersect($unprotected,plugin_list());
+        $disabled = array_filter($unprotected,'plugin_isdisabled'); //TODO check array_diff/array_intersect vs array_filter speeds
+        $this->plugins = $this->_info_list($enabled+$disabled);
         $this->repo = $this->fetch_cache();
-        
+        echo "</pre>";
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
 
@@ -31,32 +35,42 @@ class ap_plugin extends ap_manage {
          * List plugins
          */
         ptln('<h2>'.$this->lang['manage'].'</h2>');
-        ptln('<div class="plugins">');
         if(is_array($this->plugins) && count($this->plugins)) {
-            $form = new Doku_Form(array( 'action' => wl($ID,array('do'=>'admin','page'=>'plugin'))));
-            $form->startFieldset('top');
+            $form = new Doku_Form("plugins",wl($ID,array('do'=>'admin','page'=>'plugin')));
+            $form->addElement(form_makeOpenTag('div',array('class'=>'top')));
             $form->addElement(form_makeOpenTag('label',array('class'=>'checkbox')));
             $form->addElement('Sel');//TODO Add language
             $form->addElement(form_makeCloseTag('label'));
-            $form->addElement(form_makeOpenTag('h3',array('class'=>'legend')));
+            $form->addElement(form_makeOpenTag('label',array('class'=>'legend')));
+            $form->addElement(form_makeOpenTag('label',array('class'=>'head')));
             $form->addElement(rtrim($this->lang['name'],":"));
-            $form->addElement(form_makeCloseTag('h3'));
-            $form->addElement(form_makeOpenTag('label',array('class'=>'actions')));
-            $form->addElement('Action');//TODO Add language
             $form->addElement(form_makeCloseTag('label'));
-            $form->endFieldset();
+            $form->addElement(form_makeCloseTag('label'));
+            $form->addElement(form_makeOpenTag('div',array('class'=>'actions')));
+            $form->addElement('Actions');//TODO Add language
+            $form->addElement(form_makeCloseTag('div'));
+            $form->addElement(form_makeCloseTag('div'));
             foreach($this->plugins as $id => $info) {
                 $form->startFieldset($id);
                 //for now add the names at least (after filtering, the plugins with no plugin info come at bottom)
                 $form->addElement(form_makeCheckboxField('checked[]',$id,'','','checkbox'));
-                $form->addElement(form_makeOpenTag('h3',array('class'=>'legend')));
+                $form->addElement(form_makeOpenTag('label',array('class'=>'legend')));
+                $form->addElement(form_makeOpenTag('label',array('class'=>'head')));
                 $form->addElement((!is_null($info))? $info['name'] : $id);
-                $form->addElement(form_makeCloseTag('h3'));
+                $form->addElement(form_makeCloseTag('label'));
+                if(isset($info['desc'])) {
+                    $form->addElement(form_makeOpenTag('p'));
+                    $form->addElement($info['desc']);
+                    $form->addElement(form_makeCloseTag('p'));
+                }
+                $form->addElement(form_makeCloseTag('label'));
+                $form->addElement(form_makeOpenTag('div',array('class'=>'actions')));
+                $form->addElement('Info | Report broken | Delete');//TODO Make some way of keeping imploded actions && Add language
+                $form->addElement(form_makeCloseTag('div'));
                 $form->endFieldset();
             }
             html_form('PLUGIN_MANAGER',$form);
         }
-        ptln('</div>');
             //$this->html_pluginlist();
         //end list plugins
     }

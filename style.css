@@ -105,26 +105,37 @@
     width: 10em;
 }
 
-#plugin__manager .plugins fieldset {
+#plugin__manager #plugins .top {
+    background: #ccc;
+    font-weight: bold;
+    padding: 0.5em;
+}
+
+#plugin__manager #plugins .top .legend {
+    font-weight: bold;
+}
+
+#plugin__manager #plugins fieldset {
     color: #000;
     background: #fff;
     text-align: right;
+    vertical-align: middle;
     border-top: none;
     border-right: none;
     border-left: none;
 }
 
-#plugin__manager .plugins fieldset.protected {
+#plugin__manager #plugins fieldset.protected {
     background: #fdd;
     color: #000;
 }
 
-#plugin__manager .plugins fieldset.disabled {
+#plugin__manager #plugins fieldset.disabled {
     background: #e0e0e0;
     color: #a8a8a8;
 }
 
-#plugin__manager .plugins .legend {
+#plugin__manager #plugins .legend {
     color: #000;
     background: inherit;
     display: block;
@@ -132,22 +143,31 @@
     padding: 0;
     font-size: 1em;
     line-height: 1.4em;
+    width:40%;
     font-weight: normal;
     text-align: left;
     float: left;
     padding: 0;
     clear: none;
 }
-
-#plugin__manager .plugins .actions {
-    font-size: 95%;
+#plugin__manager #plugins .legend .head {
+    clear: both;
+    font-weight: bold;
 }
 
-#plugin__manager .plugins fieldset.buttons {
+#plugin__manager #plugins .legend p {
+    margin: 0;
+}
+#plugin__manager #plugins .actions {
+    font-size: 95%;
+    text-align:center;
+}
+
+#plugin__manager #plugins fieldset.buttons {
     border: none;
 }
 
-#plugin__manager .plugins fieldset.buttons .button {
+#plugin__manager #plugins fieldset.buttons .button {
     float: left;
 }
 
@@ -174,9 +194,11 @@
     background: none;
 }
 
-#plugin__manager .plugins .checkbox {
+#plugin__manager #plugins .checkbox {
     float: left;
-    width: auto;
+    width: 4em;
+    vertical-align:middle;
+    text-align:center;
     margin-right: 0.5em;
 }
 
