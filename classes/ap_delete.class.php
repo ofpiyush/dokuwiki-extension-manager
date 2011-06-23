@@ -3,12 +3,14 @@ class ap_delete extends ap_plugin {
 
     function process() {
 
-        if (!$this->dir_delete(DOKU_PLUGIN.plugin_directory($this->manager->plugin))) {
-            $this->manager->error = sprintf($this->lang['error_delete'],$this->manager->plugin);
-        } else {
-            msg(sprintf($this->lang['deleted'],$this->plugin));
-            $this->refresh();
+        foreach($this->plugin as $plugin) {
+            if (!$this->dir_delete(DOKU_PLUGIN.plugin_directory($plugin))) {
+                $this->manager->error = sprintf($this->lang['error_delete'],$plugin);
+            } else {
+                msg(sprintf($this->lang['deleted'],$plugin));
+            }
         }
+        $this->refresh();
     }
 
     function html() {

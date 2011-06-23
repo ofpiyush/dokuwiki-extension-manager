@@ -36,7 +36,9 @@ class ap_plugin extends ap_manage {
          */
         ptln('<h2>'.$this->lang['manage'].'</h2>');
         if(is_array($this->plugins) && count($this->plugins)) {
-            $form = new Doku_Form("plugins",wl($ID,array('do'=>'admin','page'=>'plugin')));
+            $form = new Doku_Form("plugins");
+            $form->addHidden('page','plugin');
+            $form->addHidden('fn[multiselect]','Multiselect');
             $form->addElement(form_makeOpenTag('div',array('class'=>'top')));
             $form->addElement(form_makeOpenTag('label',array('class'=>'checkbox')));
             $form->addElement('Sel');//TODO Add language
@@ -69,6 +71,16 @@ class ap_plugin extends ap_manage {
                 $form->addElement(form_makeCloseTag('div'));
                 $form->endFieldset();
             }
+            //TODO add a div
+            $form->addElement(form_makeMenuField('action',array(
+                                                                ''=>'Select',//TODO add langugae
+                                                                'enable'=>'Enable',//TODO add language
+                                                                'disable'=>'Disable',//TODO add language
+                                                                'delete'=>'Delete',//TODO add language
+                                                                'update'=>'Update'//TODO add language
+                                                                )
+                                                                ,'','Action'));//TODO add language
+            $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
             html_form('PLUGIN_MANAGER',$form);
         }
             //$this->html_pluginlist();

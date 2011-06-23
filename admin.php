@@ -36,8 +36,8 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $cmd = 'plugin';
     var $handler = NULL;
 
-    var $functions = array('delete','update',/*'settings',*/'info');  // require a plugin name
-    var $commands = array('manage','search','download','enable');              // don't require a plugin name
+    var $functions = array('delete','enable','update','disable',/*'settings',*/'info');  // require a plugin name
+    var $commands = array('manage','search','download');              // don't require a plugin name
     var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
 
@@ -66,18 +66,23 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         $fn = $_REQUEST['fn'];
         if (is_array($fn)) {
             $this->cmd = key($fn);
-            $this->plugin = is_array($fn[$this->cmd]) ? key($fn[$this->cmd]) : null;
+            $this->plugin = is_array($fn[$this->cmd]) ? array(key($fn[$this->cmd])) : null;
         } else {
             $this->cmd = $fn;
         }
+        if($this->cmd == 'multiselect' && is_array($_REQUEST['checked'])) {
+            $this->cmd = $_REQUEST['action'];
+            $this->plugin = $_REQUEST['checked'];
+        }
         $this->_get_plugin_list();
         // verify $_REQUEST vars and check for security token
-        if ((!in_array($this->cmd, $this->commands) && !(in_array($this->cmd, $this->functions) && in_array($this->plugin, $this->plugin_list)))
+        if ((!in_array($this->cmd, $this->commands) && !(in_array($this->cmd, $this->functions) && count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)))
             || (!($this->cmd == 'plugin' && is_null($this->plugin)) && !checkSecurityToken())) {
             $this->cmd = 'plugin';
             $this->plugin = null;
         }
 
+        
         if($this->cmd == 'plugin' && strlen($tab)) {
             $this->cmd = $tab;
         }
