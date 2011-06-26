@@ -1,17 +1,17 @@
 <?php
 class ap_plugin extends ap_manage {
     var $plugins;
+    var $protected_plugins;
 
     function process() {
         global $plugin_protected;
         $list = $this->manager->plugin_list;
-        echo "<pre>";
         $unprotected = array_diff($list,$plugin_protected);
         $enabled = array_intersect($unprotected,plugin_list());
         $disabled = array_filter($unprotected,'plugin_isdisabled'); //TODO check array_diff/array_intersect vs array_filter speeds
-        $this->plugins = $this->_info_list($enabled+$disabled);
         $this->repo = $this->fetch_cache();
-        echo "</pre>";
+        $this->plugins = array_map(array($this,'_info_list'),$enabled+$disabled);
+        $this->protected_plugins = array_map(array($this,'_info_list'),$plugin_protected);
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
 
@@ -52,13 +52,13 @@ class ap_plugin extends ap_manage {
             $form->addElement('Actions');//TODO Add language
             $form->addElement(form_makeCloseTag('div'));
             $form->addElement(form_makeCloseTag('div'));
-            foreach($this->plugins as $id => $info) {
-                $form->startFieldset($id);
+            foreach($this->plugins as $info) {
+                $form->startFieldset($info['id']);
                 //for now add the names at least (after filtering, the plugins with no plugin info come at bottom)
-                $form->addElement(form_makeCheckboxField('checked[]',$id,'','','checkbox'));
+                $form->addElement(form_makeCheckboxField('checked[]',$info['id'],'','','checkbox'));
                 $form->addElement(form_makeOpenTag('label',array('class'=>'legend')));
                 $form->addElement(form_makeOpenTag('label',array('class'=>'head')));
-                $form->addElement((!is_null($info))? $info['name'] : $id);
+                $form->addElement($info['name']);
                 $form->addElement(form_makeCloseTag('label'));
                 if(isset($info['desc'])) {
                     $form->addElement(form_makeOpenTag('p'));
@@ -73,68 +73,30 @@ class ap_plugin extends ap_manage {
             }
             //TODO add a div
             $form->addElement(form_makeMenuField('action',array(
-                                                                ''=>'Select',//TODO add langugae
+                                                                ''=>'Action',//TODO add langugae
                                                                 'enable'=>'Enable',//TODO add language
                                                                 'disable'=>'Disable',//TODO add language
                                                                 'delete'=>'Delete',//TODO add language
                                                                 'update'=>'Update'//TODO add language
                                                                 )
-                                                                ,'','Action'));//TODO add language
+                                                                ,'','With Selected: '));//TODO add language
             $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
             html_form('PLUGIN_MANAGER',$form);
         }
-            //$this->html_pluginlist();
+        echo "<pre>";
+            print_r($this->protected_plugins);
+        echo "</pre>";
+        //TODO Make UI for protected plugins
         //end list plugins
     }
-    protected function _info_list($list) {
-        foreach($list as $index) {
-            $info  = DOKU_PLUGIN.'/'.$index.'/plugin.info.txt';
-            $newlist[$index] = (@file_exists($info))? confToHash($info): null;
-        }
-        return $newlist;
+
+    protected function _info_list($index) {
+        $info  = DOKU_PLUGIN.'/'.$index.'/plugin.info.txt';
+        $hash = (@file_exists($info))? confToHash($info): array('id'=>$index,'name' => $index);
+        $return = array_key_exists($index,$this->repo) ? array_merge($hash,$this->repo[$index]) : $hash;
+        if(!array_key_exists('desc',$return) && array_key_exists('description',$return))
+            $return['desc'] = $return['description'];
+        return $return;
     }
-    /**
-    TODO remove this when done looking at and learning from!
-    function html_pluginlist() {
-        global $ID;
-        global $plugin_protected;
 
-        foreach ($this->manager->plugin_list as $plugin) {
-
-            $disabled = plugin_isdisabled($plugin);
-            if(in_array($plugin,$plugin_protected)) {
-                $protected[] = $plugin;
-                continue;
-            }
-
-            $checked = ($disabled) ? '' : ' checked="checked"';
-
-            // determine display class(es)
-            $class = array();
-            if (in_array($plugin, $this->downloaded)) $class[] = 'new';
-            if ($disabled) $class[] = 'disabled';
-
-            $class = count($class) ? ' class="'.implode(' ', $class).'"' : '';
-
-            ptln('    <fieldset'.$class.'>');
-            ptln('      <legend>'.$plugin.'</legend>');
-            ptln('      <input type="checkbox" class="enable" name="enabled[]" value="'.$plugin.'"'.$checked.' />');
-            ptln('      <h3 class="legend">'.$plugin.'</h3>');
-
-            $this->html_button($plugin, 'info', false, 6);
-            if (in_array('settings', $this->manager->functions)) {
-                $this->html_button($plugin, 'settings', !@file_exists(DOKU_PLUGIN.$plugin.'/settings.php'), 6);
-            }
-            $this->html_button($plugin, 'update', !$this->plugin_readlog($plugin, 'url'), 6);
-            $this->html_button($plugin, 'delete', false,6);
-
-            ptln('    </fieldset>');
-        }
-    }
-    
-    function html_button($plugin, $btn, $disabled=false, $indent=0) {
-        $disabled = ($disabled) ? 'disabled="disabled"' : '';
-        ptln('<input type="submit" class="button" '.$disabled.' name="fn['.$btn.']['.$plugin.']" value="'.$this->lang['btn_'.$btn].'" />',$indent);
-    }
-    */
 }
