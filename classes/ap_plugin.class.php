@@ -84,7 +84,9 @@ class ap_plugin extends ap_manage {
             html_form('PLUGIN_MANAGER',$form);
         }
         echo "<pre>";
+        if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
             print_r($this->protected_plugins);
+        }
         echo "</pre>";
         //TODO Make UI for protected plugins
         //end list plugins
