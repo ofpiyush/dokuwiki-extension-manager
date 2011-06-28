@@ -107,7 +107,7 @@ class ap_plugin extends ap_manage {
         $number = 0;
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
             ptln('<div id="plugins">');
-            ptln('  <h2>Bundled Plugins</h2>');
+            ptln('  <h2>Protected Plugins</h2>');
             ptln('  <div class= "top">');
             ptln('    <div class="legend">');
             ptln('      <span class="head">'.rtrim($this->lang['name'],":").'</span>');
@@ -115,7 +115,7 @@ class ap_plugin extends ap_manage {
             ptln('    <div class="actions">Actions</div>');
             ptln('  </div>');
             foreach($this->protected_plugins as $info) {
-                ptln('  <div class="bundled '.(($number%2)? "even" : "odd").'">');
+                ptln('  <div class="protected '.(($number%2)? "even" : "odd").'">');
                 if(array_key_exists('dokulink',$info) && strlen($info['dokulink']))
                     $name = $this->manager->render("[[doku>".$info['dokulink']."|".$info['name']."]]");
                 elseif(array_key_exists('url',$info) && strlen($info['url']))
@@ -129,7 +129,7 @@ class ap_plugin extends ap_manage {
                 }
                 ptln('    </div>');
                 ptln('    <div class="actions">');
-                ptln('      <p> Info | Report broken</p>');
+                ptln('      <p>Info</p>');
                 ptln('    </div>');
                 ptln('  </div>');
                 $number++;

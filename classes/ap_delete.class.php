@@ -2,9 +2,9 @@
 class ap_delete extends ap_plugin {
 
     function process() {
-        global $plugin_protected;
+        global $plugin_bundled;
         foreach($this->plugin as $plugin) {
-            if(in_array($plugin,$plugin_protected)) continue;
+            if(in_array($plugin,$plugin_bundled)) continue;
             if (!$this->dir_delete(DOKU_PLUGIN.plugin_directory($plugin))) {
                 $this->manager->error = sprintf($this->lang['error_delete'],$plugin);
             } else {

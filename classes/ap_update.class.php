@@ -5,9 +5,9 @@ class ap_update extends ap_download {
     var $overwrite = true;
 
     function process() {
-        global $plugin_protected;//TODO fix for !bundled
+        global $plugin_bundled;//TODO fix for !bundled
         foreach($this->plugin as $plugin) {
-            if(in_array($plugin,$plugin_protected)) continue;
+            if(in_array($plugin,$plugin_bundled)) continue;
             $plugin_url = $this->plugin_readlog($plugin, 'url');
             $this->download($plugin_url, $this->overwrite);
         }

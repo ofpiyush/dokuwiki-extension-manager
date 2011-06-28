@@ -135,7 +135,7 @@
     background: #e8e8e8;
 }
 
-#plugin__manager #plugins .bundled {
+#plugin__manager #plugins .protected {
     clear: both;
     padding: 0.5em;
     margin: auto;
