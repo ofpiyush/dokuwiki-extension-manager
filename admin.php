@@ -24,7 +24,6 @@ require_once(DOKU_PLUGIN."plugin/classes/ap_plugin.class.php");
 // plugins that are an integral part of dokuwiki, they shouldn't be disabled or deleted
 global $plugin_protected;
 $plugin_protected = array('acl','plugin','config','info','usermanager','revert');
-
 /**
  * All DokuWiki plugins to extend the admin function
  * need to inherit from this class
@@ -37,7 +36,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $handler = NULL;
 
     var $functions = array('delete','enable','update','disable',/*'settings',*/'info');  // require a plugin name
-    var $commands = array('manage','search','download');              // don't require a plugin name
+    var $commands = array('search','download'); // don't require a plugin name
     var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
 

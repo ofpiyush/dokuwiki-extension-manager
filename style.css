@@ -115,9 +115,11 @@
     font-weight: bold;
 }
 
+#plugin__manager #plugins .bottom {
+    padding: 0.5em;
+}
 #plugin__manager #plugins fieldset {
     color: #000;
-    background: #fff;
     text-align: right;
     vertical-align: middle;
     border-top: none;
@@ -125,14 +127,30 @@
     border-left: none;
 }
 
-#plugin__manager #plugins fieldset.protected {
-    background: #fdd;
-    color: #000;
+#plugin__manager #plugins .disabled_odd {
+    background: #fff;
 }
 
-#plugin__manager #plugins fieldset.disabled {
-    background: #e0e0e0;
-    color: #a8a8a8;
+#plugin__manager #plugins .disabled_even {
+    background: #eee;
+}
+
+#plugin__manager #plugins .bundled {
+    clear: both;
+    padding: 0.5em;
+    margin: auto;
+    color: #000;
+    display: block;
+    text-align: center;
+    border-bottom: 1px solid #222;
+}
+
+#plugin__manager #plugins .odd {
+    background: #efe;
+}
+
+#plugin__manager #plugins .even {
+    background: #dfd;
 }
 
 #plugin__manager #plugins .legend {
@@ -162,7 +180,11 @@
     font-size: 95%;
     text-align:center;
 }
-
+#plugin__manager #plugins .actions p {
+    text-align:center;
+    line-height: 2em;
+    vertical-align:middle;
+}
 #plugin__manager #plugins fieldset.buttons {
     border: none;
 }
