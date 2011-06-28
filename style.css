@@ -128,11 +128,11 @@
 }
 
 #plugin__manager #plugins .disabled_odd {
-    background: #fff;
+    background: #efefef;
 }
 
 #plugin__manager #plugins .disabled_even {
-    background: #eee;
+    background: #e8e8e8;
 }
 
 #plugin__manager #plugins .bundled {
@@ -146,11 +146,11 @@
 }
 
 #plugin__manager #plugins .odd {
-    background: #efe;
+    background: #dfffdf;
 }
 
 #plugin__manager #plugins .even {
-    background: #dfd;
+    background: #d8f8d8;
 }
 
 #plugin__manager #plugins .legend {
