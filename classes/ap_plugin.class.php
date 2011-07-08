@@ -5,7 +5,7 @@ class ap_plugin extends ap_manage {
     var $context = "plugin_manager";
 
     function process() {
-        global $plugin_protected, $plugin_bundled;
+        global $plugin_protected;
         $list = $this->manager->plugin_list;
         $unprotected = array_diff($list,$plugin_protected);
         $enabled = array_intersect($unprotected,plugin_list());
