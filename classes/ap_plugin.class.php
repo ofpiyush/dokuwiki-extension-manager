@@ -38,9 +38,10 @@ class ap_plugin extends ap_manage {
          */
         ptln('<h2>'.$this->lang['manage'].'</h2>');
         if(is_array($this->plugins) && count($this->plugins)) {
-            $form = new Doku_Form("plugins");
+            $form = new Doku_Form("plugins__list");
             $form->addHidden('page','plugin');
             $form->addHidden('fn[multiselect]','Multiselect');
+            //$form->addElement('<table >');//add table
             $form->addElement(form_makeOpenTag('div',array('class'=>'top')));
             $form->addElement(form_makeOpenTag('label',array('class'=>'checkbox')));
             $form->addElement('Sel');//TODO Add language
@@ -106,7 +107,7 @@ class ap_plugin extends ap_manage {
         }
         $number = 0;
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
-            ptln('<div id="plugins">');
+            ptln('<div id="plugins__protected">');
             ptln('  <h2>Protected Plugins</h2>');
             ptln('  <div class= "top">');
             ptln('    <div class="legend">');

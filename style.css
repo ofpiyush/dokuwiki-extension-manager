@@ -105,20 +105,20 @@
     width: 10em;
 }
 
-#plugin__manager #plugins .top {
+#plugin__manager .top {
     background: #ccc;
     font-weight: bold;
     padding: 0.5em;
 }
 
-#plugin__manager #plugins .top .legend {
+#plugin__manager .top .legend {
     font-weight: bold;
 }
 
-#plugin__manager #plugins .bottom {
+#plugin__manager .bottom {
     padding: 0.5em;
 }
-#plugin__manager #plugins fieldset {
+#plugin__manager fieldset {
     color: #000;
     text-align: right;
     vertical-align: middle;
@@ -127,15 +127,15 @@
     border-left: none;
 }
 
-#plugin__manager #plugins .disabled_odd {
+#plugin__manager .disabled_odd {
     background: #efefef;
 }
 
-#plugin__manager #plugins .disabled_even {
+#plugin__manager .disabled_even {
     background: #e8e8e8;
 }
 
-#plugin__manager #plugins .protected {
+#plugin__manager .protected {
     clear: both;
     padding: 0.5em;
     margin: auto;
@@ -145,15 +145,15 @@
     border-bottom: 1px solid #222;
 }
 
-#plugin__manager #plugins .odd {
+#plugin__manager .odd {
     background: #dfffdf;
 }
 
-#plugin__manager #plugins .even {
+#plugin__manager .even {
     background: #d8f8d8;
 }
 
-#plugin__manager #plugins .legend {
+#plugin__manager .legend {
     color: #000;
     background: inherit;
     display: block;
@@ -168,28 +168,28 @@
     padding: 0;
     clear: none;
 }
-#plugin__manager #plugins .legend .head {
+#plugin__manager .legend .head {
     clear: both;
     font-weight: bold;
 }
 
-#plugin__manager #plugins .legend p {
+#plugin__manager .legend p {
     margin: 0;
 }
-#plugin__manager #plugins .actions {
+#plugin__manager .actions {
     font-size: 95%;
     text-align:center;
 }
-#plugin__manager #plugins .actions p {
+#plugin__manager .actions p {
     text-align:center;
     line-height: 2em;
     vertical-align:middle;
 }
-#plugin__manager #plugins fieldset.buttons {
+#plugin__manager fieldset.buttons {
     border: none;
 }
 
-#plugin__manager #plugins fieldset.buttons .button {
+#plugin__manager fieldset.buttons .button {
     float: left;
 }
 
@@ -216,7 +216,7 @@
     background: none;
 }
 
-#plugin__manager #plugins .checkbox {
+#plugin__manager .checkbox {
     float: left;
     width: 4em;
     vertical-align:middle;
