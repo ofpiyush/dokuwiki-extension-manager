@@ -11,9 +11,13 @@ class ap_plugin extends ap_manage {
         $enabled = array_intersect($unprotected,plugin_list());
         $disabled = array_filter($unprotected,'plugin_isdisabled'); //TODO check array_diff/array_intersect vs array_filter speeds
         $this->repo = $this->fetch_cache();
+        //TODO bad fix: get better sorting.
         $this->plugins['enabled '] = array_map(array($this,'_info_list'),$enabled);
+        usort($this->plugins['enabled '],array($this,'_sort'));
         $this->plugins['disabled_'] = array_map(array($this,'_info_list'),$disabled);
+        usort($this->plugins['disabled_'],array($this,'_sort'));
         $this->protected_plugins = array_map(array($this,'_info_list'),$plugin_protected);
+        usort($this->protected_plugins,array($this,'_sort'));
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
 
@@ -42,6 +46,7 @@ class ap_plugin extends ap_manage {
             $form->addHidden('page','plugin');
             $form->addHidden('fn[multiselect]','Multiselect');
             //$form->addElement('<table >');//add table
+            /*
             $form->addElement(form_makeOpenTag('div',array('class'=>'top')));
             $form->addElement(form_makeOpenTag('label',array('class'=>'checkbox')));
             $form->addElement('Sel');//TODO Add language
@@ -55,6 +60,7 @@ class ap_plugin extends ap_manage {
             $form->addElement('Actions');//TODO Add language
             $form->addElement(form_makeCloseTag('div'));
             $form->addElement(form_makeCloseTag('div'));
+            */
             $number = 0;
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
@@ -100,7 +106,7 @@ class ap_plugin extends ap_manage {
                                                                 'delete'=>'Delete',//TODO add language
                                                                 'update'=>'Update'//TODO add language
                                                                 )
-                                                                ,'','With Selected: '));//TODO add language
+                                                                ,'','With Selected: ','','',array('class'=>'quickselect')));//TODO add language
             $form->addElement(form_makeCloseTag('div'));
             $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
             html_form('PLUGIN_MANAGER',$form);
@@ -109,14 +115,21 @@ class ap_plugin extends ap_manage {
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
             ptln('<div id="plugins__protected">');
             ptln('  <h2>Protected Plugins</h2>');
+            ptln('  <p>');
+            ptln('  These plugins are protected and should not be disabled and/or deleted. They are intrinsic to DokuWiki.');
+            ptln('  </p>');
+            /*
             ptln('  <div class= "top">');
             ptln('    <div class="legend">');
             ptln('      <span class="head">'.rtrim($this->lang['name'],":").'</span>');
             ptln('    </div>');
             ptln('    <div class="actions">Actions</div>');
             ptln('  </div>');
+            */
             foreach($this->protected_plugins as $info) {
                 ptln('  <div class="protected '.(($number%2)? "even" : "odd").'">');
+                //TODO: switch to tables remove the quickfix
+                ptln('    <div class="checkbox">&nbsp;</div>');
                 if(array_key_exists('dokulink',$info) && strlen($info['dokulink']))
                     $name = $this->manager->render("[[doku>".$info['dokulink']."|".$info['name']."]]");
                 elseif(array_key_exists('url',$info) && strlen($info['url']))
@@ -148,6 +161,9 @@ class ap_plugin extends ap_manage {
         if(!array_key_exists('desc',$return) && array_key_exists('description',$return))
             $return['desc'] = $return['description'];
         return $return;
+    }
+    protected function _sort($a,$b) {
+        return strcmp($a['name'],$b['name']);
     }
     protected function missing_dependency() {
     }
