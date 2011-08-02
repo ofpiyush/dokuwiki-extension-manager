@@ -156,10 +156,12 @@ class ap_plugin extends ap_manage {
 
     protected function _info_list($index) {
         $info  = DOKU_PLUGIN.'/'.$index.'/plugin.info.txt';
-        $hash = (@file_exists($info))? confToHash($info): array('id'=>$index,'name' => $index);
-        $return = array_key_exists($index,$this->repo) ? array_merge($hash,$this->repo[$index]) : $hash;
+        $return =array('id'=>$index,'name' => $index,'base'=>$index);
+        $return = (@file_exists($info))? array_merge($return,confToHash($info)): $return;
+        $return = array_key_exists($return['base'],$this->repo) ? array_merge($return,$this->repo[$return['base']]) : $return;
         if(!array_key_exists('desc',$return) && array_key_exists('description',$return))
             $return['desc'] = $return['description'];
+        $return['id'] = $index;
         return $return;
     }
     protected function _sort($a,$b) {

@@ -63,6 +63,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         $this->setupLocale();
         $tab = (array_key_exists('tab',$_REQUEST) && in_array($_REQUEST['tab'],$this->nav_tabs))? $_REQUEST['tab'] : 'plugin';
 
+        print_r($_REQUEST['checked']);
         $this->cmd = $_REQUEST['fn'];
         if($this->cmd == 'multiselect' && is_array($_REQUEST['checked'])) {
             $this->cmd = $_REQUEST['action'];
