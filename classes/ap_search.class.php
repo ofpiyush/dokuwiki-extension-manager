@@ -33,7 +33,7 @@ class ap_search extends ap_manage {
         ptln('<div class="pm_info">');
         ptln('<div class="common">');
         ptln('  <h2>'.$this->lang['download'].'</h2>');
-        $url_form = new Doku_Form('url');
+        $url_form = new Doku_Form('install__url');
         $url_form->startFieldset($this->lang['download']);
         $url_form->addElement(form_makeTextField('url','',$this->lang['url'],'dw__url'));
         $url_form->addHidden('page','plugin');
@@ -41,7 +41,7 @@ class ap_search extends ap_manage {
         $url_form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_download'] ));
         $url_form->endFieldset();
         $url_form->printForm();
-        $search_form = new Doku_Form('search');
+        $search_form = new Doku_Form('install__search');
         $search_form->startFieldset($lang['btn_search']);
         $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
         $search_form->addElement(form_makeMenuField('ext[type]',array(

@@ -10,7 +10,7 @@ class ap_template extends ap_manage {
         global $lang;
         ptln('<div class="common">');
         ptln('  <h2>Search for a new Template</h2>');//TODO Add language
-        $template_search = new Doku_Form('search');
+        $template_search = new Doku_Form('tpl__search');
         $template_search->startFieldset($lang['btn_search']);
         $template_search->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
         $template_search->addHidden('page','plugin');
