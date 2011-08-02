@@ -28,4 +28,3 @@ class ap_delete extends ap_plugin {
         ptln('</div>');
     }
 }
-

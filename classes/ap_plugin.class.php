@@ -1,8 +1,11 @@
 <?php
+require_once  DOKU_INC . 'inc/parser/xhtml.php';
+
 class ap_plugin extends ap_manage {
     var $plugins;
     var $protected_plugins;
     var $context = "plugin_manager";
+    var $renderer;
 
     function process() {
         global $plugin_protected;
@@ -18,6 +21,9 @@ class ap_plugin extends ap_manage {
         usort($this->plugins['disabled_'],array($this,'_sort'));
         $this->protected_plugins = array_map(array($this,'_info_list'),$plugin_protected);
         usort($this->protected_plugins,array($this,'_sort'));
+        $this->renderer = new Doku_Renderer_xhtml;
+        $this->renderer->interwiki = getInterwiki();
+        
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
 
@@ -74,12 +80,8 @@ class ap_plugin extends ap_manage {
                     $form->addElement(form_makeCheckboxField('checked[]',$info['id'],'','','checkbox'));
                     $form->addElement(form_makeOpenTag('label',array('class'=>'legend')));
                     $form->addElement(form_makeOpenTag('label',array('class'=>'head')));
-                    if(array_key_exists('dokulink',$info) && strlen($info['dokulink']))
-                        $form->addElement($this->manager->render("[[doku>".$info['dokulink']."|".$info['name']."]]"));
-                    elseif(array_key_exists('url',$info) && strlen($info['url']))
-                        $form->addElement($this->manager->render("[[".$info['url']."|".$info['name']."]]"));
-                    else
-                        $form->addElement($info['name']);
+                    $form->addElement($this->make_url($info));
+                    $this->renderer->doc = '';
                     $form->addElement(form_makeCloseTag('label'));
                     if(isset($info['desc'])) {
                         $form->addElement(form_makeOpenTag('p'));
@@ -130,14 +132,8 @@ class ap_plugin extends ap_manage {
                 ptln('  <div class="protected '.(($number%2)? "even" : "odd").'">');
                 //TODO: switch to tables remove the quickfix
                 ptln('    <div class="checkbox">&nbsp;</div>');
-                if(array_key_exists('dokulink',$info) && strlen($info['dokulink']))
-                    $name = $this->manager->render("[[doku>".$info['dokulink']."|".$info['name']."]]");
-                elseif(array_key_exists('url',$info) && strlen($info['url']))
-                    $name = $this->manager->render("[[".$info['url']."|".$info['name']."]]");
-                else
-                    $name = $info['name'];
                 ptln('    <div class="legend">');
-                ptln('      <span class="head">'.$name.'</span>');
+                ptln('      <span class="head">'.$this->make_url($info).'</span>');
                 if(isset($info['desc'])) {
                     ptln('      <p>'.$info['desc'].'</p>');
                 }
@@ -164,6 +160,16 @@ class ap_plugin extends ap_manage {
     }
     protected function _sort($a,$b) {
         return strcmp($a['name'],$b['name']);
+    }
+    protected function make_url($info) {
+        $this->renderer->doc = '';
+        if(array_key_exists('dokulink',$info) && strlen($info['dokulink']))
+            $this->renderer->interwikilink('',$info['name'],"doku",$info['dokulink']);
+        elseif(array_key_exists('url',$info) && strlen($info['url']))
+            $this->renderer->externallink($info['url'],$info['name']);
+        else
+            $this->renderer->doc = $info['name'];
+        return $this->renderer->doc;
     }
     protected function missing_dependency() {
     }
