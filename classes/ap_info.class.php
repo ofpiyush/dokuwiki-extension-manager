@@ -8,6 +8,7 @@ class ap_info extends ap_plugin {
 
         // sanity check
         if (!$this->manager->plugin) { return; }
+        $this->manager->plugin = array_pop($this->manager->plugin);
 
         $component_list = $this->get_plugin_components($this->manager->plugin);
         usort($component_list, array($this,'component_sort'));

@@ -23,7 +23,6 @@ class ap_plugin extends ap_manage {
         usort($this->protected_plugins,array($this,'_sort'));
         $this->renderer = new Doku_Renderer_xhtml;
         $this->renderer->interwiki = getInterwiki();
-        
         //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
 
@@ -80,7 +79,7 @@ class ap_plugin extends ap_manage {
                     $form->addElement(form_makeCheckboxField('checked[]',$info['id'],'','','checkbox'));
                     $form->addElement(form_makeOpenTag('label',array('class'=>'legend')));
                     $form->addElement(form_makeOpenTag('label',array('class'=>'head')));
-                    $form->addElement($this->make_url($info));
+                    $form->addElement($this->make_title($info));
                     $this->renderer->doc = '';
                     $form->addElement(form_makeCloseTag('label'));
                     if(isset($info['desc'])) {
@@ -91,7 +90,12 @@ class ap_plugin extends ap_manage {
                     $form->addElement(form_makeCloseTag('label'));
                     $form->addElement(form_makeOpenTag('div',array('class'=>'actions')));
                     $form->addElement(form_makeOpenTag('p'));
-                    $form->addElement('Info | Report broken | Delete');//TODO Make some way of keeping imploded actions && Add language
+                    $form->addElement('<a href="'.$this->make_url('info',$info['id']).'">Info</a> | ');
+                    if($type =="enabled ")
+                        $form->addElement('<a href="'.$this->make_url('disable',$info['id']).'">Disable</a> | ');
+                    else
+                        $form->addElement('<a href="'.$this->make_url('enable',$info['id']).'">Enable</a> | ');
+                    $form->addElement('<a href="'.$this->make_url('delete',$info['id']).'">Delete</a>');//TODO Make some way of keeping imploded actions && Add language
                     $form->addElement(form_makeCloseTag('p'));
                     $form->addElement(form_makeCloseTag('div'));
                     $form->endFieldset();
@@ -133,13 +137,13 @@ class ap_plugin extends ap_manage {
                 //TODO: switch to tables remove the quickfix
                 ptln('    <div class="checkbox">&nbsp;</div>');
                 ptln('    <div class="legend">');
-                ptln('      <span class="head">'.$this->make_url($info).'</span>');
+                ptln('      <span class="head">'.$this->make_title($info).'</span>');
                 if(isset($info['desc'])) {
                     ptln('      <p>'.$info['desc'].'</p>');
                 }
                 ptln('    </div>');
                 ptln('    <div class="actions">');
-                ptln('      <p>Info</p>');
+                ptln('      <p><a href="'.$this->make_url('info',$info['id']).'">Info</a></p>');
                 ptln('    </div>');
                 ptln('  </div>');
                 $number++;
@@ -161,7 +165,7 @@ class ap_plugin extends ap_manage {
     protected function _sort($a,$b) {
         return strcmp($a['name'],$b['name']);
     }
-    protected function make_url($info) {
+    protected function make_title($info) {
         $this->renderer->doc = '';
         if(array_key_exists('dokulink',$info) && strlen($info['dokulink']))
             $this->renderer->interwikilink('',$info['name'],"doku",$info['dokulink']);
@@ -170,6 +174,10 @@ class ap_plugin extends ap_manage {
         else
             $this->renderer->doc = $info['name'];
         return $this->renderer->doc;
+    }
+    protected function make_url($action,$plugin) {
+        global $ID;
+        return wl($ID,array('do'=>'admin','page'=>'plugin','fn'=>'multiselect','action'=>$action,'checked[]'=>$plugin,'sectok'=>getSecurityToken()));
     }
     protected function missing_dependency() {
     }
