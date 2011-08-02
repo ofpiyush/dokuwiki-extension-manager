@@ -37,7 +37,7 @@ class ap_search extends ap_manage {
         $url_form->startFieldset($this->lang['download']);
         $url_form->addElement(form_makeTextField('url','',$this->lang['url'],'dw__url'));
         $url_form->addHidden('page','plugin');
-        $url_form->addHidden('fn[download]',$this->lang['btn_download']);
+        $url_form->addHidden('fn','download');
         $url_form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_download'] ));
         $url_form->endFieldset();
         $url_form->printForm();

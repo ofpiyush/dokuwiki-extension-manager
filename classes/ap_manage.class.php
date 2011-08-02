@@ -7,8 +7,14 @@ abstract class ap_manage {
     var $plugin = '';
     var $downloaded = array();
     var $repo_cache = NULL;
+    protected $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode');
 
     final function __construct(DokuWiki_Admin_Plugin $manager) {
+        global $plugin_bundled;
+        if(is_array($plugin_bundled) && count($plugin_bundled))
+            $this->_bundled = $plugin_bundled;
+        else
+            $plugin_bundled = $this->_bundled;
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
         $this->lang = $manager->lang;

@@ -14,8 +14,8 @@ class ap_plugin extends ap_manage {
         $disabled = array_filter($unprotected,'plugin_isdisabled'); //TODO check array_diff/array_intersect vs array_filter speeds
         $this->repo = $this->fetch_cache();
         //TODO bad fix: get better sorting.
-        $this->plugins['enabled '] = array_map(array($this,'_info_list'),$enabled);
-        usort($this->plugins['enabled '],array($this,'_sort'));
+        $this->plugins['enabled'] = array_map(array($this,'_info_list'),$enabled);
+        usort($this->plugins['enabled'],array($this,'_sort'));
         $this->plugins['disabled'] = array_map(array($this,'_info_list'),$disabled);
         usort($this->plugins['disabled'],array($this,'_sort'));
         $this->protected_plugins = array_map(array($this,'_info_list'),$plugin_protected);
