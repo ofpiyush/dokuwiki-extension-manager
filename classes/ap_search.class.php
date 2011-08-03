@@ -39,7 +39,7 @@ class ap_search extends ap_manage {
         $url_form->printForm();
         $search_form = new Doku_Form('install__search');
         $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
+        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'inst__search'));
         $search_form->addElement(form_makeMenuField('type',array(
                                                                 ''=>'All',//TODO add language
                                                                 'Syntax'=>'Syntax',//TODO add language
