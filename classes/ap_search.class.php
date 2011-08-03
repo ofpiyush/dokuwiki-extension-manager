@@ -41,15 +41,14 @@ class ap_search extends ap_manage {
         $search_form->startFieldset($lang['btn_search']);
         $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
         $search_form->addElement(form_makeMenuField('type',array(
-                                                                ''=>'-Please Choose-',//TODO add language
-                                                                false=>'All',//TODO add language
+                                                                ''=>'All',//TODO add language
                                                                 'Syntax'=>'Syntax',//TODO add language
                                                                 'Admin'=>'Admin',//TODO add language
                                                                 'Action'=>'Action',//TODO add language
                                                                 'Renderer'=>'Renderer',//TODO add language
                                                                 'Helper'=>'Helper',//TODO add language
                                                                 'Template'=>'Template')//TODO add language
-                                                                ,'','','','',array('class'=>'quickselect')));//TODO add language
+                                                                ,'',''));//TODO add language
         $search_form->addHidden('page','plugin');
         $search_form->addHidden('tab','search');
         $search_form->addHidden('fn','search');

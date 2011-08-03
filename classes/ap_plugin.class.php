@@ -93,7 +93,7 @@ class ap_plugin extends ap_manage {
                                                                 'delete'=>'Delete',//TODO add language
                                                                 'update'=>'Update'//TODO add language
                                                                 )
-                                                                ,'','With Selected: ','','',array('class'=>'quickselect')));//TODO add language
+                                                                ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
             $form->addElement(form_makeCloseTag('div'));
             $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
             html_form('PLUGIN_MANAGER',$form);
