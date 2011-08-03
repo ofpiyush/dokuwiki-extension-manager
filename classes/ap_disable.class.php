@@ -1,26 +1,21 @@
 <?php
-class ap_disable extends ap_manage {
+class ap_disable extends ap_plugin {
+
+    var $result = array();
 
     function process() {
-        $enabled = array_filter($this->plugin,array($this,'isdisabled'));
+        global $plugin_protected;
+        $unprotected = array_diff($this->plugin,$plugin_protected);
+        $enabled = array_filter($unprotected,array($this,'isenabled'));
         if(is_array($enabled) && count($enabled)) {
-            $result['disabled']      = array_filter($enabled,'plugin_disable');
-            $result['notdisabled']   = array_diff_key($enabled,$result['disabled']);
-            foreach($result as $outcome => $plugins)
-                if(is_array($plugins) && count($plugins))
-                    array_walk($plugins,array($this,'say_'.$outcome));
-            $this->refresh();
+            $this->result['disabled']      = array_filter($enabled,'plugin_disable');
+            $this->result['notdisabled']   = array_diff_key($enabled,$this->result['disabled']);
         }
+        parent::process();
     }
 
-    function html() {}
-
-    function isdisabled($plugin) {
-        global $plugin_protected;
-        if(in_array($plugin,$plugin_protected))
-            return false;
-        else
-            return !plugin_isdisabled($plugin);
+    function isenabled($plugin) {
+        return !plugin_isdisabled($plugin);
     }
 
     function say_disabled($plugin,$key) {

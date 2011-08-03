@@ -2,35 +2,31 @@
 class ap_search extends ap_manage {
 
     var $term = NULL;
-    var $filters = array();
-    var $filter_array = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
+    var $filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
     var $result = array();
     var $repo = NULL;
+    var $filtered_repo = NULL;
     var $extra = NULL;
     var $versions = array();
     
     function process() {
-        if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0)
+        $this->clean_repo();
+        if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0) {
             $this->term = $_REQUEST['term'];
-        if(!is_null($this->term)) {
-            if(array_key_exists('filters',$_REQUEST) && is_array($_REQUEST['filters']))
-                $this->filters = array_intersect_key(array_flip($_REQUEST['filters']),$this->filter_array);
-            else
-                $this->filters = $this->filter_array;
-            if(array_key_exists('ext',$_REQUEST) && is_array($_REQUEST['ext']))
-                $this->extra = array_intersect_key($_REQUEST['ext'],$this->filter_array);
-            if(is_array($this->extra) && array_key_exists('tag',$this->extra))
-                $this->extra['tag'] = explode(',',strtolower($this->extra['tag']));
+            //add parsing for key=value based extras
         }
-        $this->repo = $this->fetch_cache();
-        if(!is_null($this->term) && !is_null($this->repo))
-            $this->lookup();
+        if($this->term !== null) {
+            if(array_key_exists('type',$_REQUEST) && !empty($_REQUEST['type'])) {
+                $this->extra['type'] = $_REQUEST['type'];
+            }
+            if($this->repo !== null)
+                $this->lookup();
+        }
     }
 
     function html() {
         $this->html_menu();
         global $lang;
-        ptln('<div class="pm_info">');
         ptln('<div class="common">');
         ptln('  <h2>'.$this->lang['download'].'</h2>');
         $url_form = new Doku_Form('install__url');
@@ -44,47 +40,100 @@ class ap_search extends ap_manage {
         $search_form = new Doku_Form('install__search');
         $search_form->startFieldset($lang['btn_search']);
         $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
-        $search_form->addElement(form_makeMenuField('ext[type]',array(
-                                                                ''=>'All',//TODO add language
+        $search_form->addElement(form_makeMenuField('type',array(
+                                                                ''=>'-Please Choose-',//TODO add language
+                                                                false=>'All',//TODO add language
                                                                 'Syntax'=>'Syntax',//TODO add language
                                                                 'Admin'=>'Admin',//TODO add language
                                                                 'Action'=>'Action',//TODO add language
                                                                 'Renderer'=>'Renderer',//TODO add language
                                                                 'Helper'=>'Helper',//TODO add language
                                                                 'Template'=>'Template')//TODO add language
-                                                                ,'','Type'));//TODO add language
-        $search_form->addElement(form_makeListboxField('filters[]',array(
-                                                                'id'=>'ID',//TODO add language
-                                                                'name'=>'Name',//TODO add language
-                                                                'description'=>'Description',//TODO add language
-                                                                'author'=>'Author',//TODO add language
-                                                                'tag'=>'Tag',//TODO add language
-                                                                'type'=>'Type')//TODO add language
-                                                                ,'','Filter by:','','',array('multiple'=>'multiple')));//TODO add language
+                                                                ,'','','','',array('class'=>'quickselect')));//TODO add language
         $search_form->addHidden('page','plugin');
         $search_form->addHidden('tab','search');
-        $search_form->addHidden('fn[search]',$lang['btn_search']);
+        $search_form->addHidden('fn','search');
         $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
         $search_form->endFieldset();
         $search_form->printForm();
         ptln('</div>');
-        ptln('<pre>');
-        if(is_array($this->result) && count($this->result))
-            print_r($this->result);
-        else
-            print_r($this->repo);
-        ptln('</pre>');
-        ptln('</div>');
+        if(is_array($this->result) && count($this->result)) {
+            ptln('<h2>'.'Search results for "'.$this->term.'"</h2>');//TODO Add language
+            $form = new Doku_Form("search__result");
+            $form->addHidden('page','plugin');
+            $form->addHidden('fn','multiselect');
+            $form->addElement(form_makeOpenTag('table',array('class'=>'inline')));
+            foreach($this->result as $result)
+                foreach($result as $info) {
+                    $class = 'result';
+                    if((@array_key_exists('securityissue',$info) && !empty($info['securityissue'])) )
+                        $class .= ' secissue';
+                    $this->make_form($form,$info,$class);
+                }
+            $form->addElement(form_makeCloseTag('table'));
+            $form->addHidden('action','download');
+            $form->addElement(form_makeButton('submit', 'admin', 'Download' ));
+            html_form('SEARCH_RESULT',$form);
+        } elseif(!is_null($this->term)) {
+                ptln('<h2>'.'The term "'.$this->term.'" was not found</h2>');//TODO Add language
+                $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
+                ptln('<p>Please try with a simpler query or <a href="'.$url.'" title="'.$url.'" />click here</a> to browse all plugins</p>');
+        } else {
+            ptln('<h2>'.'Browse plugins'.'</h2>');//TODO Add language
+            $form = new Doku_Form("plugins__list");
+            $form->addHidden('page','plugin');
+            $form->addHidden('fn','multiselect');
+            $form->addElement(form_makeOpenTag('table',array('class'=>'inline')));
+            foreach($this->filtered_repo as $info) {
+                $class = 'all';
+                if((@array_key_exists('securityissue',$info) && !empty($info['securityissue'])) )
+                    $class .= ' secissue';
+                $this->make_form($form,$info,$class);
+            }
+            $form->addElement(form_makeCloseTag('table'));
+            $form->addHidden('action','download');
+            $form->addElement(form_makeButton('submit', 'admin', 'Download' ));
+            html_form('PLUGIN_LIST',$form);
+        }
+
         //parent::html();
     }
+    protected function make_form($form,$info,$class) {
+        $form->addElement(form_makeOpenTag('tr',array('class'=>$class)));
+        $form->addElement(form_makeOpenTag('td',array('class'=>'checkbox')));
+        $form->addElement(form_makeCheckboxField('checked[]',$info['downloadurl'],'',''));
+        $form->addElement(form_makeCloseTag('td'));
+        $form->addElement(form_makeOpenTag('td',array('class'=>'legend')));
+        $form->addElement(form_makeOpenTag('span',array('class'=>'head')));
+        $form->addElement($this->make_title($info));
+        $form->addElement(form_makeCloseTag('span'));
+        if(isset($info['description'])) {
+            $form->addElement(form_makeOpenTag('p'));
+            $form->addElement(hsc($info['description']));
+            $form->addElement(form_makeCloseTag('p'));
+        }
+        $form->addElement(form_makeCloseTag('td'));
+        $form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
+        $form->addElement(form_makeOpenTag('p'));
+        if(isset($info['downloadurl']) && !empty($info['downloadurl']))
+            $form->addElement('<a href="'.$this->make_url('download',$info['downloadurl']).'">Download</a> ');
+        else
+            $form->addElement('No Download URL');
+        $form->addElement(form_makeCloseTag('p'));
+        $form->addElement(form_makeCloseTag('td'));
+        $form->addElement(form_makeCloseTag('tr'));
+    }
 
+    protected function clean_repo() {
+        $this->filtered_repo = array_diff_key($this->repo,array_flip($this->_bundled));
+    }
     /**
      * Looks up the term in the repository cache according to filters set. Basic searching.
      * TODO advanced searching options (case-sensitive, for exact term etc) is it necessary??
      * TODO assign weights to matches, like id matches highest in ordering
      */
     protected function lookup() {
-        foreach ($this->repo as $single) {
+        foreach ($this->filtered_repo as $single) {
             $matches = array_filter($single,array($this,'search'));
             if(count($matches)) {
                 $count = count(array_intersect_key($this->filters,$matches));
@@ -92,7 +141,7 @@ class ap_search extends ap_manage {
                     $this->result[$count][$single['id']] = $single;
             }
         }
-        return $this->result;
+        return krsort($this->result);
     }
 
     /**
@@ -112,7 +161,6 @@ class ap_search extends ap_manage {
     protected function check($plugin) {
         //$version_data = getVersionData();
         //print_r($this->extra);
-        if(@$plugin['tags']['tag'][0] == "!bundled") return false;
         if(is_array($this->extra) && count($this->extra))
             foreach($this->extra as $index => $value)
                 if(count($value)) {

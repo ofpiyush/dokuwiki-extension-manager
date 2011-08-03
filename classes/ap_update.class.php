@@ -10,7 +10,7 @@ class ap_update extends ap_download {
             $plugin_url = $this->plugin_readlog($plugin, 'url');
             $this->download($plugin_url, $this->overwrite);
         }
-        return '';
+        //parent::process();
     }
 
     function html() {

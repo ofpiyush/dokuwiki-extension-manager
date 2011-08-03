@@ -1,19 +1,15 @@
 <?php
-class ap_enable extends ap_manage {
+class ap_enable extends ap_plugin {
 
+    var $result = array();
     function process() {
         $disabled = array_filter($this->plugin,'plugin_isdisabled');
         if(is_array($disabled) && count($disabled)) {
-            $result['enabled']      = array_filter($disabled,'plugin_enable');
-            $result['notenabled']   = array_diff_key($disabled,$result['enabled']);
-            foreach($result as $outcome => $plugins)
-                if(is_array($plugins) && count($plugins))
-                    array_walk($plugins,array($this,'say_'.$outcome));
-            $this->refresh();
+            $this->result['enabled']      = array_filter($disabled,'plugin_enable');
+            $this->result['notenabled']   = array_diff_key($disabled,$this->result['enabled']);
         }
+        parent::process();
     }
-
-    function html() {}
 
     function say_enabled($plugin,$key) {
         msg(sprintf($this->lang['enabled'],$plugin),1);

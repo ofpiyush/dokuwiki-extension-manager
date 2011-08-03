@@ -1,10 +1,8 @@
 <?php
-require_once  DOKU_INC . 'inc/parser/xhtml.php';
 
 class ap_plugin extends ap_manage {
     var $plugins;
     var $protected_plugins;
-    var $context = "plugin_manager";
 
     function process() {
         global $plugin_protected;
@@ -12,7 +10,6 @@ class ap_plugin extends ap_manage {
         $unprotected = array_diff($list,$plugin_protected);
         $enabled = array_intersect($unprotected,plugin_list());
         $disabled = array_filter($unprotected,'plugin_isdisabled'); //TODO check array_diff/array_intersect vs array_filter speeds
-        $this->repo = $this->fetch_cache();
         //TODO bad fix: get better sorting.
         $this->plugins['enabled'] = array_map(array($this,'_info_list'),$enabled);
         usort($this->plugins['enabled'],array($this,'_sort'));
@@ -27,6 +24,11 @@ class ap_plugin extends ap_manage {
         global $lang;
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
+        if(is_array($this->result) && count($this->result)) {
+            foreach($this->result as $outcome => $changed_plugins)
+                if(is_array($changed_plugins) && count($changed_plugins))
+                    array_walk($changed_plugins,array($this,'say_'.$outcome));
+        }
         ptln('<div class="common">');
         ptln('  <h2>Search for a new plugin</h2>');//TODO Add language
         $search_form = new Doku_Form('pm__search');
@@ -47,12 +49,12 @@ class ap_plugin extends ap_manage {
             $form = new Doku_Form("plugins__list");
             $form->addHidden('page','plugin');
             $form->addHidden('fn','multiselect');
-            $form->addElement(form_makeOpenTag('table'));//add table
+            $form->addElement(form_makeOpenTag('table',array('class'=>'inline')));//add table
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
                     $class = $type;
                     if((array_key_exists('securityissue',$info) && !empty($info['securityissue'])) )
-                        $class .= " error";
+                        $class .= " secissue";
                     //if($this->missing_dependency())
                     $form->addElement(form_makeOpenTag('tr',array('class'=>$class)));
                     $form->addElement(form_makeOpenTag('td',array('class'=>'checkbox')));
@@ -71,7 +73,7 @@ class ap_plugin extends ap_manage {
                     $form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
                     $form->addElement(form_makeOpenTag('p'));
                     $form->addElement('<a href="'.$this->make_url('info',$info['id']).'">Info</a> | ');
-                    if($type =="enabled ")
+                    if($type =="enabled")
                         $form->addElement('<a href="'.$this->make_url('disable',$info['id']).'">Disable</a> | ');
                     else
                         $form->addElement('<a href="'.$this->make_url('enable',$info['id']).'">Enable</a> | ');
@@ -104,11 +106,11 @@ class ap_plugin extends ap_manage {
             ptln('  These plugins are protected and should not be disabled and/or deleted. They are intrinsic to DokuWiki.');
             ptln('  </p>');
 
-            ptln('  <table>');
+            ptln('  <table class="inline">');
             foreach($this->protected_plugins as $info) {
                 ptln('  <tr class="protected">');
                 //TODO: switch to tables remove the quickfix
-                ptln('    <td class="checkbox">&nbsp;</td>');
+                ptln('    <td class="checkbox"><input type="checkbox" checked="checked" disabled="disabled" /></td>');
                 ptln('    <td class="legend">');
                 ptln('      <span class="head">'.$this->make_title($info).'</span>');
                 if(isset($info['desc'])) {
@@ -139,21 +141,6 @@ class ap_plugin extends ap_manage {
     }
     protected function _sort($a,$b) {
         return strcmp($a['name'],$b['name']);
-    }
-    protected function make_title($info) {
-        if(array_key_exists('dokulink',$info) && strlen($info['dokulink'])) {
-            $url ="http://dokuwiki.org/".$info['dokulink'];
-            return '<a class="interwiki iw_doku" title="'.$url.'" href="'.$url.'">'.hsc($info['name']).'</a>';
-            
-        }
-        if(array_key_exists('url',$info) && strlen($info['url'])) {
-            return  '<a class="urlextern" href="'.$info['url'].'" title="'.$info['url'].'" >'.hsc($info['name']).'</a>';
-        }
-            return  hsc($info['name']);
-    }
-    protected function make_url($action,$plugin) {
-        global $ID;
-        return wl($ID,array('do'=>'admin','page'=>'plugin','fn'=>'multiselect','action'=>$action,'checked[]'=>$plugin,'sectok'=>getSecurityToken()));
     }
     protected function missing_dependency() {
     }

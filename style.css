@@ -105,55 +105,50 @@
     width: 10em;
 }
 
-#plugin__manager table {
-    padding: 0.5em;
-    border-collapse:collapse;
-    width: 100%;
-}
 
 #plugin__manager .bottom {
     padding: 0.5em;
 }
 
-#plugin__manager tr {
-    border-bottom: 1px solid __border__;
-    text-align: center;
+#plugin__manager table {
+    width:100%;
 }
 
-#plugin__manager td {
-    padding: 0.5em;
-}
 #plugin__manager .checkbox {
     width:5%;
+    text-align:center;
 }
 #plugin__manager .enabled {
-    background: #dfffdf;
+    background: #cfc;
 }
 #plugin__manager .disabled {
     background: __background_neu__;
-
 }
 
 #plugin__manager .protected {
     background: __background_alt__;
 }
 
-
+#plugin__manager .secissue {
+    background: #fcc;
+}
 #plugin__manager .legend {
-    display: block;
-    text-align: left;
+    padding:0.3em;
 }
 #plugin__manager .legend .head {
     clear: both;
-    font-weight: bold;
+    font-weight:bold;
 }
-
 #plugin__manager .legend p {
-    margin: 0;
+    margin:0 1.5em 0;
 }
 #plugin__manager .actions {
     font-size: 95%;
     width: 20%;
+}
+#plugin__manager .actions p {
+    margin:0;
+    text-align: center;
 }
 
 #plugin__manager fieldset.buttons {

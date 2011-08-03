@@ -9,7 +9,7 @@ abstract class ap_manage {
     var $repo_cache = NULL;
     protected $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode');
 
-    final function __construct(DokuWiki_Admin_Plugin $manager) {
+    function __construct(DokuWiki_Admin_Plugin $manager) {
         global $plugin_bundled;
         if(is_array($plugin_bundled) && count($plugin_bundled))
             $this->_bundled = $plugin_bundled;
@@ -18,8 +18,9 @@ abstract class ap_manage {
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
         $this->lang = $manager->lang;
-        $this->repo_cache = new cache('plugin_manager', 'sa');
+        $this->repo_cache = new cache('plugin_manager', '.sa');
         $this->check_load_cache();
+        $this->repo = $this->fetch_cache();
     }
 
     abstract function process();
@@ -29,16 +30,31 @@ abstract class ap_manage {
     // build our standard menu
     function html_menu() {
         global $ID;
-        $tab = (in_array($this->manager->cmd,array('plugin','template','search')))? $this->manager->cmd : 'plugin' ;
-        ptln('<div class="pm_menu">');
-		ptln('    <ul>');
-		ptln('	    <li class="'.(($tab == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
-		ptln('	    <li class="'.(($tab == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
-		ptln('	    <li class="'.(($tab == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">Install</a></li>');
-		ptln('    </ul>');
-        ptln('</div>');
+            $tab = (in_array($this->manager->cmd,array('plugin','template','search')))? $this->manager->cmd : 'plugin' ;
+            ptln('<div class="pm_menu">');
+		    ptln('    <ul>');
+		    ptln('	    <li class="'.(($tab == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
+		    ptln('	    <li class="'.(($tab == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
+		    ptln('	    <li class="'.(($tab == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">Install</a></li>');
+		    ptln('    </ul>');
+            ptln('</div>');
     }
 
+    protected function make_title($info) {
+        if(array_key_exists('dokulink',$info) && strlen($info['dokulink'])) {
+            $url ="http://dokuwiki.org/".$info['dokulink'];
+            return '<a class="interwiki iw_doku" title="'.$url.'" href="'.$url.'">'.hsc($info['name']).'</a>';
+        }
+        if(array_key_exists('url',$info) && strlen($info['url'])) {
+            return  '<a class="urlextern" href="'.$info['url'].'" title="'.$info['url'].'" >'.hsc($info['name']).'</a>';
+        }
+        return  hsc($info['name']);
+    }
+
+    protected function make_url($action,$plugin) {
+        global $ID;
+        return wl($ID,array('do'=>'admin','page'=>'plugin','fn'=>'multiselect','action'=>$action,'checked[]'=>$plugin,'sectok'=>getSecurityToken()));
+    }
     /**
      *  Refresh plugin list
      */
@@ -139,7 +155,7 @@ abstract class ap_manage {
      */
     function reload_cache() {
         $dhc = new DokuHTTPClient();
-        $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php');
+        $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?includetemplates=yes');
         unset($dhc);
         if($data) {
             try {

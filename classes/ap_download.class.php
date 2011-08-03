@@ -7,18 +7,21 @@ class ap_download extends ap_plugin {
      * Initiate the plugin download
      */
     function process() {
-        global $lang;
-
-        $plugin_url = $_REQUEST['url'];
-        $this->download($plugin_url, $this->overwrite);
-        return '';
+        if(array_key_exists('url',$_REQUEST)) {
+            $plugin_url = $_REQUEST['url'];
+            $this->download($plugin_url, $this->overwrite);
+        }elseif(is_array($this->plugin) && count($this->plugin)) {
+            foreach($this->plugin as $plugin) {
+                $this->download($plugin, $this->overwrite);
+            }
+        }
+        parent::process();
     }
 
     /**
      * Print results of the download
      */
     function html() {
-        parent::html();
 
         ptln('<div class="pm_info">');
         ptln('<h2>'.$this->lang['downloading'].'</h2>');
@@ -38,6 +41,7 @@ class ap_download extends ap_plugin {
             ptln('<p>'.$this->lang['download_none'].'</p>');
         }
         ptln('</div>');
+        parent::html();
     }
 
     /**
