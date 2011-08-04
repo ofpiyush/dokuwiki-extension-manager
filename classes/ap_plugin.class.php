@@ -33,7 +33,7 @@ class ap_plugin extends ap_manage {
         ptln('  <h2>Search for a new plugin</h2>');//TODO Add language
         $search_form = new Doku_Form('pm__search');
         $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'dw__search'));
+        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'pm__sfield'));
         $search_form->addHidden('page','plugin');
         $search_form->addHidden('tab','search');
         $search_form->addHidden('fn','search');

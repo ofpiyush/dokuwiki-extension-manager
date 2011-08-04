@@ -12,7 +12,7 @@ class ap_template extends ap_manage {
         ptln('  <h2>Search for a new Template</h2>');//TODO Add language
         $template_search = new Doku_Form('tpl__search');
         $template_search->startFieldset($lang['btn_search']);
-        $template_search->addElement(form_makeTextField('term','',$lang['btn_search'],'tmp__search'));
+        $template_search->addElement(form_makeTextField('term','',$lang['btn_search'],'pm__sfield'));
         $template_search->addHidden('page','plugin');
         $template_search->addHidden('tab','search');
         $template_search->addHidden('ext[type]','Template');
