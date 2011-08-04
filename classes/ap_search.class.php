@@ -72,7 +72,7 @@ class ap_search extends ap_manage {
             $form->addElement(form_makeCloseTag('table'));
             $form->addElement(form_makeMenuField('action',array(
                                                                 ''=>'-Please choose-',//TODO add langugae
-                                                                'download'=>'Download',//TODO add language
+                                                                'download'=>$this->lang['btn_download'],
                                                                 'disdown'=>'Download as disabled',//TODO add language
                                                                 )
                                                                 ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
@@ -99,7 +99,7 @@ class ap_search extends ap_manage {
             $form->addElement(form_makeOpenTag('div',array('class'=>'bottom')));
             $form->addElement(form_makeMenuField('action',array(
                                                                 ''=>'-Please choose-',//TODO add langugae
-                                                                'download'=>'Download',//TODO add language
+                                                                'download'=>$this->lang['btn_download'],
                                                                 'disdown'=>'Download as disabled',//TODO add language
                                                                 )
                                                                 ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
@@ -130,7 +130,7 @@ class ap_search extends ap_manage {
         $form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
         $form->addElement(form_makeOpenTag('p'));
         if(isset($info['downloadurl']) && !empty($info['downloadurl']))
-            $form->addElement('<a href="'.$this->make_url('download',$info['id']).'">Download</a> | <a href="'.$this->make_url('disdown',$info['id']).'">Download as disabled</a>');
+            $form->addElement('<a href="'.$this->make_url('download',$info['id']).'">'.$this->lang['btn_download'].'</a> | <a href="'.$this->make_url('disdown',$info['id']).'">Download as disabled</a>');
         else
             $form->addElement('No Download URL');
         $form->addElement(form_makeCloseTag('p'));

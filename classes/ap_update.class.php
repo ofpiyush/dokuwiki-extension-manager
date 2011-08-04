@@ -4,7 +4,7 @@ class ap_update extends ap_download {
 
     var $overwrite = true;
 
-    function process() {
+    function down() {
         foreach($this->plugin as $plugin) {
             if(in_array($plugin,$this->_bundled)) continue;
             $plugin_url = $this->plugin_readlog($plugin, 'url');
@@ -12,7 +12,6 @@ class ap_update extends ap_download {
         }
         $this->result['updated'] = $this->downloaded;
         $this->result['notupdated'][] = 1;
-        parent::process(false);
     }
 
     function say_updated($plugin) {

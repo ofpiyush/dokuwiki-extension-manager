@@ -6,9 +6,8 @@ class ap_download extends ap_plugin {
     /**
      * Initiate the plugin download
      */
-    function process($exec = true) {
-        if($exec)
-            $this->down();
+    function process() {
+        $this->down();
         parent::process();
     }
 
@@ -23,7 +22,10 @@ class ap_download extends ap_plugin {
         }
         $this->result['downloaded'] = $this->downloaded;
         $this->result['notdownloaded'][] = 1;
+        $this->manager->plugin_list = array_merge($this->manager->plugin_list,array_keys($this->downloaded));
+        @array_filter(array_keys($this->result['downloaded']),'plugin_enable');
     }
+
     function say_downloaded($plugin) {
         if(count($this->downloaded[$plugin]) == 1)
             msg(sprintf($this->lang['downloaded'],$plugin),1);
