@@ -37,7 +37,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $handler = NULL;
 
     var $functions = array('delete','enable','update','disable',/*'settings',*/'info');  // require a plugin name
-    var $commands = array('search','download'); // don't require a plugin name
+    var $commands = array('search','download','disdown'); // don't require a plugin name
     var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
 
@@ -75,7 +75,6 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->cmd = 'plugin';
             $this->plugin = null;
         }
-
         
         if($this->cmd == 'plugin' && strlen($tab)) {
             $this->cmd = $tab;

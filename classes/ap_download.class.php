@@ -6,42 +6,38 @@ class ap_download extends ap_plugin {
     /**
      * Initiate the plugin download
      */
-    function process() {
+    function process($exec = true) {
+        if($exec)
+            $this->down();
+        parent::process();
+    }
+
+    function down() {
         if(array_key_exists('url',$_REQUEST)) {
             $plugin_url = $_REQUEST['url'];
             $this->download($plugin_url, $this->overwrite);
         }elseif(is_array($this->plugin) && count($this->plugin)) {
-            foreach($this->plugin as $plugin) {
-                $this->download($plugin, $this->overwrite);
-            }
+            $plugins = array_intersect_key($this->repo,array_flip($this->plugin));
+            foreach ($plugins as $plugin)
+                $this->download($plugin['downloadurl'], $this->overwrite);
         }
-        parent::process();
+        $this->result['downloaded'] = $this->downloaded;
+        $this->result['notdownloaded'][] = 1;
+    }
+    function say_downloaded($plugin) {
+        if(count($this->downloaded[$plugin]) == 1)
+            msg(sprintf($this->lang['downloaded'],$plugin),1);
+        elseif(count($this->downloaded[$plugin]))
+            msg(sprintf($this->lang['packageinstalled'], count($this->downloaded[$plugin]), join(',',$this->downloaded[$plugin])),1);
+        elseif(!$this->manager->error)
+            msg(sprintf($this->lang['download_none']),-1);
     }
 
-    /**
-     * Print results of the download
-     */
-    function html() {
-
-        ptln('<div class="pm_info">');
-        ptln('<h2>'.$this->lang['downloading'].'</h2>');
-
-        if ($this->manager->error) {
-            ptln('<div class="error">'.str_replace("\n","<br />",$this->manager->error).'</div>');
-        } else if (count($this->downloaded) == 1) {
-            ptln('<p>'.sprintf($this->lang['downloaded'],$this->downloaded[0]).'</p>');
-        } else if (count($this->downloaded)) {   // more than one plugin in the download
-            ptln('<p>'.$this->lang['downloads'].'</p>');
-            ptln('<ul>');
-            foreach ($this->downloaded as $plugin) {
-                ptln('<li><div class="li">'.$plugin.'</div></li>',2);
-            }
-            ptln('</ul>');
-        } else {        // none found in download
-            ptln('<p>'.$this->lang['download_none'].'</p>');
-        }
-        ptln('</div>');
-        parent::html();
+    function say_notdownloaded($plugin) {
+        if($this->manager->error)
+            msg(sprintf($this->manager->error),-1);
+        elseif(!count($this->downloaded))
+            msg(sprintf($this->lang['download_none']),-1);
     }
 
     /**
@@ -102,7 +98,7 @@ class ap_download extends ap_plugin {
 
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
-                        $this->downloaded[] = $item['base'];
+                        $this->downloaded[$item['base']] = $item['base'];
                         $this->plugin_writelog($target, $instruction, array($url));
                     } else {
                         $this->manager->error .= sprintf($this->lang['error_copy']."\n", $item['base']);
@@ -118,8 +114,6 @@ class ap_download extends ap_plugin {
         if ($tmp) $this->dir_delete($tmp);
 
         if (!$this->manager->error) {
-            msg(sprintf($this->lang['packageinstalled'], count($this->downloaded), join(',',$this->downloaded)),1);
-            $this->refresh();
             return true;
         }
 

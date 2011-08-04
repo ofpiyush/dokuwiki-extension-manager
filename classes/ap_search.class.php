@@ -70,8 +70,14 @@ class ap_search extends ap_manage {
                     $this->make_form($form,$info,$class);
                 }
             $form->addElement(form_makeCloseTag('table'));
-            $form->addHidden('action','download');
-            $form->addElement(form_makeButton('submit', 'admin', 'Download' ));
+            $form->addElement(form_makeMenuField('action',array(
+                                                                ''=>'-Please choose-',//TODO add langugae
+                                                                'download'=>'Download',//TODO add language
+                                                                'disdown'=>'Download as disabled',//TODO add language
+                                                                )
+                                                                ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
+            $form->addElement(form_makeCloseTag('div'));
+            $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
             html_form('SEARCH_RESULT',$form);
         } elseif(!is_null($this->term)) {
                 ptln('<h2>'.'The term "'.$this->term.'" was not found</h2>');//TODO Add language
@@ -90,17 +96,26 @@ class ap_search extends ap_manage {
                 $this->make_form($form,$info,$class);
             }
             $form->addElement(form_makeCloseTag('table'));
-            $form->addHidden('action','download');
-            $form->addElement(form_makeButton('submit', 'admin', 'Download' ));
+            $form->addElement(form_makeOpenTag('div',array('class'=>'bottom')));
+            $form->addElement(form_makeMenuField('action',array(
+                                                                ''=>'-Please choose-',//TODO add langugae
+                                                                'download'=>'Download',//TODO add language
+                                                                'disdown'=>'Download as disabled',//TODO add language
+                                                                )
+                                                                ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
+            $form->addElement(form_makeCloseTag('div'));
+            $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
             html_form('PLUGIN_LIST',$form);
         }
-
-        //parent::html();
     }
+
     protected function make_form($form,$info,$class) {
         $form->addElement(form_makeOpenTag('tr',array('class'=>$class)));
         $form->addElement(form_makeOpenTag('td',array('class'=>'checkbox')));
-        $form->addElement(form_makeCheckboxField('checked[]',$info['downloadurl'],'',''));
+        if(isset($info['downloadurl']) && !empty($info['downloadurl']))
+            $form->addElement(form_makeCheckboxField('checked[]',$info['id'],'',''));
+        else
+            $form->addElement(form_makeCheckboxField('no','','','','',array('disabled'=>'disabled')));
         $form->addElement(form_makeCloseTag('td'));
         $form->addElement(form_makeOpenTag('td',array('class'=>'legend')));
         $form->addElement(form_makeOpenTag('span',array('class'=>'head')));
@@ -115,7 +130,7 @@ class ap_search extends ap_manage {
         $form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
         $form->addElement(form_makeOpenTag('p'));
         if(isset($info['downloadurl']) && !empty($info['downloadurl']))
-            $form->addElement('<a href="'.$this->make_url('download',$info['downloadurl']).'">Download</a> ');
+            $form->addElement('<a href="'.$this->make_url('download',$info['id']).'">Download</a> | <a href="'.$this->make_url('disdown',$info['id']).'">Download as disabled</a>');
         else
             $form->addElement('No Download URL');
         $form->addElement(form_makeCloseTag('p'));
@@ -124,7 +139,7 @@ class ap_search extends ap_manage {
     }
 
     protected function clean_repo() {
-        $this->filtered_repo = array_diff_key($this->repo,array_flip($this->_bundled));
+        $this->filtered_repo = array_diff_key($this->repo,array_flip($this->manager->plugin_list));
     }
     /**
      * Looks up the term in the repository cache according to filters set. Basic searching.

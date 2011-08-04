@@ -10,30 +10,25 @@ class ap_update extends ap_download {
             $plugin_url = $this->plugin_readlog($plugin, 'url');
             $this->download($plugin_url, $this->overwrite);
         }
-        //parent::process();
+        $this->result['updated'] = $this->downloaded;
+        $this->result['notupdated'][] = 1;
+        parent::process(false);
     }
 
-    function html() {
-        parent::html();
+    function say_updated($plugin) {
+        if(count($this->downloaded[$plugin]) == 1)
+            msg(sprintf($this->lang['updated'],$plugin),1);
+        elseif(count($this->downloaded[$plugin]))
+            msg(sprintf($this->lang['updates']." ".join(',',$this->downloaded[$plugin])),1);
+        elseif(!$this->manager->error)
+            msg(sprintf($this->lang['update_none']),-1);
+    }
 
-        ptln('<div class="pm_info">');
-        ptln('<h2>'.$this->lang['updating'].'</h2>');
-
-        if ($this->manager->error) {
-            ptln('<div class="error">'.str_replace("\n","<br />", $this->manager->error).'</div>');
-        } else if (count($this->downloaded) == 1) {
-            ptln('<p>'.sprintf($this->lang['updated'],$this->downloaded[0]).'</p>');
-        } else if (count($this->downloaded)) {   // more than one plugin in the download
-            ptln('<p>'.$this->lang['updates'].'</p>');
-            ptln('<ul>');
-            foreach ($this->downloaded as $plugin) {
-                ptln('<li><div class="li">'.$plugin.'</div></li>',2);
-            }
-            ptln('</ul>');
-        } else {        // none found in download
-            ptln('<p>'.$this->lang['update_none'].'</p>');
-        }
-        ptln('</div>');
+    function say_notupdated($plugin) {
+        if($this->manager->error)
+            msg(sprintf($this->manager->error),-1);
+        elseif(!count($this->downloaded))
+            msg(sprintf($this->lang['update_none']),-1);
     }
 }
 
