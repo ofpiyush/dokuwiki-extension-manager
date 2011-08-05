@@ -40,20 +40,31 @@ abstract class ap_manage {
             ptln('</div>');
     }
 
-    protected function make_title($info) {
-        if(array_key_exists('dokulink',$info) && strlen($info['dokulink'])) {
-            $url ="http://dokuwiki.org/".$info['dokulink'];
-            return '<a class="interwiki iw_doku" title="'.$url.'" href="'.$url.'">'.hsc($info['name']).'</a>';
-        }
-        if(array_key_exists('url',$info) && strlen($info['url'])) {
-            return  '<a class="urlextern" href="'.$info['url'].'" title="'.$info['url'].'" >'.hsc($info['name']).'</a>';
-        }
-        return  hsc($info['name']);
+    protected function render_search($id,$head,$value = '',$type = null) {
+        global $lang,$ID;
+        ptln('<div class="common">');
+        ptln('  <h2>'.$head.'</h2>');
+        $search_form = new Doku_Form($id);
+        $search_form->startFieldset($lang['btn_search']);
+        $search_form->addElement(form_makeTextField('term',$value,$lang['btn_search'],'pm__sfield'));
+        $search_form->addHidden('page','plugin');
+        $search_form->addHidden('tab','search');
+        $search_form->addHidden('fn','search');
+        if($type !== null)
+            if(is_array($type) && count($type))
+                $search_form->addElement(form_makeMenuField('type',$type,'',''));
+            else
+                $search_form->addHidden('type',$type);
+        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
+        $search_form->endFieldset();
+        $search_form->printForm();
+        ptln('</div>');
     }
 
-    protected function make_url($action,$plugin) {
+    function make_action($action,$plugin,$value) {
         global $ID;
-        return wl($ID,array('do'=>'admin','page'=>'plugin','fn'=>'multiselect','action'=>$action,'checked[]'=>$plugin,'sectok'=>getSecurityToken()));
+        $url = wl($ID,array('do'=>'admin','page'=>'plugin','fn'=>'multiselect','action'=>$action,'checked[]'=>$plugin,'sectok'=>getSecurityToken()));
+        return '<a href="'.$url.'" title="'.$url.'">'.$value.'</a>';
     }
     /**
      *  Refresh plugin list

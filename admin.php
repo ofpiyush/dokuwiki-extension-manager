@@ -15,6 +15,7 @@ if(!defined('DOKU_INC')) die();
 
 require_once(DOKU_PLUGIN."plugin/classes/ap_manage.class.php");
 require_once(DOKU_PLUGIN."plugin/classes/ap_plugin.class.php");
+require_once(DOKU_PLUGIN."plugin/classes/plugins_list.class.php");
 
 //--------------------------[ GLOBALS ]------------------------------------------------
 // note: probably should be dokuwiki wide globals, where they can be accessed by pluginutils.php

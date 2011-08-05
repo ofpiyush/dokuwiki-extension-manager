@@ -2,15 +2,30 @@
 class ap_search extends ap_manage {
 
     var $term = NULL;
-    var $filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
+    var $filters = array();
     var $result = array();
     var $repo = NULL;
     var $filtered_repo = NULL;
     var $extra = NULL;
     var $versions = array();
-    
+    var $actions_list = array();
+    var $search_types = array();
+
     function process() {
         $this->clean_repo();
+        $this->actions_list = array(
+                'download'=>$this->lang['btn_download'],
+                'disdown'=>'Download as disabled');//TODO add language
+        $this->search_types = array(
+            ''=>'All',//TODO add language
+            'Syntax'=>'Syntax',//TODO add language
+            'Admin'=>'Admin',//TODO add language
+            'Action'=>'Action',//TODO add language
+            'Renderer'=>'Renderer',//TODO add language
+            'Helper'=>'Helper',//TODO add language
+            'Template'=>'Template');//TODO add language
+        $this->filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
+
         if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0) {
             $this->term = $_REQUEST['term'];
             //add parsing for key=value based extras
@@ -26,7 +41,7 @@ class ap_search extends ap_manage {
 
     function html() {
         $this->html_menu();
-        global $lang;
+
         ptln('<div class="common">');
         ptln('  <h2>'.$this->lang['download'].'</h2>');
         $url_form = new Doku_Form('install__url');
@@ -37,105 +52,58 @@ class ap_search extends ap_manage {
         $url_form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_download'] ));
         $url_form->endFieldset();
         $url_form->printForm();
-        $search_form = new Doku_Form('install__search');
-        $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'pm__sfield'));
-        $search_form->addElement(form_makeMenuField('type',array(
-                                                                ''=>'All',//TODO add language
-                                                                'Syntax'=>'Syntax',//TODO add language
-                                                                'Admin'=>'Admin',//TODO add language
-                                                                'Action'=>'Action',//TODO add language
-                                                                'Renderer'=>'Renderer',//TODO add language
-                                                                'Helper'=>'Helper',//TODO add language
-                                                                'Template'=>'Template')//TODO add language
-                                                                ,'',''));//TODO add language
-        $search_form->addHidden('page','plugin');
-        $search_form->addHidden('tab','search');
-        $search_form->addHidden('fn','search');
-        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
-        $search_form->endFieldset();
-        $search_form->printForm();
         ptln('</div>');
-        if(is_array($this->result) && count($this->result)) {
+
+        $this->render_search('install__search', 'Search for a new plugin',$this->term,$this->search_types);
+
+        if(is_array($this->search_result) && count($this->search_result)) {
             ptln('<h2>'.'Search results for "'.$this->term.'"</h2>');//TODO Add language
-            $form = new Doku_Form("search__result");
-            $form->addHidden('page','plugin');
-            $form->addHidden('fn','multiselect');
-            $form->addElement(form_makeOpenTag('table',array('class'=>'inline')));
-            foreach($this->result as $result)
+            $list = new plugins_list('search_result',$this->actions_list);
+            foreach($this->search_result as $result)
                 foreach($result as $info) {
-                    $class = 'result';
-                    if((@array_key_exists('securityissue',$info) && !empty($info['securityissue'])) )
-                        $class .= ' secissue';
-                    $this->make_form($form,$info,$class);
+                    $class = $this->get_class($info,'result');
+                    $actions = $this->get_actions($info);
+                    $checkbox = $this->get_checkbox($info);
+                    $list->add_row($class,$info,$actions,$checkbox);
                 }
-            $form->addElement(form_makeCloseTag('table'));
-            $form->addElement(form_makeMenuField('action',array(
-                                                                ''=>'-Please choose-',//TODO add langugae
-                                                                'download'=>$this->lang['btn_download'],
-                                                                'disdown'=>'Download as disabled',//TODO add language
-                                                                )
-                                                                ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
-            $form->addElement(form_makeCloseTag('div'));
-            $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
-            html_form('SEARCH_RESULT',$form);
+            $list->render('SEARCH_RESULT');
         } elseif(!is_null($this->term)) {
-                ptln('<h2>'.'The term "'.$this->term.'" was not found</h2>');//TODO Add language
-                $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
-                ptln('<p>Please try with a simpler query or <a href="'.$url.'" title="'.$url.'" />click here</a> to browse all plugins</p>');
+            ptln('<h2>'.'The term "'.$this->term.'" was not found'.'</h2>');//TODO Add language
+            $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
+            ptln('<p>Please try with a simpler query or <a href="'.$url.'" title="'.$url.'" />click here</a> to browse all plugins</p>');
         } else {
-            ptln('<h2>'.'Browse plugins'.'</h2>');//TODO Add language
-            $form = new Doku_Form("plugins__list");
-            $form->addHidden('page','plugin');
-            $form->addHidden('fn','multiselect');
-            $form->addElement(form_makeOpenTag('table',array('class'=>'inline')));
+            ptln('<h2>'.'Browse all plugins'.'</h2>');//TODO Add language
+            $list = new plugins_list('plugins__list',$this->actions_list);
             foreach($this->filtered_repo as $info) {
-                $class = 'all';
-                if((@array_key_exists('securityissue',$info) && !empty($info['securityissue'])) )
-                    $class .= ' secissue';
-                $this->make_form($form,$info,$class);
+                $class = $this->get_class($info,'all');
+                $actions = $this->get_actions($info);
+                $checkbox = $this->get_checkbox($info);
+                $list->add_row($class,$info,$actions,$checkbox);
             }
-            $form->addElement(form_makeCloseTag('table'));
-            $form->addElement(form_makeOpenTag('div',array('class'=>'bottom')));
-            $form->addElement(form_makeMenuField('action',array(
-                                                                ''=>'-Please choose-',//TODO add langugae
-                                                                'download'=>$this->lang['btn_download'],
-                                                                'disdown'=>'Download as disabled',//TODO add language
-                                                                )
-                                                                ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
-            $form->addElement(form_makeCloseTag('div'));
-            $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
-            html_form('PLUGIN_LIST',$form);
+            $list->render();
         }
     }
 
-    protected function make_form($form,$info,$class) {
-        $form->addElement(form_makeOpenTag('tr',array('class'=>$class)));
-        $form->addElement(form_makeOpenTag('td',array('class'=>'checkbox')));
-        if(isset($info['downloadurl']) && !empty($info['downloadurl']))
-            $form->addElement(form_makeCheckboxField('checked[]',$info['id'],'',''));
-        else
-            $form->addElement(form_makeCheckboxField('no','','','','',array('disabled'=>'disabled')));
-        $form->addElement(form_makeCloseTag('td'));
-        $form->addElement(form_makeOpenTag('td',array('class'=>'legend')));
-        $form->addElement(form_makeOpenTag('span',array('class'=>'head')));
-        $form->addElement($this->make_title($info));
-        $form->addElement(form_makeCloseTag('span'));
-        if(isset($info['description'])) {
-            $form->addElement(form_makeOpenTag('p'));
-            $form->addElement(hsc($info['description']));
-            $form->addElement(form_makeCloseTag('p'));
+    protected function get_class($info,$class) {
+        if(array_key_exists('securityissue',$info) && !empty($info['securityissue']))
+            $class .= ' secissue';
+        return $class;
+    }
+
+    protected function get_actions($info) {
+        if(array_key_exists('downloadurl',$info) && !empty($info['downloadurl'])) {
+            $actions = $this->make_action('download',$info['id'],$this->lang['btn_download']);
+            $actions .= ' | '.$this->make_action('disdown',$info['id'],'Download as disabled');
+        } else {
+            $actions = "No Download URL";
         }
-        $form->addElement(form_makeCloseTag('td'));
-        $form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
-        $form->addElement(form_makeOpenTag('p'));
-        if(isset($info['downloadurl']) && !empty($info['downloadurl']))
-            $form->addElement('<a href="'.$this->make_url('download',$info['id']).'">'.$this->lang['btn_download'].'</a> | <a href="'.$this->make_url('disdown',$info['id']).'">Download as disabled</a>');
-        else
-            $form->addElement('No Download URL');
-        $form->addElement(form_makeCloseTag('p'));
-        $form->addElement(form_makeCloseTag('td'));
-        $form->addElement(form_makeCloseTag('tr'));
+        return $actions;
+    }
+
+    protected function get_checkbox($info) {
+        if(array_key_exists('downloadurl',$info) && !empty($info['downloadurl']))
+            return array();
+        return array('disabled'=>'disabled');
     }
 
     protected function clean_repo() {
@@ -152,7 +120,7 @@ class ap_search extends ap_manage {
             if(count($matches)) {
                 $count = count(array_intersect_key($this->filters,$matches));
                 if($count && $this->check($single))
-                    $this->result[$count][$single['id']] = $single;
+                    $this->search_result[$count][$single['id']] = $single;
             }
         }
         return krsort($this->result);

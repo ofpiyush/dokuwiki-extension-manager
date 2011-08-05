@@ -3,9 +3,16 @@
 class ap_plugin extends ap_manage {
     var $plugins;
     var $protected_plugins;
+    var $actions_list;
 
     function process() {
         global $plugin_protected;
+        $this->actions_list = array(
+            'enable'=>'Enable',//TODO add language
+            'disable'=>'Disable',//TODO add language
+            'delete'=>'Delete',//TODO add language
+            'update'=>'Update'//TODO add language
+            );
         $list = $this->manager->plugin_list;
         $unprotected = array_diff($list,$plugin_protected);
         $enabled = array_intersect($unprotected,plugin_list());
@@ -24,79 +31,29 @@ class ap_plugin extends ap_manage {
         global $lang;
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
-        if(is_array($this->result) && count($this->result)) {
-            foreach($this->result as $outcome => $changed_plugins)
-                if(is_array($changed_plugins) && count($changed_plugins))
-                    array_walk($changed_plugins,array($this,'say_'.$outcome));
-        }
-        ptln('<div class="common">');
-        ptln('  <h2>Search for a new plugin</h2>');//TODO Add language
-        $search_form = new Doku_Form('pm__search');
-        $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('term','',$lang['btn_search'],'pm__sfield'));
-        $search_form->addHidden('page','plugin');
-        $search_form->addHidden('tab','search');
-        $search_form->addHidden('fn','search');
-        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
-        $search_form->endFieldset();
-        $search_form->printForm();
-        ptln('</div>');
+        $this->show_results();
+        $this->render_search('pm__search','Search for a new plugin');
         /**
          * List plugins
          */
         ptln('<h2>'.$this->lang['manage'].'</h2>');
         if(is_array($this->plugins) && count($this->plugins)) {
-            $form = new Doku_Form("plugins__list");
-            $form->addHidden('page','plugin');
-            $form->addHidden('fn','multiselect');
-            $form->addElement(form_makeOpenTag('table',array('class'=>'inline')));//add table
+            $list = new plugins_list('plugins_list',$this->actions_list);
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
                     $class = $type;
                     if((array_key_exists('securityissue',$info) && !empty($info['securityissue'])) )
                         $class .= " secissue";
-                    //if($this->missing_dependency())
-                    $form->addElement(form_makeOpenTag('tr',array('class'=>$class)));
-                    $form->addElement(form_makeOpenTag('td',array('class'=>'checkbox')));
-                    $form->addElement(form_makeCheckboxField('checked[]',$info['id'],'',''));
-                    $form->addElement(form_makeCloseTag('td'));
-                    $form->addElement(form_makeOpenTag('td',array('class'=>'legend')));
-                    $form->addElement(form_makeOpenTag('span',array('class'=>'head')));
-                    $form->addElement($this->make_title($info));
-                    $form->addElement(form_makeCloseTag('span'));
-                    if(isset($info['desc'])) {
-                        $form->addElement(form_makeOpenTag('p'));
-                        $form->addElement(hsc($info['desc']));
-                        $form->addElement(form_makeCloseTag('p'));
-                    }
-                    $form->addElement(form_makeCloseTag('td'));
-                    $form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
-                    $form->addElement(form_makeOpenTag('p'));
-                    $form->addElement('<a href="'.$this->make_url('info',$info['id']).'">Info</a> | ');
+                    $actions = $this->make_action('info',$info['id'],'Info');
                     if($type =="enabled")
-                        $form->addElement('<a href="'.$this->make_url('disable',$info['id']).'">Disable</a> | ');
+                        $actions .= ' | '.$this->make_action('disable',$info['id'],'Disable');
                     else
-                        $form->addElement('<a href="'.$this->make_url('enable',$info['id']).'">Enable</a> | ');
-                    $form->addElement('<a href="'.$this->make_url('delete',$info['id']).'">Delete</a>');//TODO Make some way of keeping imploded actions && Add language
-                    $form->addElement(form_makeCloseTag('p'));
-                    $form->addElement(form_makeCloseTag('td'));
-                    $form->addElement(form_makeCloseTag('tr'));
+                        $actions .= ' | '.$this->make_action('enable',$info['id'],'Enable');
+                    $actions .= ' | '.$this->make_action('delete',$info['id'],'Delete');
+                    $list->add_row($class,$info,$actions);
                 }
             }
-            //TODO add a div
-            $form->addElement(form_makeCloseTag('table'));
-            $form->addElement(form_makeOpenTag('div',array('class'=>'bottom')));
-            $form->addElement(form_makeMenuField('action',array(
-                                                                ''=>'-Please choose-',//TODO add langugae
-                                                                'enable'=>'Enable',//TODO add language
-                                                                'disable'=>'Disable',//TODO add language
-                                                                'delete'=>'Delete',//TODO add language
-                                                                'update'=>'Update'//TODO add language
-                                                                )
-                                                                ,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
-            $form->addElement(form_makeCloseTag('div'));
-            $form->addElement(form_makeButton('submit', 'admin', 'Go' ));
-            html_form('PLUGIN_MANAGER',$form);
+            $list->render('PLUGIN_MANAGER');
         }
 
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
@@ -105,44 +62,55 @@ class ap_plugin extends ap_manage {
             ptln('  <p>');
             ptln('  These plugins are protected and should not be disabled and/or deleted. They are intrinsic to DokuWiki.');
             ptln('  </p>');
-
             ptln('  <table class="inline">');
             foreach($this->protected_plugins as $info) {
-                ptln('  <tr class="protected">');
-                //TODO: switch to tables remove the quickfix
-                ptln('    <td class="checkbox"><input type="checkbox" checked="checked" disabled="disabled" /></td>');
-                ptln('    <td class="legend">');
-                ptln('      <span class="head">'.$this->make_title($info).'</span>');
-                if(isset($info['desc'])) {
-                    ptln('      <p>'.hsc($info['desc']).'</p>');
+                ptln('    <tr class="protected">');
+                ptln('      <td class="checkbox"><input type="checkbox" checked="checked" disabled="disabled" /></td>');
+                ptln('      <td class="legend">');
+                ptln('        <span class="head">'.$list->make_title($info).'</span>');
+                if(isset($info['description'])) {
+                    ptln('        <p>'.hsc($info['description']).'</p>');
                 }
-                ptln('    </td>');
-                ptln('    <td class="actions">');
-                ptln('      <p><a href="'.$this->make_url('info',$info['id']).'">Info</a></p>');
-                ptln('    </td>');
-                ptln('  </tr>');
+                ptln('      </td>');
+                ptln('      <td class="actions">');
+                ptln('        <p>'.$this->make_action('info',$info['id'],'Info').'</p>');
+                ptln('      </td>');
+                ptln('    </tr>');
             }
             ptln('  </table>');
             ptln('</div>');
         }
-        //TODO Make UI for protected plugins
         //end list plugins
+    }
+
+    protected function show_results() {
+        if(is_array($this->result) && count($this->result)) {
+            foreach($this->result as $outcome => $changed_plugins)
+                if(is_array($changed_plugins) && count($changed_plugins))
+                    array_walk($changed_plugins,array($this,'say_'.$outcome));
+        }
     }
 
     protected function _info_list($index) {
         $info  = DOKU_PLUGIN.'/'.$index.'/plugin.info.txt';
-        $return =array('id'=>$index,'name' => $index,'base'=>$index);
-        $return = (@file_exists($info))? array_merge($return,confToHash($info)): $return;
+        $return = array('id'=>$index,'name' => $index,'base'=>$index);
+        if(@file_exists($info)) {
+            $return = array_merge($return,confToHash($info));
+        } 
+        /* TODO for #25 "getInfo() not supported" discuss the issue with having components
+        else {
+            $components = $this->get_plugin_components($index);
+            $load = plugin_load()
+        }
+        */
         $return = array_key_exists($return['base'],$this->repo) ? array_merge($return,$this->repo[$return['base']]) : $return;
-        if(!array_key_exists('desc',$return) && array_key_exists('description',$return))
-            $return['desc'] = $return['description'];
+        if(array_key_exists('desc',$return) && strlen($return['desc']))
+            $return['description'] = $return['desc'];
         $return['id'] = $index;
         return $return;
     }
     protected function _sort($a,$b) {
         return strcmp($a['name'],$b['name']);
-    }
-    protected function missing_dependency() {
     }
 
 }
