@@ -30,10 +30,11 @@ class ap_search extends ap_manage {
             $this->term = $_REQUEST['term'];
             //add parsing for key=value based extras
         }
-        if($this->term !== null) {
-            if(array_key_exists('type',$_REQUEST) && !empty($_REQUEST['type'])) {
-                $this->extra['type'] = $_REQUEST['type'];
-            }
+        if(array_key_exists('type',$_REQUEST) && !empty($_REQUEST['type'])) {
+            $this->extra['type'] = $_REQUEST['type'];
+        }
+        if($this->term !== null || $this->extra !== null ) {
+            if($this->term === null) $this->term = " ";
             if($this->repo !== null)
                 $this->lookup();
         }
@@ -92,8 +93,12 @@ class ap_search extends ap_manage {
 
     protected function get_actions($info) {
         if(array_key_exists('downloadurl',$info) && !empty($info['downloadurl'])) {
+            if(@stripos($info['type'],'Template')!==false) {
+                $actions = $this->make_action('download',$info['id'],'Download as disabled');
+            } else {
             $actions = $this->make_action('download',$info['id'],$this->lang['btn_download']);
             $actions .= ' | '.$this->make_action('disdown',$info['id'],'Download as disabled');
+            }
         } else {
             $actions = "No Download URL";
         }

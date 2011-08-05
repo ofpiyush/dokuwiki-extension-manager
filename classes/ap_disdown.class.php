@@ -4,6 +4,7 @@ class ap_disdown extends ap_download {
 
     function down() {
         parent::down();
-        array_filter($this->downloaded,'plugin_disable');
+        if(isset($this->downloaded['plugin']) && is_array($this->downloaded['plugin']))
+            array_filter($this->downloaded['plugin'],'plugin_disable');
     }
 }

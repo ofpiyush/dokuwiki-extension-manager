@@ -2,6 +2,8 @@
 class ap_download extends ap_plugin {
 
     var $overwrite = true;
+    var $downerrors = array();
+    var $current = null;
 
     /**
      * Initiate the plugin download
@@ -12,34 +14,53 @@ class ap_download extends ap_plugin {
     }
 
     function down() {
+    //FIXME needs serious refactoring (probably after GSoC)
         if(array_key_exists('url',$_REQUEST)) {
             $plugin_url = $_REQUEST['url'];
-            $this->download($plugin_url, $this->overwrite);
+            if($this->download($plugin_url, $this->overwrite)) {
+                $base = $this->current['base'];
+                if($this->current = "plugin")
+                    $this->result['downloaded'][]= $base;
+                else
+                   $this->result['tempdownloaded'][]= $base; 
+            }
+            else {
+                $this->result['notdownloaded'][] = "-@-&-bigbadurl-&-@-";
+                $this->downerrors["-@-&-bigbadurl-&-@-"] = $this->manager->error;
+            }
         }elseif(is_array($this->plugin) && count($this->plugin)) {
             $plugins = array_intersect_key($this->repo,array_flip($this->plugin));
-            foreach ($plugins as $plugin)
-                $this->download($plugin['downloadurl'], $this->overwrite);
+            foreach ($plugins as $plugin) {
+                if($this->download($plugin['downloadurl'], $this->overwrite)) {
+                    $base = $this->current['base'];
+                    if($plugin['type'] == 'Template') {
+                        $this->result['tempdownloaded'][]= $base;
+                    } else {
+                        $this->manager->plugin_list[] = $base;
+                        plugin_enable($base);
+                        $this->result['downloaded'][]= $base;
+                    }
+                } else {
+                    $this->result['notdownloaded'][] = $base;
+                    $this->downerrors[$base] = $this->manager->error;
+                }
+            }
         }
-        $this->result['downloaded'] = $this->downloaded;
-        $this->result['notdownloaded'][] = 1;
-        $this->manager->plugin_list = array_merge($this->manager->plugin_list,array_keys($this->downloaded));
-        @array_filter(array_keys($this->result['downloaded']),'plugin_enable');
     }
 
     function say_downloaded($plugin) {
-        if(count($this->downloaded[$plugin]) == 1)
-            msg(sprintf($this->lang['downloaded'],$plugin),1);
-        elseif(count($this->downloaded[$plugin]))
-            msg(sprintf($this->lang['packageinstalled'], count($this->downloaded[$plugin]), join(',',$this->downloaded[$plugin])),1);
-        elseif(!$this->manager->error)
-            msg(sprintf($this->lang['download_none']),-1);
+        msg(sprintf($this->lang['downloaded'],$plugin),1);
+    }
+
+    function say_tempdownloaded($template) {
+        msg(sprintf("Template %s successfully downloaded",$template),1);
     }
 
     function say_notdownloaded($plugin) {
-        if($this->manager->error)
-            msg(sprintf($this->manager->error),-1);
-        elseif(!count($this->downloaded))
-            msg(sprintf($this->lang['download_none']),-1);
+        $msg ="";
+        if($plugin != "---badtemplate---")
+           $msg .= $plugin." could not be downloaded <br />";
+        msg($msg.$this->downerrors[$plugin],-1);
     }
 
     /**
@@ -100,7 +121,8 @@ class ap_download extends ap_plugin {
 
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
-                        $this->downloaded[$item['base']] = $item['base'];
+                        $this->downloaded[$item['type']][] = $item['base'];
+                        $this->current = $item;
                         $this->plugin_writelog($target, $instruction, array($url));
                     } else {
                         $this->manager->error .= sprintf($this->lang['error_copy']."\n", $item['base']);
@@ -158,13 +180,19 @@ class ap_download extends ap_plugin {
                     $info['base'] = basename($conf['base']);
                     if(!$info['base']) $info['base'] = basename("$base/$dir");
                     $result['new'][] = $info;
-                }elseif($f == 'template.info.txt'){
+                } elseif($f == 'template.info.txt') {
                     $info = array();
                     $info['type'] = 'template';
                     $info['tmp']  = "$base/$dir";
                     $conf = confToHash("$base/$dir/$f");
                     $info['base'] = basename($conf['base']);
                     if(!$info['base']) $info['base'] = basename("$base/$dir");
+                    $result['new'][] = $info;
+                } elseif($f == 'main.php') {
+                    $info = array();
+                    $info['type'] = 'template';
+                    $info['tmp']  = "$base/$dir";
+                    $info['base'] = basename("$base/$dir");
                     $result['new'][] = $info;
                 }
             }else{
