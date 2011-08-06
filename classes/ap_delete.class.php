@@ -9,8 +9,6 @@ class ap_delete extends ap_plugin {
             $this->result['deleted']      = array_filter($plugins,array($this,'delete'));
             $this->result['notdeleted']   = array_diff_key($plugins,$this->result['deleted']);
             $this->manager->plugin_list   = array_diff($this->manager->plugin_list,$this->result['deleted']);
-            //remove from plugins.local.php
-            array_filter($this->result['deleted'],'plugin_enable');
         }
         parent::process();
     }

@@ -40,10 +40,26 @@ class plugins_list {
         $this->form->addElement(form_makeOpenTag('span',array('class'=>'head')));
         $this->form->addElement($this->make_title($info));
         $this->form->addElement(form_makeCloseTag('span'));
-        if(isset($info['description'])) {
+        if(!empty($info['description'])) {
             $this->form->addElement(form_makeOpenTag('p'));
             $this->form->addElement(hsc($info['description']));
             $this->form->addElement(form_makeCloseTag('p'));
+        }
+        if(!empty($info['securityissue'])) {
+            $this->form->addElement(form_makeOpenTag('div',array('class'=>'warn')));
+            $this->form->addElement('<b>Security Issue:</b> '.hsc($info['securityissue']));
+            $this->form->addElement(form_makeCloseTag('div'));
+        }
+        if(!empty($info['securitywarning'])) {
+            $this->form->addElement(form_makeOpenTag('div',array('class'=>'warn')));
+            $this->form->addElement('<b>Security Warning:</b> '.hsc($info['securitywarning']));
+            $this->form->addElement(form_makeCloseTag('div'));
+        }
+        if(!empty($info['screenshoturl']) && substr($class,0,8) == 'template' ) {
+            $this->form->addElement(form_makeCloseTag('td'));
+            $this->form->addElement(form_makeOpenTag('td',array('class'=>'screenshot')));
+            $this->form->addElement("<img src=\"{$info['screenshoturl']}\" />");
+            $this->form->addElement(form_makeCloseTag('td'));
         }
         $this->form->addElement(form_makeCloseTag('td'));
         $this->form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
@@ -77,14 +93,13 @@ class plugins_list {
      */
     function make_title($info) {
         $name = hsc($info['name']);
-        if(array_key_exists('dokulink',$info) && strlen($info['dokulink'])) {
-            $info['url'] = "http://dokuwiki.org/".$info['dokulink'];
+        if(!empty($info['dokulink'])) {
+            $info['url'] = "http://www.dokuwiki.org/".$info['dokulink'];
             return $this->make_link($info,"interwiki iw_doku");
         }
 
-        if(array_key_exists('url',$info) && strlen($info['url'])) {
-            // not using preg_match as this is pretty much the only case
-            if(stripos('http://dokuwiki.org/',$info['url']) === 0)
+        if(!empty($info['url'])) {
+            if(preg_match('|^http(s)?://(www.)?dokuwiki.org/(.*)?$|i', $info['url']))
                 return $this->make_link($info,"interwiki iw_doku");
             else
                 return $this->make_link($info,"urlextern");

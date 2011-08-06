@@ -10,11 +10,6 @@ abstract class ap_manage {
     protected $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode');
 
     function __construct(DokuWiki_Admin_Plugin $manager) {
-        global $plugin_bundled;
-        if(is_array($plugin_bundled) && count($plugin_bundled))
-            $this->_bundled = $plugin_bundled;
-        else
-            $plugin_bundled = $this->_bundled;
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
         $this->lang = $manager->lang;
@@ -166,7 +161,7 @@ abstract class ap_manage {
      */
     function reload_cache() {
         $dhc = new DokuHTTPClient();
-        $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?includetemplates=yes');
+        $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes');
         unset($dhc);
         if($data) {
             try {

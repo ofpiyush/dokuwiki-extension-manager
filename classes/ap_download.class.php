@@ -189,11 +189,14 @@ class ap_download extends ap_plugin {
                     if(!$info['base']) $info['base'] = basename("$base/$dir");
                     $result['new'][] = $info;
                 } elseif($f == 'main.php') {
-                    $info = array();
-                    $info['type'] = 'template';
-                    $info['tmp']  = "$base/$dir";
-                    $info['base'] = basename("$base/$dir");
-                    $result['new'][] = $info;
+                    $tempid = basename("$base/$dir");
+                    if(isset($this->repo['template:'.$tempid])) {
+                        $info = array();
+                        $info['type'] = 'template';
+                        $info['tmp']  = "$base/$dir";
+                        $info['base'] = $tempid;
+                        $result['new'][] = $info;
+                    }
                 }
             }else{
                 // it's a directory -> add to dir list for old method, then recurse

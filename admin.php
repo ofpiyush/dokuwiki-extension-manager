@@ -25,7 +25,6 @@ require_once(DOKU_PLUGIN."plugin/classes/plugins_list.class.php");
 // plugins that are an integral part of dokuwiki, they shouldn't be disabled or deleted
 global $plugin_protected;
 $plugin_protected = array('acl','plugin','config','usermanager','revert');
-$plugin_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode');
 /**
  * All DokuWiki plugins to extend the admin function
  * need to inherit from this class
