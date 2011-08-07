@@ -47,12 +47,12 @@ class plugins_list {
         }
         if(!empty($info['securityissue'])) {
             $this->form->addElement(form_makeOpenTag('div',array('class'=>'issue')));
-            $this->form->addElement('<b>Security Issue:</b> '.hsc($info['securityissue']));
+            $this->form->addElement('<strong>Security Issue:</strong> '.hsc($info['securityissue']));
             $this->form->addElement(form_makeCloseTag('div'));
         }
         if(!empty($info['securitywarning'])) {
             $this->form->addElement(form_makeOpenTag('div',array('class'=>'warn')));
-            $this->form->addElement('<b>Security Warning:</b> '.hsc($info['securitywarning']));
+            $this->form->addElement('<strong>Security Warning:</strong> '.hsc($info['securitywarning']));
             $this->form->addElement(form_makeCloseTag('div'));
         }
         if(!empty($info['screenshoturl']) && stripos($class,'template') !== false ) {

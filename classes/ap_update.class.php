@@ -23,7 +23,7 @@ class ap_update extends ap_download {
     }
 
     function say_updated($plugin) {
-        msg(sprintf($this->lang['downloaded'],$plugin),1);
+        msg(sprintf($this->lang['updated'],$plugin),1);
     }
 
     function say_tempupdated($template) {
