@@ -25,12 +25,16 @@ abstract class ap_manage {
     // build our standard menu
     function html_menu() {
         global $ID;
-            $tab = (in_array($this->manager->cmd,array('plugin','template','search')))? $this->manager->cmd : 'plugin' ;
+            $tabs_array = array(
+                'plugin' => rtrim($this->lang['plugin'],":"),
+                'template' =>$this->lang['template'],
+                'search' =>"Install"
+                );
+            $selected = array_key_exists($this->manager->cmd,$tabs_array)? $this->manager->cmd : 'plugin' ;
             ptln('<div class="pm_menu">');
 		    ptln('    <ul>');
-		    ptln('	    <li class="'.(($tab == "plugin")? " selected": "bar").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'plugin')).'">'.rtrim($this->lang['plugin'],":").'</a></li>');
-		    ptln('	    <li class="'.(($tab == "template")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'template')).'">'.$this->lang['template'].'</a></li>');
-		    ptln('	    <li class="'.(($tab == "search")? " selected": "bar").'"><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search')).'">Install</a></li>');
+		    foreach($tabs_array as $tab =>$text)
+		        ptln('	    <li class="'.(($tab == $selected)? "selected": "notsel").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
 		    ptln('    </ul>');
             ptln('</div>');
     }

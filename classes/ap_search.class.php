@@ -26,11 +26,11 @@ class ap_search extends ap_manage {
             'Template'=>'Template');//TODO add language
         $this->filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
 
-        if(array_key_exists('term',$_REQUEST) && @strlen($_REQUEST['term']) > 0) {
+        if(!empty($_REQUEST['term']) > 0) {
             $this->term = $_REQUEST['term'];
             //add parsing for key=value based extras
         }
-        if(array_key_exists('type',$_REQUEST) && !empty($_REQUEST['type'])) {
+        if(!empty($_REQUEST['type'])) {
             $this->extra['type'] = $_REQUEST['type'];
         }
         if($this->term !== null || $this->extra !== null ) {
@@ -86,8 +86,9 @@ class ap_search extends ap_manage {
     }
 
     protected function get_class($info,$class) {
-        if(array_key_exists('securityissue',$info) && !empty($info['securityissue']))
-            $class .= ' secissue';
+        if(!empty($info['securityissue'])) $class .= ' secissue';
+        if(!empty($this->extra['type']) && $this->extra['type'] == "Template" )
+            $class .= " template";
         return $class;
     }
 
@@ -96,8 +97,8 @@ class ap_search extends ap_manage {
             if(@stripos($info['type'],'Template')!==false) {
                 $actions = $this->make_action('download',$info['id'],'Download as disabled');
             } else {
-            $actions = $this->make_action('download',$info['id'],$this->lang['btn_download']);
-            $actions .= ' | '.$this->make_action('disdown',$info['id'],'Download as disabled');
+                $actions = $this->make_action('download',$info['id'],$this->lang['btn_download']);
+                $actions .= ' | '.$this->make_action('disdown',$info['id'],'Download as disabled');
             }
         } else {
             $actions = "No Download URL";
@@ -113,6 +114,7 @@ class ap_search extends ap_manage {
 
     protected function clean_repo() {
         $this->filtered_repo = array_diff_key($this->repo,array_flip($this->manager->plugin_list));
+        $this->filtered_repo = array_filter($this->filtered_repo,array($this,'filter_clean'));
     }
     /**
      * Looks up the term in the repository cache according to filters set. Basic searching.
@@ -154,7 +156,7 @@ class ap_search extends ap_manage {
                     if($index == 'type') {
                         if(strlen($value) && stripos($plugin['type'],$value) === false) return false;
                     }
-                    elseif($index == 'tag') {
+                    elseif($index == 'tag') { // Tag based left here for future use
                         foreach($value as $tag)
                             if(strlen($tag))
                                 if(@in_array(trim($tag),(array)$plugin['tags']['tag'])===false) return false;
@@ -163,4 +165,15 @@ class ap_search extends ap_manage {
         //All tests passed
         return true;
     }
+
+    /**
+     * Used to filter BEFORE the repo is searched on. only remove very very important ones
+     */
+    protected function filter_clean($plugin) {
+        //Check for security issue
+        if(!empty($plugin['securityissue'])) return false;
+        if(@in_array('!obsolete',(array)$plugin['tags']['tag'])) return false;
+        //all tests passed
+        return true;
+    } 
 }

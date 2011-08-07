@@ -53,33 +53,35 @@
 }
 
 #plugin__manager .pm_menu {
-    width: 100%;
-    float: left;
-    border-bottom:1px solid #666;
+
+    border-bottom:1px solid __border__;
 }
 
 
 #plugin__manager .pm_menu ul {
     list-style:none;
-    padding:0 10px;
-
+    padding:0 0.3em;
+    margin:1em 0 0 1em;
 }
 #plugin__manager .pm_menu ul li {
     clear: none;
-    padding:10px;
-    margin: 0 10px;
-    float:left;
-    border: 1px solid #666;
-    border-bottom:0px;
-    background: #ccc;
+    padding:0.3em;
+    margin: 0 0.4em;
+    display:inline-block;
+    border: 1px solid __border__;
+    font-size:1em;
+    border-bottom:0;
+    background: __background_alt__;
+    color: __text_alt__;
     font-weight: bold;
-    -moz-border-radius: 10px 10px 0px 0px ;
-    -webkit-border-radius: 10px 10px 0px 0px ;
-    border-radius: 10px 10px 0px 0px ;
+    -moz-border-radius: 1em 1em 0px 0px ;
+    -webkit-border-radius: 1em 1em 0px 0px ;
+    border-radius: 1em 1em 0px 0px ;
 }
+
 #plugin__manager .pm_menu ul li.selected {
-    float:left;
-    background: #fff; 
+    background: __background__;
+    color: __text__;
 }
 #plugin__manager .pm_info {
     width: 100%;
@@ -120,20 +122,42 @@
 }
 #plugin__manager .enabled {
     background: #cfc;
+    color:#000;
 }
 #plugin__manager .disabled {
     background: __background_neu__;
+    color: __text_neu__;
 }
 
 #plugin__manager .protected {
     background: __background_alt__;
+    color: __text_alt__;
 }
 
 #plugin__manager .secissue {
     background: #fcc;
+    color: #000;
+}
+#plugin__manager .issue , #plugin__manager .warn {
+    padding:0.3em;
+    margin:0.1em 0.5em;
+    border: 1px solid __border__;
+    text-align:center;
+    background: #faa;
+    color:#000;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    -ms-border-radius: 0.2em;
+    -o-border-radius: 0.2em;
+    border-radius: 0.2em;
+}
+
+#plugin__manager .warn {
+    background: #ffc;
 }
 #plugin__manager .legend {
-    padding:0.3em;
+    padding:0.2em;
 }
 #plugin__manager .legend .head {
     clear: both;

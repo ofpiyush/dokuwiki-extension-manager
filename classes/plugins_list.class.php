@@ -46,7 +46,7 @@ class plugins_list {
             $this->form->addElement(form_makeCloseTag('p'));
         }
         if(!empty($info['securityissue'])) {
-            $this->form->addElement(form_makeOpenTag('div',array('class'=>'warn')));
+            $this->form->addElement(form_makeOpenTag('div',array('class'=>'issue')));
             $this->form->addElement('<b>Security Issue:</b> '.hsc($info['securityissue']));
             $this->form->addElement(form_makeCloseTag('div'));
         }
@@ -55,10 +55,10 @@ class plugins_list {
             $this->form->addElement('<b>Security Warning:</b> '.hsc($info['securitywarning']));
             $this->form->addElement(form_makeCloseTag('div'));
         }
-        if(!empty($info['screenshoturl']) && substr($class,0,8) == 'template' ) {
+        if(!empty($info['screenshoturl']) && stripos($class,'template') !== false ) {
             $this->form->addElement(form_makeCloseTag('td'));
             $this->form->addElement(form_makeOpenTag('td',array('class'=>'screenshot')));
-            $this->form->addElement("<img src=\"{$info['screenshoturl']}\" />");
+            $this->form->addElement('<img alt="'.$info['name'].'" width="80" src="'.hsc($info['screenshoturl']).'" />');
             $this->form->addElement(form_makeCloseTag('td'));
         }
         $this->form->addElement(form_makeCloseTag('td'));
@@ -109,6 +109,6 @@ class plugins_list {
     }
 
     function make_link($info, $class) {
-        return '<a href="'.$info['url'].'" title="'.$info['url'].'" class ="'.$class.'">'.hsc($info['name']).'</a>';
+        return '<a href="'.hsc($info['url']).'" title="'.hsc($info['url']).'" class ="'.$class.'">'.hsc($info['name']).'</a>';
     }
 }

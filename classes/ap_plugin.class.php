@@ -42,7 +42,7 @@ class ap_plugin extends ap_manage {
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
                     $class = $type;
-                    if((array_key_exists('securityissue',$info) && !empty($info['securityissue'])) )
+                    if($type == "enabled" && !empty($info['securityissue']))
                         $class .= " secissue";
                     $actions = $this->make_action('info',$info['id'],'Info');
                     if($type =="enabled")

@@ -58,7 +58,7 @@ class ap_download extends ap_plugin {
 
     function say_notdownloaded($plugin) {
         $msg ="";
-        if($plugin != "---badtemplate---")
+        if($plugin != "-@-&-bigbadurl-&-@-")
            $msg .= $plugin." could not be downloaded <br />";
         msg($msg.$this->downerrors[$plugin],-1);
     }
