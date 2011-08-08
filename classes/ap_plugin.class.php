@@ -31,7 +31,6 @@ class ap_plugin extends ap_manage {
         global $lang;
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
-        $this->show_results();
         $this->render_search('pm__search','Search for a new plugin');
         /**
          * List plugins

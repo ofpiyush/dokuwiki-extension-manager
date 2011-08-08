@@ -11,6 +11,8 @@ class ap_disable extends ap_plugin {
             $this->result['disabled']      = array_filter($enabled,'plugin_disable');
             $this->result['notdisabled']   = array_diff_key($enabled,$this->result['disabled']);
         }
+        $this->show_results();
+        $this->refresh();
         parent::process();
     }
 

@@ -6,32 +6,27 @@ class ap_update extends ap_download {
 
     function down() {
         foreach($this->plugin as $plugin) {
+            $this->current = null;
+            $this->manager->error = null;
             if(in_array($plugin,$this->_bundled)) continue;
             $plugin_url = $this->plugin_readlog($plugin, 'url');
-            if($this->download($plugin_url, $this->overwrite)) {
-                $base = $this->current['base'];
-                if($plugin['type'] == 'Template') {
-                    $this->result['tempupdated'][]= $base;
+            if(!empty($plugin_url)) {
+                if($this->download($plugin_url, $this->overwrite)) {
+                    $base = $this->current['base'];
+                    if($plugin['type'] == 'Template') {
+                        msg(sprintf("Template %s successfully updated",$base),1);
+                    } else {
+                        msg(sprintf($this->lang['updated'],$base),1);
+                    }
                 } else {
-                    $this->result['updated'][]= $base;
+                    msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />".$this->manager->error,-1);
                 }
-            } else {
-                $this->result['notupdated'][] = $base;
-                $this->downerrors[$base] = $this->manager->error;
             }
+            else {
+                msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />"."Couldnot find manager.dat file for the plugin",-1);
+            }
+            
         }
-    }
-
-    function say_updated($plugin) {
-        msg(sprintf($this->lang['updated'],$plugin),1);
-    }
-
-    function say_tempupdated($template) {
-        msg(sprintf("Template %s successfully updated",$template),1);
-    }
-
-    function say_notupdated($plugin) {
-        msg("<b>".$plugin.":</b> ".$this->lang['update_none']."<br />".$this->downerrors[$plugin],-1);
     }
 }
 

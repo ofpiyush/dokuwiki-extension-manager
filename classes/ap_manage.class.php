@@ -7,6 +7,7 @@ abstract class ap_manage {
     var $plugin = '';
     var $downloaded = array();
     var $repo_cache = NULL;
+    var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
     protected $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode');
 
     function __construct(DokuWiki_Admin_Plugin $manager) {
@@ -68,7 +69,7 @@ abstract class ap_manage {
     /**
      *  Refresh plugin list
      */
-    function refresh() {
+    function refresh($tab = "plugin") {
         global $config_cascade;
 
         // expire dokuwiki caches
@@ -77,7 +78,7 @@ abstract class ap_manage {
 
         // update latest plugin date - FIXME
         global $ID;
-        send_redirect(wl($ID,array('do'=>'admin','page'=>'plugin'),true, '&'));
+        send_redirect(wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab),true, '&'));
     }
 
     /**
@@ -103,25 +104,29 @@ abstract class ap_manage {
         }
     }
 
-    function plugin_readlog($plugin, $field) {
-        static $log = array();
-        $file = DOKU_PLUGIN.plugin_directory($plugin).'/manager.dat';
+    function plugin_readlog($plugin, $field = 'ALL') {
+        return $this->fetch_log(DOKU_PLUGIN.plugin_directory($plugin),$field);
+    }
 
-        if (!isset($log[$plugin])) {
-            $tmp = @file_get_contents($file);
-            if (!$tmp) return '';
-            $log[$plugin] = & $tmp;
+    function fetch_log($path,$field = 'ALL') {
+        static $log = array();
+        $hash = md5($path);
+
+        if (!isset($log[$hash])) {
+            $file = @file($path.'/manager.dat');
+            if(empty($file)) return false;
+            foreach($file as $line) {
+                $line = explode('=',$line);
+                $log[$hash][$line[0]] = $line[1];
+            }
         }
 
         if ($field == 'ALL') {
-            return $log[$plugin];
+            return $log[$hash];
         }
 
-        $match = array();
-        if (preg_match_all('/'.$field.'=(.*)$/m',$log[$plugin], $match))
-            return implode("\n", $match[1]);
-
-        return '';
+        if(!empty($log[$hash][$field])) return $log[$hash][$field];
+        return false;
     }
 
     /**
@@ -165,7 +170,7 @@ abstract class ap_manage {
      */
     function reload_cache() {
         $dhc = new DokuHTTPClient();
-        $data = $dhc->get('http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes');
+        $data = $dhc->get($this->repo_url);
         unset($dhc);
         if($data) {
             try {
@@ -187,6 +192,9 @@ abstract class ap_manage {
             catch(Exception $e) {
                 // do some debugging actions if necessary?
             }
+        } else {
+            $this->repo_cache->storeCache(serialize(array()));
+            msg("There was an error retrieving the plugin list from the dokuwiki server, please force reload later", -1);
         }
     }
     

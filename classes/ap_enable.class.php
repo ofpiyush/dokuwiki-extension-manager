@@ -8,6 +8,8 @@ class ap_enable extends ap_plugin {
             $this->result['enabled']      = array_filter($disabled,'plugin_enable');
             $this->result['notenabled']   = array_diff_key($disabled,$this->result['enabled']);
         }
+        $this->show_results();
+        $this->refresh();
         parent::process();
     }
 

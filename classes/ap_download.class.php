@@ -10,6 +10,8 @@ class ap_download extends ap_plugin {
      */
     function process() {
         $this->down();
+        $this->refresh();
+        //failsafe for if refresh doesnt work
         parent::process();
     }
 
@@ -19,54 +21,38 @@ class ap_download extends ap_plugin {
             $plugin_url = $_REQUEST['url'];
             if($this->download($plugin_url, $this->overwrite)) {
                 $base = $this->current['base'];
-                if($this->current = "plugin")
-                    $this->result['downloaded'][]= $base;
+                if($this->current['type'] = "plugin")
+                    msg(sprintf($this->lang['downloaded'],$base),1);
                 else
-                   $this->result['tempdownloaded'][]= $base; 
+                   msg(sprintf("Template %s successfully downloaded",$base),1);
             }
             else {
-                $this->result['notdownloaded'][] = "-@-&-bigbadurl-&-@-";
-                $this->downerrors["-@-&-bigbadurl-&-@-"] = $this->manager->error;
+                msg($this->manager->error,-1);
             }
         }elseif(is_array($this->plugin) && count($this->plugin)) {
             $plugins = array_intersect_key($this->repo,array_flip($this->plugin));
             foreach ($plugins as $plugin) {
-                if($this->download($plugin['downloadurl'], $this->overwrite)) {
+                $this->current = null;
+                $this->manager->error = null;
+                $type = (stripos($plugin['type'],'Template') !== false ) ? 'template' : 'plugin';
+                if($this->download($plugin['downloadurl'], $this->overwrite,$type)) {
                     $base = $this->current['base'];
-                    if($plugin['type'] == 'Template') {
-                        $this->result['tempdownloaded'][]= $base;
+                    if($this->current['type'] == 'template') {
+                        msg(sprintf("Template %s successfully downloaded",$base),1);
                     } else {
-                        $this->manager->plugin_list[] = $base;
-                        plugin_enable($base);
-                        $this->result['downloaded'][]= $base;
+                        msg(sprintf($this->lang['downloaded'],$base),1);
                     }
                 } else {
-                    $this->result['notdownloaded'][] = $base;
-                    $this->downerrors[$base] = $this->manager->error;
+                    msg("<strong>".$plugin."</strong> could not be downloaded <br />".$this->manager->error,-1);
                 }
             }
         }
     }
 
-    function say_downloaded($plugin) {
-        msg(sprintf($this->lang['downloaded'],$plugin),1);
-    }
-
-    function say_tempdownloaded($template) {
-        msg(sprintf("Template %s successfully downloaded",$template),1);
-    }
-
-    function say_notdownloaded($plugin) {
-        $msg ="";
-        if($plugin != "-@-&-bigbadurl-&-@-")
-           $msg .= $plugin." could not be downloaded <br />";
-        msg($msg.$this->downerrors[$plugin],-1);
-    }
-
     /**
      * Process the downloaded file
      */
-    function download($url, $overwrite=false) {
+    function download($url, $overwrite=false, $default_type = "plugin") {
         global $lang;
         // check the url
         $matches = array();
@@ -94,7 +80,7 @@ class ap_download extends ap_plugin {
         // move the folder(s) to lib/plugins/
         if (!$this->manager->error) {
             $result = array('old'=>array(), 'new'=>array());
-            if($this->find_folders($result,$tmp)){
+            if($this->find_folders($result,$tmp,'', $default_type)){
                 // choose correct result array
                 if(count($result['new'])){
                     $install = $result['new'];
@@ -104,6 +90,7 @@ class ap_download extends ap_plugin {
 
                 // now install all found items
                 foreach($install as $item){
+                    $this->current = $item;
                     // where to install?
                     if($item['type'] == 'template'){
                         $target = DOKU_INC.'lib/tpl/'.$item['base'];
@@ -122,7 +109,6 @@ class ap_download extends ap_plugin {
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
                         $this->downloaded[$item['type']][] = $item['base'];
-                        $this->current = $item;
                         $this->plugin_writelog($target, $instruction, array($url));
                     } else {
                         $this->manager->error .= sprintf($this->lang['error_copy']."\n", $item['base']);
@@ -164,7 +150,7 @@ class ap_download extends ap_plugin {
      * @param string $dir - a subdirectory. do not set. used by recursion
      * @return bool - false on error
      */
-    function find_folders(&$result,$base,$dir=''){
+    function find_folders(&$result,$base,$dir='',$default_type ="plugin"){
         $dh = @opendir("$base/$dir");
         if(!$dh) return false;
         while (false !== ($f = readdir($dh))) {
@@ -188,7 +174,7 @@ class ap_download extends ap_plugin {
                     $info['base'] = basename($conf['base']);
                     if(!$info['base']) $info['base'] = basename("$base/$dir");
                     $result['new'][] = $info;
-                } elseif($f == 'main.php') {
+                } elseif($f == 'main.php' || stripos($f,'style.ini')!==false) {
                     $tempid = basename("$base/$dir");
                     if(isset($this->repo['template:'.$tempid])) {
                         $info = array();
@@ -202,12 +188,12 @@ class ap_download extends ap_plugin {
                 // it's a directory -> add to dir list for old method, then recurse
                 if(!$dir){
                     $info = array();
-                    $info['type'] = 'plugin';
+                    $info['type'] = $default_type;
                     $info['tmp']  = "$base/$dir/$f";
                     $info['base'] = $f;
                     $result['old'][] = $info;
                 }
-                $this->find_folders($result,$base,"$dir/$f");
+                $this->find_folders($result,$base,"$dir/$f",$default_type);
             }
         }
         closedir($dh);
