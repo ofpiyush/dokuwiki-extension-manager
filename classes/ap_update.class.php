@@ -5,8 +5,8 @@ class ap_update extends ap_download {
     var $overwrite = true;
 
     function down() {
-        $type = !empty($_REQUEST['template'])? 'template': 'plugin';
-        $base_path = ($type == "template")? DOKU_INC.'lib/tpl/' : DOKU_PLUGIN;
+        $this->type = !empty($_REQUEST['template'])? 'template': 'plugin';
+        $base_path = ($this->type == "template")? DOKU_INC.'lib/tpl/' : DOKU_PLUGIN;
         foreach($this->plugin as $plugin) {
             if(in_array($plugin,$this->_bundled)) continue;
             $this->current = null;
@@ -15,7 +15,7 @@ class ap_update extends ap_download {
             $default_base = $info['base'];
             $plugin_url = $this->fetch_log($base_path.$plugin.'/', 'downloadurl');
             if(!empty($plugin_url)) {
-                if($this->download($plugin_url, $this->overwrite,$default_base,$type)) {
+                if($this->download($plugin_url, $this->overwrite,$default_base,$this->type)) {
                     $base = $this->current['base'];
                     if($type == 'template') {
                         msg(sprintf("Template %s successfully updated",$base),1);

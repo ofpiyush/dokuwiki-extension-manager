@@ -4,13 +4,14 @@ class ap_download extends ap_plugin {
     var $overwrite = true;
     var $downerrors = array();
     var $current = null;
+    var $type = "plugin";
 
     /**
      * Initiate the plugin download
      */
     function process() {
         $this->down();
-        $this->refresh();
+        $this->refresh($this->type);
         //failsafe for if refresh doesnt work
         parent::process();
     }

@@ -21,4 +21,3 @@ class ap_enable extends ap_plugin {
         msg(sprintf($this->lang['notenabled'],$plugin),-1);
     }
 }
-
