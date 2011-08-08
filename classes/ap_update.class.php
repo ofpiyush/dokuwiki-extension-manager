@@ -11,7 +11,7 @@ class ap_update extends ap_download {
             if(in_array($plugin,$this->_bundled)) continue;
             $this->current = null;
             $this->manager->error = null;
-            $info = $this->_info_list($plugin,$type)
+            $info = $this->_info_list($plugin,$type);
             $default_base = $info['base'];
             $plugin_url = $this->fetch_log($base_path.$plugin.'/', 'downloadurl');
             if(!empty($plugin_url)) {
