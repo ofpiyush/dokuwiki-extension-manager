@@ -6,16 +6,14 @@ class ap_delete extends ap_plugin {
 
     function process() {
         $plugins = array_diff($this->plugin,$this->_bundled);
-        print_r($plugin);
         $this->type = !empty($_REQUEST['template']) ? 'template' : 'plugin';
-        print_r($plugins);
         if(is_array($plugins) && count($plugins)) {
             $this->result[$this->type.'deleted']      = array_filter($plugins,array($this,'delete'));
-            $this->result[$this->type.'notdeleted']   = array_diff_key($plugins,$this->result['deleted']);
-            $this->manager->plugin_list   = array_diff($this->manager->plugin_list,$this->result['deleted']);
+            $this->result[$this->type.'notdeleted']   = array_diff_key($plugins,$this->result[$this->type.'deleted']);
+            $this->manager->plugin_list   = array_diff($this->manager->plugin_list,$this->result[$this->type.'deleted']);
         }
         $this->show_results();
-        $this->refresh();
+        $this->refresh($this->type);
         parent::process();
     }
 

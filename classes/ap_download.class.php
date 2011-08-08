@@ -39,24 +39,17 @@ class ap_download extends ap_plugin {
                 if($this->download($plugin['downloadurl'], $this->overwrite,$default_base,$type)) {
                     $base = $this->current['base'];
                     if($this->current['type'] == 'template') {
-                        $this->check_maketplinfo($base,$plugin);
                         msg(sprintf("Template %s successfully downloaded",$base),1);
                     } else {
                         msg(sprintf($this->lang['downloaded'],$base),1);
                     }
                 } else {
-                    msg("<strong>".$plugin."</strong> could not be downloaded <br />".$this->manager->error,-1);
+                    msg("<strong>".$plugin['id']."</strong> could not be downloaded <br />".$this->manager->error,-1);
                 }
             }
         }
     }
 
-    function check_maketplinfo($base,$template) {
-        if(@(!file_exists(DOKU_INC.'lib/tpl/'.$base.'/template.txt'))) {
-            $template['base'] = str_replace("template:",'',$template['id']);
-            $this->info_autogen(DOKU_INC.'lib/tpl/'.$base.'template.txt',$template);
-        }
-    }
     /**
      * Process the downloaded file
      */

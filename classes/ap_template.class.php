@@ -26,10 +26,14 @@ class ap_template extends ap_manage {
     function html() {
         $this->html_menu();
         $this->render_search('tpl__search','Search for a new Template','','Template');
-        //TODO bring out a decent layout in grid, with screenshots hotlinked form servers?
         ptln('<h2>'.'Installed Templates'.'</h2>');
         $list = new plugins_list('templates_list',$this->actions_list,'template');
-        $list->enabled_tpl_row($this->enabled,$this->make_action('update',$this->enabled['id'],'Update',true));
+        // work on the view for enabled template
+        //$list->enabled_tpl_row($this->enabled,$this->make_action('update',$this->enabled['id'],'Update',true));
+        $actions = "";
+        if($this->enabled['id'] !='default')
+            $actions .=$this->make_action('update',$this->enabled['id'],'Update',true);
+        $list->add_row("template enabled",$this->enabled,$actions);
         if(!empty($this->templates)) {
             $class = 'template disabled';
             $actions = $this->make_action('update',$template['id'],'Update',true);

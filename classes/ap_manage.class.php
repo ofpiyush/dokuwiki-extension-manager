@@ -9,9 +9,10 @@ abstract class ap_manage {
     var $repo_cache = NULL;
     var $tpl_dir = NULL;
     var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
-    protected $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
+    protected $_bundled = array();
 
     function __construct(DokuWiki_Admin_Plugin $manager) {
+        $this->_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
         $this->tpl_dir = DOKU_INC.'lib/tpl/';
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
@@ -182,6 +183,7 @@ abstract class ap_manage {
                 if(!empty($obj)) {
                     $obj_info = $obj->getInfo();
                     $return = array_merge($return,$obj_info);
+                    if(empty($obj_info['base'])) $obj_info['base'] = $plugin;
                     $this->info_autogen($info_path,$obj_info);
                 }
                 unset($obj);
