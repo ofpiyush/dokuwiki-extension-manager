@@ -12,11 +12,11 @@ class ap_plugin extends ap_manage {
             'disable'=>'Disable',//TODO add language
             'delete'=>'Delete',//TODO add language
             'update'=>'Update'//TODO add language
-            );
+        );
         $list = $this->manager->plugin_list;
         $unprotected = array_diff($list,$plugin_protected);
         $enabled = array_intersect($unprotected,plugin_list());
-        $disabled = array_filter($unprotected,'plugin_isdisabled'); //TODO check array_diff/array_intersect vs array_filter speeds
+        $disabled = array_filter($unprotected,'plugin_isdisabled');
         //TODO bad fix: get better sorting.
         $this->plugins['enabled'] = array_map(array($this,'_info_list'),$enabled);
         usort($this->plugins['enabled'],array($this,'_sort'));
@@ -52,7 +52,7 @@ class ap_plugin extends ap_manage {
                     $list->add_row($class,$info,$actions);
                 }
             }
-            $list->render('PLUGIN_MANAGER');
+            $list->render('PLUGIN_PLUGINMANAGER_RENDER_PLUGINSLIST');
         }
 
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
@@ -89,27 +89,4 @@ class ap_plugin extends ap_manage {
                     array_walk($changed_plugins,array($this,'say_'.$outcome));
         }
     }
-
-    protected function _info_list($index) {
-        $info  = DOKU_PLUGIN.'/'.$index.'/plugin.info.txt';
-        $return = array('id'=>$index,'name' => $index,'base'=>$index);
-        if(@file_exists($info)) {
-            $return = array_merge($return,confToHash($info));
-        } 
-        /* TODO for #25 "getInfo() not supported" discuss the issue with having components
-        else {
-            $components = $this->get_plugin_components($index);
-            $load = plugin_load()
-        }
-        */
-        $return = array_key_exists($return['base'],$this->repo) ? array_merge($return,$this->repo[$return['base']]) : $return;
-        if(array_key_exists('desc',$return) && strlen($return['desc']))
-            $return['description'] = $return['desc'];
-        $return['id'] = $index;
-        return $return;
-    }
-    protected function _sort($a,$b) {
-        return strcmp($a['name'],$b['name']);
-    }
-
 }

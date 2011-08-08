@@ -7,10 +7,12 @@ abstract class ap_manage {
     var $plugin = '';
     var $downloaded = array();
     var $repo_cache = NULL;
+    var $tpl_dir = NULL;
     var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
-    protected $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode');
+    protected $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
 
     function __construct(DokuWiki_Admin_Plugin $manager) {
+        $this->tpl_dir = DOKU_INC.'lib/tpl/';
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
         $this->lang = $manager->lang;
@@ -61,9 +63,18 @@ abstract class ap_manage {
         ptln('</div>');
     }
 
-    function make_action($action,$plugin,$value) {
+    function make_action($action,$plugin,$value,$template = false) {
         global $ID;
-        $url = wl($ID,array('do'=>'admin','page'=>'plugin','fn'=>'multiselect','action'=>$action,'checked[]'=>$plugin,'sectok'=>getSecurityToken()));
+        $params = array(
+            'do'=>'admin',
+            'page'=>'plugin',
+            'fn'=>'multiselect',
+            'action'=>$action,
+            'checked[]'=>$plugin,
+            'sectok'=>getSecurityToken()
+        );
+        if($template) $params['template'] = 'template';
+        $url = wl($ID,$params);
         return '<a href="'.$url.'" title="'.$url.'">'.$value.'</a>';
     }
     /**
@@ -91,21 +102,17 @@ abstract class ap_manage {
                 $url = $data[0];
                 $date = date('r');
                 if (!$fp = @fopen($file, 'w')) return;
-                fwrite($fp, "installed=$date\nurl=$url\n");
+                fwrite($fp, "installed=$date".PHP_EOL."downloadurl=$url".PHP_EOL);
                 fclose($fp);
                 break;
 
             case 'update' :
                 $date = date('r');
                 if (!$fp = @fopen($file, 'a')) return;
-                fwrite($fp, "updated=$date\n");
+                fwrite($fp, "updated=$date".PHP_EOL);
                 fclose($fp);
-                break;
+                break;                
         }
-    }
-
-    function plugin_readlog($plugin, $field = 'ALL') {
-        return $this->fetch_log(DOKU_PLUGIN.plugin_directory($plugin),$field);
     }
 
     function fetch_log($path,$field = 'ALL') {
@@ -113,10 +120,12 @@ abstract class ap_manage {
         $hash = md5($path);
 
         if (!isset($log[$hash])) {
-            $file = @file($path.'/manager.dat');
+            $file = @file($path.'manager.dat');
             if(empty($file)) return false;
             foreach($file as $line) {
-                $line = explode('=',$line);
+                $line = explode('=',trim($line,PHP_EOL));
+                $line = array_map('trim', $line);
+                if($line[0] == 'url') $line[0] = 'downloadurl';
                 $log[$hash][$line[0]] = $line[1];
             }
         }
@@ -127,6 +136,100 @@ abstract class ap_manage {
 
         if(!empty($log[$hash][$field])) return $log[$hash][$field];
         return false;
+    }
+
+    /**
+     * return a list (name & type) of all the component plugins that make up this plugin
+     *
+     * @todo can this move to pluginutils?
+     */
+    function get_plugin_components($plugin) {
+
+        global $plugin_types;
+        $components = array();
+        $path = DOKU_PLUGIN.plugin_directory($plugin).'/';
+
+        foreach ($plugin_types as $type) {
+            if (@file_exists($path.$type.'.php')) { $components[] = array('name'=>$plugin, 'type'=>$type); continue; }
+
+            if ($dh = @opendir($path.$type.'/')) {
+                while (false !== ($cp = readdir($dh))) {
+                    if ($cp == '.' || $cp == '..' || strtolower(substr($cp,-4)) != '.php') continue;
+
+                    $components[] = array('name'=>$plugin.'_'.substr($cp, 0, -4), 'type'=>$type);
+                }
+                closedir($dh);
+            }
+        }
+
+        return $components;
+    }
+
+    /**
+     * Read info and return an array compatible with plugins_list table
+     */
+    protected function _info_list($index,$type = "plugin") {
+        $info_autogenerate = false;
+        $path = ($type == "plugin") ? DOKU_PLUGIN.plugin_directory($index).'/': DOKU_INC."lib/tpl/$index/";
+        $info_path = $path.$type.'.info.txt';
+        $return = array('id'=>$index,'name' => $index,'base'=>$index);
+        if(@file_exists($info_path)) {
+            $return = array_merge($return,confToHash($info_path));
+        } elseif($type == 'plugin') {
+            $components = $this->get_plugin_components($index);
+            if(!empty($components)) {
+                $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
+                if(!empty($obj)) {
+                    $obj_info = $obj->getInfo();
+                    $return = array_merge($return,$obj_info);
+                    $this->info_autogen($info_path,$obj_info);
+                }
+                unset($obj);
+            }
+        } else {
+            $info_autogenerate = true;
+        }
+
+        $repo_key = ($type == 'template') ? 'template:'.$return['base'] : $return['base'];
+        if(!empty($this->repo[$repo_key])) {
+            $return = array_merge($return,$this->repo[$repo_key]);
+        }
+        if(!empty($return['desc'])) {
+            $return['description'] = $return['desc'];
+        }
+        $return['id'] = $index;
+        $log = $this->fetch_log($path);
+        if(!empty($log)) {
+            $return = array_merge($log,$return);
+        } elseif(!empty($return['downloadurl'])) {
+            $this->plugin_writelog($path,'install',array($return['downloadurl']));
+        }
+        if($info_autogenerate && !empty($return['description'])) {
+            $this->info_autogen($info_path,$return);
+        }
+        return $return;
+    }
+
+
+    /**
+     * Auto generate plugin and template info.txt
+     */
+    function info_autogen($file,$return) {
+        $info = "";
+        if (!$fp = @fopen($file, 'w')) return false;
+        foreach(array('base','author','email','date','name','desc','url') as $index) {
+            if(!empty($return[$index])) $info.= $index." ".$return[$index]."\n";
+        }
+        if(empty($return['desc']) && !empty($return['description'])) {
+            $info.='desc '.$return['description']."\n";
+        }
+        if(empty($return['url']) && !empty($return['dokulink'])) {
+            $info.='url http://www.dokuwiki.org/'.$return['dokulink']."\n";
+        }
+        fwrite($fp, $info);
+        fclose($fp);
+        msg("Auto generated and saved info for ".$return['base'],2);
+        return true;
     }
 
     /**
@@ -254,5 +357,9 @@ abstract class ap_manage {
 
         }
         return $xml;
+    }
+    //sorting based on name
+    protected function _sort($a,$b) {
+        return strcmp($a['name'],$b['name']);
     }
 }

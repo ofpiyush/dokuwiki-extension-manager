@@ -21,10 +21,10 @@ class ap_download extends ap_plugin {
             $plugin_url = $_REQUEST['url'];
             if($this->download($plugin_url, $this->overwrite)) {
                 $base = $this->current['base'];
-                if($this->current['type'] = "plugin")
-                    msg(sprintf($this->lang['downloaded'],$base),1);
+                if($this->current['type'] = "template")
+                    msg(sprintf("Template %s successfully downloaded",$base),1);
                 else
-                   msg(sprintf("Template %s successfully downloaded",$base),1);
+                   msg(sprintf($this->lang['downloaded'],$base),1);
             }
             else {
                 msg($this->manager->error,-1);
@@ -35,9 +35,11 @@ class ap_download extends ap_plugin {
                 $this->current = null;
                 $this->manager->error = null;
                 $type = (stripos($plugin['type'],'Template') !== false ) ? 'template' : 'plugin';
-                if($this->download($plugin['downloadurl'], $this->overwrite,$type)) {
+                $default_base = ($type == 'template') ? str_replace('template:','',$plugin['id']) :$plugin['id'];
+                if($this->download($plugin['downloadurl'], $this->overwrite,$default_base,$type)) {
                     $base = $this->current['base'];
                     if($this->current['type'] == 'template') {
+                        $this->check_maketplinfo($base,$plugin);
                         msg(sprintf("Template %s successfully downloaded",$base),1);
                     } else {
                         msg(sprintf($this->lang['downloaded'],$base),1);
@@ -49,10 +51,16 @@ class ap_download extends ap_plugin {
         }
     }
 
+    function check_maketplinfo($base,$template) {
+        if(@(!file_exists(DOKU_INC.'lib/tpl/'.$base.'/template.txt'))) {
+            $template['base'] = str_replace("template:",'',$template['id']);
+            $this->info_autogen(DOKU_INC.'lib/tpl/'.$base.'template.txt',$template);
+        }
+    }
     /**
      * Process the downloaded file
      */
-    function download($url, $overwrite=false, $default_type = "plugin") {
+    function download($url, $overwrite=false,$default_base = null, $default_type = "plugin") {
         global $lang;
         // check the url
         $matches = array();
@@ -93,11 +101,15 @@ class ap_download extends ap_plugin {
                     $this->current = $item;
                     // where to install?
                     if($item['type'] == 'template'){
-                        $target = DOKU_INC.'lib/tpl/'.$item['base'];
+                        $target_base_dir = DOKU_INC.'lib/tpl/';
+                        if(!empty($default_base) && !file_exists($item['tmp'].'template.info.txt'))
+                            $item['base'] = $default_base;
                     }else{
-                        $target = DOKU_INC.'lib/plugins/'.$item['base'];
+                        $target_base_dir = DOKU_INC.'lib/plugins/';
+                        if(!empty($default_base) && !file_exists($item['tmp'].'plugin.info.txt'))
+                            $item['base'] = $default_base;
                     }
-
+                    $target = $target_base_dir.$item['base'];
                     // check to make sure we aren't overwriting anything
                     if (!$overwrite && @file_exists($target)) {
                         // remember our settings, ask the user to confirm overwrite, FIXME

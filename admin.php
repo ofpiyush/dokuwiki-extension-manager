@@ -40,6 +40,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $commands = array('search','download','disdown'); // don't require a plugin name
     var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
+    var $template_list = array();
 
     var $msg = '';
     var $error = '';
@@ -69,9 +70,9 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->plugin = $_REQUEST['checked'];
         }
         $this->_get_plugin_list();
+        $this->_get_template_list();
         // verify $_REQUEST vars and check for security token
-        if ((!in_array($this->cmd, $this->commands) && !(in_array($this->cmd, $this->functions) && count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)))
-            || (!($this->cmd == 'plugin' && is_null($this->plugin)) && !checkSecurityToken())) {
+        if ($this->invalid_request()) {
             $this->cmd = 'plugin';
             $this->plugin = null;
         }
@@ -89,6 +90,16 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         if(is_null($this->handler)) $this->handler = new ap_plugin($this);
         $this->msg = $this->handler->process();
 
+    }
+    function invalid_request() {
+        if(empty($this->cmd)) return true;
+        if(in_array($this->cmd, $this->commands)) return false;
+        if(in_array($this->cmd, $this->functions)) {
+            if(count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)) return false;
+            if(count(array_intersect($this->plugin, $this->template_list)) == count($this->plugin)) return false;
+        }
+        if(checkSecurityToken()) return false;
+        return true;
     }
 
     /**
@@ -116,6 +127,25 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->plugin_list = $list;
         }
         return $this->plugin_list;
+    }
+
+    private function _get_template_list() {
+        if(empty($this->template_list)) {
+            $tpl_dir = DOKU_INC.'lib/tpl/';
+            $list = array();
+            if($dh = @opendir($tpl_dir)) {
+                while(false !== ($template = readdir($dh))) {
+                    if($template[0] == '.') continue;
+                    if(is_dir($tpl_dir.$template)) {
+                        //FIXME No absolute check to determine if it is a template or any other directory
+                        $list[] = $template;
+                    }
+                }
+            }
+            trigger_event('PLUGIN_PLUGINMANAGER_TEMPLATELIST',$list);
+            $this->template_list = $list;
+        }
+        return $this->template_list;
     }
 
 }

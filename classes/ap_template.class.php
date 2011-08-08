@@ -1,15 +1,49 @@
 <?php
 class ap_template extends ap_manage {
 
+    var $info_list_type = "template";
+    var $info_list_path = NULL;
+    var $templates = array();
+    var $enabled = array();
+    var $tpl_default = array();
+    var $actions_list = array();
+
     function process() {
-        
-        //TODO pull up plugins list type 32 or Template from the cache!!!
+        global $conf;
+        $this->info_list_path = DOKU_INC.'lib/tpl/';
+        $this->enabled = $this->_info_list($conf['template']);
+        if($conf['template']!='default')
+            $this->tpl_default = $this->_info_list('default');
+        $list = array_diff($this->manager->template_list,array($conf['template'],'default'));
+        $this->templates = array_map(array($this,'_info_list'),$list); 
+        usort($this->templates,array($this,'_sort'));
+        $this->actions_list = array(
+            'delete'=>'Delete',//TODO add language
+            'update'=>'Update'//TODO add language
+        );
     }
 
     function html() {
         $this->html_menu();
         $this->render_search('tpl__search','Search for a new Template','','Template');
         //TODO bring out a decent layout in grid, with screenshots hotlinked form servers?
-        
+        ptln('<h2>'.'Installed Templates'.'</h2>');
+        $list = new plugins_list('templates_list',$this->actions_list,'template');
+        $list->enabled_tpl_row($this->enabled,$this->make_action('update',$this->enabled['id'],'Update',true));
+        if(!empty($this->templates)) {
+            $class = 'template disabled';
+            $actions = $this->make_action('update',$template['id'],'Update',true);
+            $actions .= ' | '.$this->make_action('delete',$template['id'],'Delete',true);
+            foreach($this->templates as $template) {
+                $list->add_row($class,$template,$actions);
+            }
+        }
+        if(!empty($this->tpl_default)) {
+            $list->add_row($class,$this->tpl_default,'');
+        }
+        $list->render('PLUGIN_PLUGINMANAGER_RENDER_PLUGINSLIST');
+    }
+    function _info_list($template) {
+        return parent::_info_list($template,'template');
     }
 }

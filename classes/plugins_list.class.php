@@ -10,12 +10,15 @@ class plugins_list {
 
     protected $form = null;
     protected $actions = array();
+    protected $type = "plugin";
+    protected $rowadded = false;
 
     /**
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct($id,$actions) {
+    function __construct($id,$actions,$type ="plugin") {
+        $this->type = $type;
         $this->actions[''] = '-Please Choose-';
         $this->actions = array_merge($this->actions,$actions);
         $this->form = new Doku_Form($id);
@@ -24,6 +27,19 @@ class plugins_list {
         $this->form->addElement(form_makeOpenTag('table',array('class'=>'inline')));
     }
 
+    function enabled_tpl_row($enabled,$actions) {
+        $this->form->addHidden('template','template');
+        $class ="enabled template";
+        if(!empty($this->enabled['securityissue'])) $class .= " secissue";
+        $this->form->addElement('<tr class="'.$class.'"><td colspan="4" >');
+        if(!empty($enabled['screenshoturl']))
+            $this->form->addElement('<img alt="'.$enabled['name'].'" src="'.hsc($enabled['screenshoturl']).'" />');
+        $this->form->addElement('<div class="legend"><span class="head">');
+        $this->form->addElement($this->make_title($enabled));
+        $this->form->addElement('</span></div>');
+        $this->form->addElement('<p>'.hsc($enabled['description']).'</p>');
+        $this->form->addElement('</td></tr>');
+    }
     /**
      * Build single row of plugin table
      * @param string $class    class of the table row
@@ -32,6 +48,7 @@ class plugins_list {
      * @param array  $checkbox the optional parameters to be passed in for the checkbox (use-case disabling downloads)
      */
     function add_row($class,$info,$actions,$checkbox = array()) {
+        $this->rowadded = true;
         $this->form->addElement(form_makeOpenTag('tr',array('class'=>$class)));
         $this->form->addElement(form_makeOpenTag('td',array('class'=>'checkbox')));
         $this->form->addElement(form_makeCheckboxField('checked[]',$info['id'],'','','',$checkbox));
@@ -55,10 +72,11 @@ class plugins_list {
             $this->form->addElement('<strong>Security Warning:</strong> '.hsc($info['securitywarning']));
             $this->form->addElement(form_makeCloseTag('div'));
         }
-        if(!empty($info['screenshoturl']) && stripos($class,'template') !== false ) {
+        if(stripos($class,'template') !== false ) {
             $this->form->addElement(form_makeCloseTag('td'));
             $this->form->addElement(form_makeOpenTag('td',array('class'=>'screenshot')));
-            $this->form->addElement('<img alt="'.$info['name'].'" width="80" src="'.hsc($info['screenshoturl']).'" />');
+            if(!empty($info['screenshoturl']))
+                $this->form->addElement('<img alt="'.$info['name'].'" width="80" src="'.hsc($info['screenshoturl']).'" />');
             $this->form->addElement(form_makeCloseTag('td'));
         }
         $this->form->addElement(form_makeCloseTag('td'));
@@ -76,14 +94,20 @@ class plugins_list {
      */
     function render($name = null) {
         $this->form->addElement(form_makeCloseTag('table'));
-        $this->form->addElement(form_makeOpenTag('div',array('class'=>'bottom')));
-        $this->form->addElement(form_makeMenuField('action',$this->actions,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
-        $this->form->addElement(form_makeCloseTag('div'));
-        $this->form->addElement(form_makeButton('submit', 'admin', 'Go' ));
+        if($this->rowadded) {
+            $this->form->addElement(form_makeOpenTag('div',array('class'=>'bottom')));
+            $this->form->addElement(form_makeMenuField('action',$this->actions,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
+            $this->form->addElement(form_makeCloseTag('div'));
+            $this->form->addElement(form_makeButton('submit', 'admin', 'Go' ));
+        }
         if($name !== null)
             html_form($name,$this->form);
         else
             $this->form->printForm();
+    }
+
+    function get_form() {
+        return $this->form;
     }
 
     /**

@@ -67,7 +67,7 @@ class ap_search extends ap_manage {
                     $checkbox = $this->get_checkbox($info);
                     $list->add_row($class,$info,$actions,$checkbox);
                 }
-            $list->render('SEARCH_RESULT');
+            $list->render('PLUGIN_PLUGINMANAGER_RENDER_SEARCHRESULT');
         } elseif(!is_null($this->term)) {
             ptln('<h2>'.'The term "'.$this->term.'" was not found'.'</h2>');//TODO Add language
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));

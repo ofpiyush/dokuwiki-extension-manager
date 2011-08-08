@@ -163,6 +163,10 @@
     clear: both;
     font-weight:bold;
 }
+#plugin__manager .screenshot {
+    padding: 5px;
+    width: 90px;
+}
 #plugin__manager .legend p {
     margin:0 1.5em 0;
 }

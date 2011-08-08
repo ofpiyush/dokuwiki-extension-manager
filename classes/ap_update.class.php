@@ -5,15 +5,19 @@ class ap_update extends ap_download {
     var $overwrite = true;
 
     function down() {
+        $type = !empty($_REQUEST['template'])? 'template': 'plugin';
+        $base_path = ($type == "template")? DOKU_INC.'lib/tpl/' : DOKU_PLUGIN;
         foreach($this->plugin as $plugin) {
+            if(in_array($plugin,$this->_bundled)) continue;
             $this->current = null;
             $this->manager->error = null;
-            if(in_array($plugin,$this->_bundled)) continue;
-            $plugin_url = $this->plugin_readlog($plugin, 'url');
+            $info = $this->_info_list($plugin,$type)
+            $default_base = $info['base'];
+            $plugin_url = $this->fetch_log($base_path.$plugin.'/', 'downloadurl');
             if(!empty($plugin_url)) {
-                if($this->download($plugin_url, $this->overwrite)) {
+                if($this->download($plugin_url, $this->overwrite,$default_base,$type)) {
                     $base = $this->current['base'];
-                    if($plugin['type'] == 'Template') {
+                    if($type == 'template') {
                         msg(sprintf("Template %s successfully updated",$base),1);
                     } else {
                         msg(sprintf($this->lang['updated'],$base),1);
@@ -23,7 +27,7 @@ class ap_update extends ap_download {
                 }
             }
             else {
-                msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />"."Couldnot find manager.dat file for the plugin",-1);
+                msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />"."Couldnot find manager.dat file.",-1);
             }
             
         }

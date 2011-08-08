@@ -54,9 +54,9 @@ class ap_info extends ap_plugin {
         ptln("<h2>".$this->manager->getLang('plugin')." {$this->manager->plugin}</h2>");
 
         // collect pertinent information from the log
-        $installed = $this->plugin_readlog($this->manager->plugin, 'installed');
-        $source = $this->plugin_readlog($this->manager->plugin, 'url');
-        $updated = $this->plugin_readlog($this->manager->plugin, 'updated');
+        //$installed = $this->plugin_readlog($this->manager->plugin, 'installed');
+        //$source = $this->plugin_readlog($this->manager->plugin, 'url');
+        //$updated = $this->plugin_readlog($this->manager->plugin, 'updated');
         if (strrpos($updated, "\n") !== false) $updated = substr($updated, strrpos($updated, "\n")+1);
 
         ptln("<dl>",2);
@@ -103,34 +103,6 @@ class ap_info extends ap_plugin {
     // simple output filter, make html entities safe and convert new lines to <br />
     function out($text) {
         return str_replace("\n",'<br />',htmlspecialchars($text));
-    }
-
-
-    /**
-     * return a list (name & type) of all the component plugins that make up this plugin
-     *
-     * @todo can this move to pluginutils?
-     */
-    function get_plugin_components($plugin) {
-
-        global $plugin_types;
-        $components = array();
-        $path = DOKU_PLUGIN.plugin_directory($plugin).'/';
-
-        foreach ($plugin_types as $type) {
-            if (@file_exists($path.$type.'.php')) { $components[] = array('name'=>$plugin, 'type'=>$type); continue; }
-
-            if ($dh = @opendir($path.$type.'/')) {
-                while (false !== ($cp = readdir($dh))) {
-                    if ($cp == '.' || $cp == '..' || strtolower(substr($cp,-4)) != '.php') continue;
-
-                    $components[] = array('name'=>$plugin.'_'.substr($cp, 0, -4), 'type'=>$type);
-                }
-                closedir($dh);
-            }
-        }
-
-        return $components;
     }
 
     /**
