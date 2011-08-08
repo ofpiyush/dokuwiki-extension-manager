@@ -25,10 +25,11 @@ class plugins_list {
         $this->form->addHidden('page','plugin');
         $this->form->addHidden('fn','multiselect');
         $this->form->addElement(form_makeOpenTag('table',array('class'=>'inline')));
+        if($type == "template")
+            $this->form->addHidden('template','template');
     }
 
     function enabled_tpl_row($enabled,$actions) {
-        $this->form->addHidden('template','template');
         $class ="enabled template";
         if(!empty($this->enabled['securityissue'])) $class .= " secissue";
         $this->form->addElement('<tr class="'.$class.'"><td colspan="4" >');

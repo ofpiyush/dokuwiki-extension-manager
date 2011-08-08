@@ -35,10 +35,10 @@ class ap_template extends ap_manage {
             $actions .=$this->make_action('update',$this->enabled['id'],'Update',true);
         $list->add_row("template enabled",$this->enabled,$actions);
         if(!empty($this->templates)) {
-            $class = 'template disabled';
-            $actions = $this->make_action('update',$template['id'],'Update',true);
-            $actions .= ' | '.$this->make_action('delete',$template['id'],'Delete',true);
+            $class = 'template disabled';            
             foreach($this->templates as $template) {
+                $actions = $this->make_action('update',$template['id'],'Update',true);
+                $actions .= ' | '.$this->make_action('delete',$template['id'],'Delete',true);
                 $list->add_row($class,$template,$actions);
             }
         }
