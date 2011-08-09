@@ -38,7 +38,7 @@ abstract class ap_manage {
             ptln('<div class="pm_menu">');
 		    ptln('    <ul>');
 		    foreach($tabs_array as $tab =>$text)
-		        ptln('	    <li class="'.(($tab == $selected)? "selected": "notsel").'" ><a href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
+		        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
 		    ptln('    </ul>');
             ptln('</div>');
     }

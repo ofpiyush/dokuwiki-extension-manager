@@ -36,9 +36,6 @@
     display: none;
 }
 
-#plugin__manager .new {
-    background: #dee7ec;
-}
 
 /* IE won't understand but doesn't require it */
 #plugin__manager input[disabled] {
@@ -46,10 +43,11 @@
     border-color: #ccc;
 }
 
-#plugin__manager .pm_menu,
-#plugin__manager .pm_info {
+#plugin__manager .pm_menu {
     margin-left: 0;
     text-align: left;
+    float: left;
+    width: 100%;
 }
 
 #plugin__manager .pm_menu {
@@ -63,28 +61,32 @@
     padding:0 0.3em;
     margin:1em 0 0 1em;
 }
-#plugin__manager .pm_menu ul li {
-    clear: none;
-    padding:0.3em;
-    margin: 0 0.4em;
-    display:inline-block;
-    border: 1px solid __border__;
-    font-size:1em;
-    border-bottom:0;
-    background: __background_alt__;
-    color: __text_alt__;
+
+#plugin__manager .pm_menu ul li a {
     font-weight: bold;
-    -moz-border-radius: 1em 1em 0px 0px ;
-    -webkit-border-radius: 1em 1em 0px 0px ;
-    border-radius: 1em 1em 0px 0px ;
+    display: block;
+    float:left;
+    padding: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-right: 2px;
+    -moz-border-radius-topright: 10px;
+    -webkit-border-top-right-radius: 10px;
+    -moz-border-radius-topleft: 10px;
+    -webkit-border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
 }
 
-#plugin__manager .pm_menu ul li.selected {
-    background: __background__;
-    color: __text__;
+#plugin__manager .pm_menu .selected {
+    background-color: __background_alt__;
+    color: __text_alt__;
 }
-#plugin__manager .pm_info {
-    width: 100%;
+
+#plugin__manager .pm_menu a:hover {
+    background-color: __background_alt__;
+    color: __text_alt__;
+    opacity: 0.5;
 }
 
 #plugin__manager .common fieldset {
@@ -181,29 +183,6 @@
 
 #plugin__manager fieldset.buttons .button {
     float: left;
-}
-
-#plugin__manager .pm_info h3 {
-    margin-left: 0;
-}
-
-#plugin__manager .pm_info dl {
-    margin: 1em 0;
-    padding: 0;
-}
-
-#plugin__manager .pm_info dt {
-    width: 6em;
-    float: left;
-    clear: left;
-    margin: 0;
-    padding: 0;
-}
-
-#plugin__manager .pm_info dd {
-    margin: 0 0 0 7em;
-    padding: 0;
-    background: none;
 }
 
 /* end admin plugin styles */
