@@ -3,7 +3,7 @@ class ap_search extends ap_manage {
 
     var $term = NULL;
     var $filters = array();
-    var $result = array();
+    var $search_result = array();
     var $repo = NULL;
     var $filtered_repo = NULL;
     var $extra = NULL;
@@ -15,15 +15,16 @@ class ap_search extends ap_manage {
         $this->clean_repo();
         $this->actions_list = array(
                 'download'=>$this->lang['btn_download'],
-                'disdown'=>'Download as disabled');//TODO add language
+                'disdown'=>$this->lang['btn_disdown']);
         $this->search_types = array(
-            ''=>'All',//TODO add language
-            'Syntax'=>'Syntax',//TODO add language
-            'Admin'=>'Admin',//TODO add language
-            'Action'=>'Action',//TODO add language
-            'Renderer'=>'Renderer',//TODO add language
-            'Helper'=>'Helper',//TODO add language
-            'Template'=>'Template');//TODO add language
+            ''=>$this->lang['all'],
+            'Syntax'=>$this->lang['syntax'],
+            'Admin'=>$this->lang['admin'],
+            'Action'=>$this->lang['action'],
+            'Renderer'=>$this->lang['renderer'],
+            'Helper'=>$this->lang['helper'],
+            'Template'=>$this->lang['template']
+            );
         $this->filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
 
         if(!empty($_REQUEST['term']) > 0) {
@@ -55,10 +56,10 @@ class ap_search extends ap_manage {
         $url_form->printForm();
         ptln('</div>');
 
-        $this->render_search('install__search', 'Search for a new plugin',$this->term,$this->search_types);
+        $this->render_search('install__search', $this->lang['search_plugin'],$this->term,$this->search_types);
 
         if(is_array($this->search_result) && count($this->search_result)) {
-            ptln('<h2>'.'Search results for "'.$this->term.'"</h2>');//TODO Add language
+            ptln('<h2>'.hsc(sprintf($this->lang['search_results'],$this->term)).'</h2>');//TODO Add language
             $list = new plugins_list($this,'search_result',$this->actions_list);
             foreach($this->search_result as $result)
                 foreach($result as $info) {
@@ -69,11 +70,11 @@ class ap_search extends ap_manage {
                 }
             $list->render('PLUGIN_PLUGINMANAGER_RENDER_SEARCHRESULT');
         } elseif(!is_null($this->term)) {
-            ptln('<h2>'.'The term "'.$this->term.'" was not found'.'</h2>');//TODO Add language
+            ptln('<h2>'.hsc(sprintf($this->lang['not_found'],$this->term)).'</h2>');//TODO Add language
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
-            ptln('<p>Please try with a simpler query or <a href="'.$url.'" title="'.$url.'" />click here</a> to browse all plugins</p>');
+            ptln('<p>'.sprintf($this->lang['no_result'],$url,$url).'</p>');
         } else {
-            ptln('<h2>'.'Browse all plugins'.'</h2>');//TODO Add language
+            ptln('<h2>'.$this->lang['browse'].'</h2>');//TODO Add language
             $list = new plugins_list($this,'plugins__list',$this->actions_list);
             foreach($this->filtered_repo as $info) {
                 $class = $this->get_class($info,'all');
@@ -95,13 +96,13 @@ class ap_search extends ap_manage {
     protected function get_actions($info) {
         if(array_key_exists('downloadurl',$info) && !empty($info['downloadurl'])) {
             if(@stripos($info['type'],'Template')!==false) {
-                $actions = $this->make_action('download',$info['id'],'Download as disabled');
+                $actions = $this->make_action('download',$info['id'],$this->lang['btn_disdown']);
             } else {
                 $actions = $this->make_action('download',$info['id'],$this->lang['btn_download']);
-                $actions .= ' | '.$this->make_action('disdown',$info['id'],'Download as disabled');
+                $actions .= ' | '.$this->make_action('disdown',$info['id'],$this->lang['btn_disdown']);
             }
         } else {
-            $actions = "No Download URL";
+            $actions = $this->lang['no_url'];
         }
         return $actions;
     }

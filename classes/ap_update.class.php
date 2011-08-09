@@ -18,7 +18,7 @@ class ap_update extends ap_download {
                 if($this->download($plugin_url, $this->overwrite,$default_base,$this->type)) {
                     $base = $this->current['base'];
                     if($this->type == 'template') {
-                        msg(sprintf("Template %s successfully updated",$base),1);
+                        msg(sprintf($this->lang['tempupdated'],$base),1);
                     } else {
                         msg(sprintf($this->lang['updated'],$base),1);
                     }
@@ -27,7 +27,7 @@ class ap_update extends ap_download {
                 }
             }
             else {
-                msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />"."Couldnot find manager.dat file.",-1);
+                msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />".$this->lang['no_manager'],-1);
             }
             
         }

@@ -9,10 +9,10 @@ class ap_plugin extends ap_manage {
     function process() {
         global $plugin_protected;
         $this->actions_list = array(
-            'enable'=>'Enable',//TODO add language
-            'disable'=>'Disable',//TODO add language
-            'delete'=>'Delete',//TODO add language
-            'update'=>'Update'//TODO add language
+            'enable'=>$this->lang['btn_enable'],
+            'disable'=>$this->lang['btn_disable'],
+            'delete'=>$this->lang['btn_delete'],
+            'update'=>$this->lang['btn_update'],
         );
         $list = $this->manager->plugin_list;
         if(!empty($_REQUEST['info']))
@@ -44,7 +44,7 @@ class ap_plugin extends ap_manage {
         global $lang;
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
-        $this->render_search('pm__search','Search for a new plugin');
+        $this->render_search('pm__search',$this->lang['search_plugin']);
         /**
          * List plugins
          */
@@ -70,9 +70,9 @@ class ap_plugin extends ap_manage {
 
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
             ptln('<div id="plugins__protected">');
-            ptln('  <h2>Protected Plugins</h2>');
+            ptln('  <h2>'.$this->lang['protected_head'].'</h2>');
             ptln('  <p>');
-            ptln('  These plugins are protected and should not be disabled and/or deleted. They are intrinsic to DokuWiki.');
+            ptln($this->lang['protected_desc']);
             ptln('  </p>');
             ptln('  <table class="inline">');
             if(!empty($this->showinfo) && $this->showinfo['protected']) {
@@ -116,7 +116,7 @@ class ap_plugin extends ap_manage {
         }
         ptln('      </td>');
         ptln('      <td class="actions">');
-        ptln('        <p>'.$this->make_action('info',$info['id'],'Info').'</p>');
+        ptln('        <p>'.$this->make_action('info',$info['id'],$this->lang['btn_info']).'</p>');
         ptln('      </td>');
         ptln('    </tr>');
     }
@@ -129,13 +129,13 @@ class ap_plugin extends ap_manage {
     }
 
     function get_actions($info,$type) {
-        $actions = $this->make_action('info',$info['id'],'Info');
+        $actions = $this->make_action('info',$info['id'],$this->lang['btn_info']);
         if($type =="enabled")
-            $actions .= ' | '.$this->make_action('disable',$info['id'],'Disable');
+            $actions .= ' | '.$this->make_action('disable',$info['id'],$this->lang['btn_disable']);
         else
-            $actions .= ' | '.$this->make_action('enable',$info['id'],'Enable');
+            $actions .= ' | '.$this->make_action('enable',$info['id'],$this->lang['btn_enable']);
         if(!in_array($info['id'],$this->_bundled))
-            $actions .= ' | '.$this->make_action('delete',$info['id'],'Delete');
+            $actions .= ' | '.$this->make_action('delete',$info['id'],$this->lang['btn_delete']);
         return $actions;
     }
 

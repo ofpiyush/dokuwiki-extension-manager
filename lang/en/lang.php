@@ -9,15 +9,25 @@
 $lang['menu'] = 'Manage Plugins';
 
 // custom language strings for the plugin
-$lang['download'] = "Download and install a new plugin";
-$lang['manage'] = "Installed Plugins";
-$lang['template'] = 'Template';
-$lang['btn_info'] = 'info';
-$lang['btn_update'] = 'update';
-$lang['btn_delete'] = 'delete';
-$lang['btn_settings'] = 'settings';
-$lang['btn_download'] = 'Download';
-$lang['btn_enable'] = 'Save';
+$lang['download']         = "Download and install a new plugin";
+$lang['manage']           = "Installed Plugins";
+$lang['protected_head']   = 'Protected Plugins';
+$lang['protected_full']   = 'These plugins are protected and should not be disabled and/or deleted. They are intrinsic to DokuWiki.';
+$lang['tpl_search']       = 'Search for a new Template';
+$lang['search_plugin']    = 'Search for a new Plugin or Template';
+$lang['search_results']   = 'Search results for "%s"';
+$lang['tpl_manage']       = 'Installed Templates';
+$lang['template']         = 'Template';
+$lang['btn_info']         = 'info';
+$lang['btn_update']       = 'update';
+$lang['btn_delete']       = 'delete';
+$lang['btn_enable']       = 'enable';
+$lang['btn_disable']      = 'disable';
+$lang['btn_settings']     = 'settings';
+$lang['btn_download']     = 'Download';
+$lang['btn_disdown']      = 'Download as disabled';
+$lang['btn_enable']       = 'Save';
+$lang['browse']           = 'Browse all plugins';
 
 $lang['url']              = 'URL';
 
@@ -29,8 +39,10 @@ $lang['unknown']          = 'unknown';
 // ..ing = header message
 // ..ed = success message
 
+
 $lang['updating']         = 'Updating ...';
 $lang['updated']          = 'Plugin %s updated successfully';
+$lang['tempupdated']      = 'Template %s successfully updated';
 $lang['updates']          = 'The following plugins have been updated successfully';
 $lang['update_none']      = 'No updates found.';
 
@@ -41,6 +53,14 @@ $lang['downloading']      = 'Downloading ...';
 $lang['downloaded']       = 'Plugin %s installed successfully';
 $lang['downloads']        = 'The following plugins have been installed successfully:';
 $lang['download_none']    = 'No plugins found, or there has been an unknown problem during downloading and installing.';
+
+//plugin types
+$lang['all']              = 'All';
+$lang['syntax']           = 'Syntax';
+$lang['admin']            = 'Admin';
+$lang['action']           = 'Action';
+$lang['renderer']         = 'Renderer';
+$lang['helper']           = 'Helper';
 
 // info titles
 $lang['plugin']           = 'Plugin:';
@@ -54,6 +74,10 @@ $lang['author']           = 'Author:';
 $lang['www']              = 'Web:';
 $lang['tags']             = 'Tags:';
 // error messages
+$lang['no_result']        = 'Please try with a simpler query or <a href="%s" title="%s" />click here</a> to browse all plugins.';
+$lang['not_found']        = 'The term "%s" was not found';
+$lang['no_url']           = 'No Download URL';
+$lang['no_manager']       = 'Couldnot find manager.dat file.';
 $lang['error']            = 'An unknown error occurred.';
 $lang['error_download']   = 'Unable to download the plugin file: %s';
 $lang['error_badurl']     = 'Suspect bad url - unable to determine file name from the url';
