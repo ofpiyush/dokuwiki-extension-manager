@@ -12,6 +12,7 @@ class plugins_list {
     protected $actions = array();
     protected $type = "plugin";
     protected $rowadded = false;
+    protected $id = null;
 
     /**
      * Plugins list constructor
@@ -19,8 +20,10 @@ class plugins_list {
      */
     function __construct(ap_manage $manager,$id,$actions,$type ="plugin") {
         $this->manager = $manager;
+        $this->lang = $manager->lang;
         $this->type = $type;
-        $this->actions[''] = '-Please Choose-';
+        $this->id = $id;
+        $this->actions[''] = $this->lang['please_choose'];
         $this->actions = array_merge($this->actions,$actions);
         $this->form = new Doku_Form($id);
         $this->form->addHidden('page','plugin');
@@ -54,7 +57,9 @@ class plugins_list {
      * @param array  $checkbox the optional parameters to be passed in for the checkbox (use-case disabling downloads)
      */
     function add_row($class,$info,$actions,$checkbox = array()) {
-        $this->rowadded = true;
+        //TODO remove this check when moving to the other template view
+        if(!($this->type =='template' && stripos($class,'enabled')))
+            $this->rowadded = true;
         $this->form->addElement('<tr class="'.$class.'">');
         $checked ="";
         if(!empty($checkbox)) {
@@ -64,49 +69,55 @@ class plugins_list {
         $this->form->addElement('<td class="checkbox"><input type="checkbox" name="checked[]" value="'.$info['id'].'" '.$checked.' /></td>');
         $this->form->addElement('<td class="legend">');
         $this->form->addElement('<span class="head">'.$this->make_title($info).'</span>');
-        if(stripos($class,'infoed') !== false) {
-            $this->form->addElement('<span class="inforight"><p>');
-            if(!empty($info['author'])) {
-                if(!empty($info['email']))
-                    $this->form->addElement('<strong>'.hsc($this->manager->lang['author']).'</strong> <a href="mailto:'.hsc($info['email']).'">'.hsc($info['author']).'</a><br/>');
-                else
-                    $this->form->addElement('<strong>'.hsc($this->manager->lang['author']).'</strong> '.hsc($info['author']).'<br/>');
-            }
-            if(!empty($info['tags']))
-                $this->form->addElement('<strong>'.hsc($this->manager->lang['tags']).'</strong> '.hsc(implode(', ',(array)$info['tags']['tag'])).'<br/>');
-            $this->form->addElement('</p></span>');
-        }
+        $this->form->addElement('<div class="inforight"><p>');
+        $this->add_inforight($class,$info);
+        $this->form->addElement('</p></div>');
         if(!empty($info['description'])) {
             $this->form->addElement("<p>".hsc($info['description'])."</p>");
         }
+        if(!empty($info['newversion'])) {
+            $this->form->addElement('<div class="notify">'.sprintf($this->lang['update_available'],hsc($info['newversion'])).'</div>');
+        }
         if(!empty($info['securityissue'])) {
-            $this->form->addElement('<div class="error">'.'<strong>Security Issue:</strong> '.hsc($info['securityissue']).'</div>');
+            $this->form->addElement('<div class="error">'.'<strong>'.$this->lang['security_issue'].'</strong> '.hsc($info['securityissue']).'</div>');
         }
         if(!empty($info['securitywarning'])) {
-            $this->form->addElement('<div class="notify">'.'<strong>Security Warning:</strong> '.hsc($info['securitywarning']).'</div>');
+            $this->form->addElement('<div class="notify">'.'<strong>'.$this->lang['security_warning'].'</strong> '.hsc($info['securitywarning']).'</div>');
         }
         if(stripos($class,'infoed') !== false) {
-            $this->form->addElement('<p>');
-            if(!empty($info['type'])) {
-                $this->form->addElement('<strong>'.hsc($this->manager->lang['components']).':</strong> '.hsc($info['type']).'<br/>');
-            }
-            if(!empty($info['installed']))
-                $this->form->addElement('<strong>'.hsc($this->manager->lang['installed']).'</strong> <em>'.hsc($info['installed']).'</em><br/>');
-            if(!empty($info['updated']))
-                $this->form->addElement('<strong>'.hsc($this->manager->lang['lastupdate']).'</strong> <em>'.hsc($info['updated']).'</em><br/>');
-            $this->form->addElement('</p>');
+            $this->add_infoed($info);
         }
         if(stripos($class,'template') !== false ) {
-            $this->form->addElement('</td><td class="screenshot">');
-            if(!empty($info['screenshoturl'])) {
-                if($info['screenshoturl'][0] == ':') $info['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$info['screenshoturl'];
-                $this->form->addElement('<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'"><img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" /></a>');
-            }
+            $this->add_screenshot($info);
         }
         $this->form->addElement('</td>');
         $this->form->addElement('<td class="actions"><p>'.$actions.'</p></td></tr>');
     }
 
+    function add_screenshot($info) {
+        $this->form->addElement('</td><td class="screenshot">');
+        if(!empty($info['screenshoturl'])) {
+            if($info['screenshoturl'][0] == ':') {
+                $info['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$info['screenshoturl'];
+            }
+            $this->form->addElement('<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'"><img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" /></a>');
+        }
+    }
+
+    function add_infoed($info) {
+        $this->form->addElement('<p>');
+        $default = "<em>".$this->lang['unknown']."</em>";
+        $this->form->addElement('<strong>'.hsc($this->lang['author']).'</strong> '.$this->make_author($info).'<br/>');
+        $this->form->addElement('<strong>'.hsc($this->lang['components']).':</strong> '.
+                (!empty($info['type']) ? hsc($info['type']) : $default).'<br/>');
+        $this->form->addElement('<strong>'.hsc($this->lang['installed']).'</strong> <em>'.
+                (!empty($info['installed']) ? hsc($info['installed']): $default).'</em><br/>');
+        $this->form->addElement('<strong>'.hsc($this->lang['lastupdate']).'</strong> <em>'.
+                (!empty($info['updated']) ? hsc($info['updated']) : $default).'</em><br/>');
+        $this->form->addElement('<strong>'.$this->lang['tags'].'</strong> '.
+                (!empty($info['tags']) ? hsc(implode(', ',(array)$info['tags']['tag'])) : $default).'<br/>');
+        $this->form->addElement('</p>');
+    }
     /**
      * Add closing tags and render the form
      * @param string $name Name of the event to trigger
@@ -115,9 +126,9 @@ class plugins_list {
         $this->form->addElement('</table>');
         if($this->rowadded) {
             $this->form->addElement('<div class="bottom">');
-            $this->form->addElement(form_makeMenuField('action',$this->actions,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
+            $this->form->addElement(form_makeMenuField('action',$this->actions,'',$this->lang['action'].': ','','',array('class'=>'quickselect')));
             $this->form->addElement("</div>");
-            $this->form->addElement(form_makeButton('submit', 'admin', $this->manager->lang['btn_enable'] ));
+            $this->form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_go'] ));
         }
         if($name !== null)
             html_form($name,$this->form);
@@ -129,6 +140,11 @@ class plugins_list {
         return $this->form;
     }
 
+    function add_inforight($class,$info) {
+        if(in_array($this->id,array('plugins_list','templates_list'))) {
+            $this->form->addElement('<strong>'.$this->lang['version'].'</strong> '.$info['version']);
+        }
+    }
     /**
      * Generate title url for a single plugin
      * @param array $info a single plugin from repo cache
@@ -151,6 +167,15 @@ class plugins_list {
         return  hsc($info['name']);
     }
 
+    function make_author($info) {
+        if(!empty($info['author'])) {
+            if(!empty($info['email'])) {
+                return '<a href="mailto:'.hsc($info['email']).'">'.hsc($info['author']).'</a>';
+            }
+            return hsc($info['author']);
+        }
+        return "<em>".$this->lang['unknown']."</em>";
+    }
     function make_link($info, $class) {
         return '<a href="'.hsc($info['url']).'" title="'.hsc($info['url']).'" class ="'.$class.'">'.hsc($info['name']).'</a>';
     }

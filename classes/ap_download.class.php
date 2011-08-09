@@ -10,6 +10,9 @@ class ap_download extends ap_plugin {
      * Initiate the plugin download
      */
     function process() {
+        if(isset($_REQUEST['template'])) {
+            $this->type ='template';
+        }
         $this->down();
         $this->refresh($this->type);
         //failsafe for if refresh doesnt work
@@ -23,7 +26,7 @@ class ap_download extends ap_plugin {
             if($this->download($plugin_url, $this->overwrite)) {
                 $base = $this->current['base'];
                 if($this->current['type'] = "template")
-                    msg(sprintf("Template %s successfully downloaded",$base),1);
+                    msg(sprintf($this->lang['tempdownloaded'],$base),1);
                 else
                    msg(sprintf($this->lang['downloaded'],$base),1);
             }
@@ -37,15 +40,15 @@ class ap_download extends ap_plugin {
                 $this->manager->error = null;
                 $type = (stripos($plugin['type'],'Template') !== false ) ? 'template' : 'plugin';
                 $default_base = ($type == 'template') ? str_replace('template:','',$plugin['id']) :$plugin['id'];
-                if($this->download($plugin['downloadurl'], $this->overwrite,$default_base,$type)) {
+                if($this->download($plugin['downloadurl'], $this->overwrite,$default_base,$type,$plugin)) {
                     $base = $this->current['base'];
                     if($this->current['type'] == 'template') {
-                        msg(sprintf("Template %s successfully downloaded",$base),1);
+                        msg(sprintf($this->lang['tempdownloaded'],$base),1);
                     } else {
                         msg(sprintf($this->lang['downloaded'],$base),1);
                     }
                 } else {
-                    msg("<strong>".$plugin['id']."</strong> could not be downloaded <br />".$this->manager->error,-1);
+                    msg(sprintf($this->lang['notdownloaded'],$plugin['id'])." <br />".$this->manager->error,-1);
                 }
             }
         }
@@ -54,7 +57,7 @@ class ap_download extends ap_plugin {
     /**
      * Process the downloaded file
      */
-    function download($url, $overwrite=false,$default_base = null, $default_type = "plugin") {
+    function download($url, $overwrite=false,$default_base = null, $default_type = "plugin",$plugin =array()) {
         global $lang;
         // check the url
         $matches = array();
@@ -89,18 +92,17 @@ class ap_download extends ap_plugin {
                 }else{
                     $install = $result['old'];
                 }
-
                 // now install all found items
                 foreach($install as $item){
                     $this->current = $item;
                     // where to install?
                     if($item['type'] == 'template'){
                         $target_base_dir = DOKU_INC.'lib/tpl/';
-                        if(!empty($default_base) && !file_exists($item['tmp'].'template.info.txt'))
+                        if(!empty($default_base) && !file_exists($item['tmp'].'/template.info.txt'))
                             $item['base'] = $default_base;
                     }else{
                         $target_base_dir = DOKU_INC.'lib/plugins/';
-                        if(!empty($default_base) && !file_exists($item['tmp'].'plugin.info.txt'))
+                        if(!empty($default_base) && !file_exists($item['tmp'].'/plugin.info.txt'))
                             $item['base'] = $default_base;
                     }
                     $target = $target_base_dir.$item['base'];
@@ -115,7 +117,10 @@ class ap_download extends ap_plugin {
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
                         $this->downloaded[$item['type']][] = $item['base'];
-                        $this->plugin_writelog($target, $instruction, array($url));
+                        $version = '';
+                        if(!empty($plugin['lastupdate']))
+                            $version = date('Y-m-d',strtotime($plugin['lastupdate']));
+                        $this->plugin_writelog($target, $instruction, array('url' =>$url,'version'=>$version));
                     } else {
                         $this->manager->error .= sprintf($this->lang['error_copy']."\n", $item['base']);
                     }

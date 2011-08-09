@@ -32,7 +32,7 @@ abstract class ap_manage {
             $tabs_array = array(
                 'plugin' => rtrim($this->lang['plugin'],":"),
                 'template' =>$this->lang['template'],
-                'search' =>"Install"
+                'search' =>$this->lang['install']
                 );
             $selected = array_key_exists($this->manager->cmd,$tabs_array)? $this->manager->cmd : 'plugin' ;
             ptln('<div class="pm_menu">');
@@ -46,10 +46,10 @@ abstract class ap_manage {
     protected function render_search($id,$head,$value = '',$type = null) {
         global $lang,$ID;
         ptln('<div class="common">');
-        ptln('  <h2>'.$head.'</h2>');
+        ptln('  <h2>'.hsc($head).'</h2>');
         $search_form = new Doku_Form($id);
         $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('term',$value,$lang['btn_search'],'pm__sfield'));
+        $search_form->addElement(form_makeTextField('term',hsc($value),$lang['btn_search'],'pm__sfield'));
         $search_form->addHidden('page','plugin');
         $search_form->addHidden('tab','search');
         $search_form->addHidden('fn','search');
@@ -76,7 +76,7 @@ abstract class ap_manage {
         );
         if(!empty($extra)) $params = array_merge($params,$extra);
         $url = wl($ID,$params);
-        return '<a href="'.$url.'" title="'.$url.'">'.$value.'</a>';
+        return '<a href="'.$url.'" title="'.$url.'">'.hsc($value).'</a>';
     }
     /**
      *  Refresh plugin list
@@ -98,23 +98,26 @@ abstract class ap_manage {
     /**
      * Write a log entry to the given target directory
      */
-    function plugin_writelog($target, $cmd, $data) {
+    function plugin_writelog($target, $cmd, $data,$date = true) {
         $file = $target.'/manager.dat';
-        switch ($cmd) {
-            case 'install' :
-                $url = $data[0];
-                $date = date('r');
-                if (!$fp = @fopen($file, 'w')) return;
-                fwrite($fp, "installed=$date".PHP_EOL."downloadurl=$url".PHP_EOL);
-                fclose($fp);
-                break;
-
-            case 'update' :
-                $date = date('r');
-                if (!$fp = @fopen($file, 'a')) return;
-                fwrite($fp, "updated=$date".PHP_EOL);
-                fclose($fp);
-                break;                
+        $out = "";
+        if(!empty($data['url'])) {
+            $out = "downloadurl=".$data['url'].PHP_EOL;
+        }
+        if(!empty($data['version'])) {
+            $out .= "version=".$data['version'].PHP_EOL;
+        }
+        if($cmd == 'install') {
+            if($date)
+                $out .= "installed=".date('r').PHP_EOL;
+            if(!$fp = @fopen($file, 'wb')) return;
+            fwrite($fp, $out);
+            fclose($fp);
+        } elseif($cmd == 'update') {
+            $out .= "updated=".date('r').PHP_EOL;
+            if (!$fp = @fopen($file, 'a')) return;
+            fwrite($fp, $out);
+            fclose($fp);
         }
     }
 
@@ -192,7 +195,7 @@ abstract class ap_manage {
                 if(!empty($obj)) {
                     $obj_info = $obj->getInfo();
                     $return = array_merge($return,$obj_info);
-                    if(empty($obj_info['base'])) $obj_info['base'] = $plugin;
+                    if(empty($obj_info['base'])) $obj_info['base'] = $index;
                     $this->info_autogen($info_path,$obj_info);
                 }
                 unset($obj);
@@ -213,9 +216,14 @@ abstract class ap_manage {
         $log = $this->fetch_log($path);
         if(!empty($log)) {
             $return = array_merge($log,$return);
-        } elseif(!empty($return['downloadurl'])) {
-            $this->plugin_writelog($path,'install',array($return['downloadurl']));
+        } elseif(!empty($return['downloadurl']) && 
+            !in_array($this->manager->cmd,array('download','disdown','update'))) {
+
+            msg($this->lang['no_manager'],2);
+            msg($this->lang['autogen_manager'],2);
+            $this->plugin_writelog($path,'install',array('url'=>$return['downloadurl']),false);
         }
+        $return = $this->populate_version($return);
         if($info_autogenerate && !empty($return['description'])) {
             $this->info_autogen($info_path,$return);
         }
@@ -231,14 +239,41 @@ abstract class ap_manage {
         }
         return $return;
     }
-
+    function populate_version($info) {
+        foreach(array('updated','installed','lastupdate','version') as $key) {
+            if(!empty($info[$key])) {
+                $$key = strtotime($info[$key]);
+                $info[$key] = date('Y-m-d',$$key);
+            }
+        }
+        $time = 0;
+        if(in_array($info['id'],$this->_bundled)) {
+            $version = getVersionData();
+            $info['version'] = $version['date'];
+        } else {
+            if(!empty($version)){
+                $time = $updated;
+            } elseif(!empty($updated)) {
+                $time = $updated;
+            } elseif(!empty($installed)) {
+                $time = $installed;
+            }
+            if(!empty($lastupdate) && !empty($time) && $lastupdate > $time) {
+                $info['newversion'] = $info['lastupdate'];
+            }
+        }
+        if(empty($info['version'])) {
+            $info['version'] = $this->lang['unknown'];
+            if($time != 0) $info['version'] .= '<br /> <em>('.date('Y-m-d',$time).')</em>';
+        }
+        return $info;
+    }
 
     /**
      * Auto generate plugin and template info.txt
      */
     function info_autogen($file,$return) {
         $info = "";
-        if (!$fp = @fopen($file, 'w')) return false;
         foreach(array('base','author','email','date','name','desc','url') as $index) {
             if(!empty($return[$index])) $info.= $index." ".$return[$index]."\n";
         }
@@ -248,9 +283,11 @@ abstract class ap_manage {
         if(empty($return['url']) && !empty($return['dokulink'])) {
             $info.='url http://www.dokuwiki.org/'.$return['dokulink']."\n";
         }
+        if($info == "") return false;
+        if (!$fp = @fopen($file, 'w')) return false;
         fwrite($fp, $info);
         fclose($fp);
-        msg("Auto generated and saved info for ".$return['base'],2);
+        msg(sprintf($this->lang['autogen_info'],$return['base']),2);
         return true;
     }
 
@@ -291,9 +328,9 @@ abstract class ap_manage {
 
     /**
      * Downloads and reloads cache. may be moving to serialized result directly from server would work better?
-     * FIXME Last updated time to prevent calls on every pageload (offline / behind firewalls)
      */
     function reload_cache() {
+        $error = true;
         $dhc = new DokuHTTPClient();
         $data = $dhc->get($this->repo_url);
         unset($dhc);
@@ -313,13 +350,15 @@ abstract class ap_manage {
                     $final[$single['id']] = $single;
                 unset($data);
                 $this->repo_cache->storeCache(serialize($final));
+                $error = false;
             }
             catch(Exception $e) {
-                // do some debugging actions if necessary?
+                msg($e->getMessage(), -1);
             }
-        } else {
+        }
+        if($error) {
             $this->repo_cache->storeCache(serialize(array()));
-            msg("There was an error retrieving the plugin list from the dokuwiki server, please force reload later", -1);
+            msg($this->lang['repocache_error'], -1);
         }
     }
     
@@ -341,8 +380,7 @@ abstract class ap_manage {
     }
     
     /**
-     * Converts XML to arrays. may be should be kept under parseutils?? 
-     * FIXME (only if we want a generic function) Doesnt support attributes yet
+     * Converts XML to arrays. may be should be kept under parseutils??
      */
     function xml_array ($string) {
         $parser = xml_parser_create('');
@@ -352,7 +390,7 @@ abstract class ap_manage {
         xml_parse_into_struct($parser,$string, $struct);
         xml_parser_free($parser);
         if(!is_array($struct))
-            throw new Exception('Repository XML unformatted'); // FIXME Add language
+            throw new Exception($this->lang['repoxml_error']);
         $xml = array();
         $levels = array();
         $current = &$xml;

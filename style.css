@@ -159,7 +159,8 @@
 #plugin__manager .inforight {
     top:0;
     float:right;
-    margin:0.2em;
+    width: 115px;
+    font-size:0.8em;
 }
 #plugin__manager .screenshot {
     padding: 5px;

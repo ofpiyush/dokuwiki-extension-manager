@@ -13,21 +13,24 @@ class ap_update extends ap_download {
             $this->manager->error = null;
             $info = $this->_info_list($plugin,$type);
             $default_base = $info['base'];
-            $plugin_url = $this->fetch_log($base_path.$plugin.'/', 'downloadurl');
-            if(!empty($plugin_url)) {
-                if($this->download($plugin_url, $this->overwrite,$default_base,$this->type)) {
-                    $base = $this->current['base'];
-                    if($this->type == 'template') {
-                        msg(sprintf($this->lang['tempupdated'],$base),1);
+            if(@file_exists($base_path.$plugin.'/manager.dat')) {
+                $plugin_url = $this->fetch_log($base_path.$plugin.'/', 'downloadurl');
+                if(!empty($plugin_url)) {
+                    if($this->download($plugin_url, $this->overwrite,$default_base,$this->type,$info)) {
+                        $base = $this->current['base'];
+                        if($this->type == 'template') {
+                            msg(sprintf($this->lang['tempupdated'],$base),1);
+                        } else {
+                            msg(sprintf($this->lang['updated'],$base),1);
+                        }
                     } else {
-                        msg(sprintf($this->lang['updated'],$base),1);
+                        msg("<strong>".$plugin.":</strong> ".$this->lang['update_error']."<br />".$this->manager->error,-1);
                     }
-                } else {
-                    msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />".$this->manager->error,-1);
-                }
-            }
-            else {
-                msg("<strong>".$plugin.":</strong> ".$this->lang['update_none']."<br />".$this->lang['no_manager'],-1);
+                 } else {
+                    msg("<strong>".$plugin.":</strong> ".$this->lang['update_error']."<br />".$this->manager->error,-1);
+                 }
+            } else {
+                msg("<strong>".$plugin.":</strong> ".$this->lang['update_error']."<br />".$this->lang['no_manager'],-1);
             }
             
         }
