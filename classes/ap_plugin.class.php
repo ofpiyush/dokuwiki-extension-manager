@@ -9,7 +9,7 @@ class ap_plugin extends ap_manage {
     function process() {
         global $plugin_protected;
         $this->actions_list = array(
-            'enable'=>$this->lang['btn_enable'],
+            'enable'=>$this->lang['enable'],
             'disable'=>$this->lang['btn_disable'],
             'delete'=>$this->lang['btn_delete'],
             'update'=>$this->lang['btn_update'],
@@ -133,7 +133,7 @@ class ap_plugin extends ap_manage {
         if($type =="enabled")
             $actions .= ' | '.$this->make_action('disable',$info['id'],$this->lang['btn_disable']);
         else
-            $actions .= ' | '.$this->make_action('enable',$info['id'],$this->lang['btn_enable']);
+            $actions .= ' | '.$this->make_action('enable',$info['id'],$this->lang['enable']);
         if(!in_array($info['id'],$this->_bundled))
             $actions .= ' | '.$this->make_action('delete',$info['id'],$this->lang['btn_delete']);
         return $actions;

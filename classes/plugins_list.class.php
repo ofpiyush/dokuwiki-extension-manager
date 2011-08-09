@@ -117,7 +117,7 @@ class plugins_list {
             $this->form->addElement('<div class="bottom">');
             $this->form->addElement(form_makeMenuField('action',$this->actions,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
             $this->form->addElement("</div>");
-            $this->form->addElement(form_makeButton('submit', 'admin', 'Go' ));
+            $this->form->addElement(form_makeButton('submit', 'admin', $this->manager->lang['btn_enable'] ));
         }
         if($name !== null)
             html_form($name,$this->form);
