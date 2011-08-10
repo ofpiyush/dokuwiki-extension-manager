@@ -13,19 +13,21 @@ class ap_search extends ap_manage {
 
     function process() {
         if(empty($this->repo)) $this->refresh();
+        $doku=getVersionData();
+        $this->doku_version = $doku['date'];
         $this->clean_repo();
         $this->actions_list = array(
-                'download'=>$this->lang['btn_download'],
-                'disdown'=>$this->lang['btn_disdown']
+                'download'=>$this->get_lang('btn_download'),
+                'disdown'=>$this->get_lang('btn_disdown')
                 );
         $this->search_types = array(
-            ''=>$this->lang['all'],
-            'Syntax'=>$this->lang['syntax'],
-            'Admin'=>$this->lang['admin'],
-            'Action'=>$this->lang['action'],
-            'Renderer'=>$this->lang['renderer'],
-            'Helper'=>$this->lang['helper'],
-            'Template'=>$this->lang['template']
+            ''=>$this->get_lang('all'),
+            'Syntax'=>$this->get_lang('syntax'),
+            'Admin'=>$this->get_lang('admin'),
+            'Action'=>$this->get_lang('action'),
+            'Renderer'=>$this->get_lang('renderer'),
+            'Helper'=>$this->get_lang('helper'),
+            'Template'=>$this->get_lang('template')
             );
         $this->filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
 
@@ -45,60 +47,66 @@ class ap_search extends ap_manage {
 
     function html() {
         $this->html_menu();
-        $this->render_search('install__search', $this->lang['search_plugin'],$this->term,$this->search_types);
+        $this->render_search('install__search', $this->get_lang('search_plugin'),$this->term,$this->search_types);
 
         if(is_array($this->search_result) && count($this->search_result)) {
-            ptln('<h2>'.hsc(sprintf($this->lang['search_results'],$this->term)).'</h2>');
             $list = new plugins_list($this,'search__result',$this->actions_list);
-            foreach($this->search_result as $result)
+            $list->add_header(sprintf($this->get_lang('search_results'),hsc($this->term)));
+            $list->start_form();
+            foreach($this->search_result as $result) {
                 foreach($result as $info) {
                     $class = $this->get_class($info,'result');
-                    $actions = $this->get_actions($info);
+                    $actions = $this->get_actions($info,'');//add some imp type info later
                     $checkbox = $this->get_checkbox($info);
                     $list->add_row($class,$info,$actions,$checkbox);
                 }
-            $list->render('PLUGIN_PLUGINMANAGER_RENDER_SEARCHRESULT');
+            }
+            $list->end_form();
+            $list->render();
         } elseif(!is_null($this->term)) {
-            ptln('<h2>'.hsc(sprintf($this->lang['not_found'],$this->term)).'</h2>');
+            $no_result = new plugins_list($this,'no__result');
+            $no_result->add_header(sprintf($this->get_lang('not_found'),hsc($this->term)));
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
-            ptln('<p>'.sprintf($this->lang['no_result'],$url,$url).'</p>');
+            $no_result->add_p(sprintf($this->get_lang('no_result'),$url,$url));
+            $no_result->render();
         } else {
-            ptln('<h2>'.$this->lang['browse'].'</h2>');
-            $list = new plugins_list($this,'browse__list',$this->actions_list);
+            $full_list = new plugins_list($this,'browse__list',$this->actions_list);
+            $full_list->add_header($this->get_lang('browse'));
+            $full_list->start_form();
             foreach($this->filtered_repo as $info) {
                 $class = $this->get_class($info,'all');
-                $actions = $this->get_actions($info);
+                $actions = $this->get_actions($info,'');//add some necessary type info later on
                 $checkbox = $this->get_checkbox($info);
-                $list->add_row($class,$info,$actions,$checkbox);
+                $full_list->add_row($class,$info,$actions,$checkbox);
             }
-            $list->render();
+            $full_list->end_form();
+            $full_list->render();
         }
     }
 
-    protected function get_class($info,$class) {
+    function get_class(array $info,$class) {
         if(!empty($info['securityissue'])) $class .= ' secissue';
         if(!empty($this->extra['type']) && $this->extra['type'] == "Template" )
             $class .= " template";
         return $class;
     }
 
-    protected function get_actions($info) {
+    function get_actions(array $info,$type) {
         if(array_key_exists('downloadurl',$info) && !empty($info['downloadurl'])) {
             if(@stripos($info['type'],'Template')!==false) {
-                $actions = $this->make_action('download',$info['id'],$this->lang['btn_disdown']);
+                $actions = $this->make_action('download',$info['id'],$this->get_lang('btn_disdown'));
             } else {
-                $actions = $this->make_action('download',$info['id'],$this->lang['btn_download']);
-                $actions .= ' | '.$this->make_action('disdown',$info['id'],$this->lang['btn_disdown']);
+                $actions = $this->make_action('download',$info['id'],$this->get_lang('btn_download'));
+                $actions .= ' | '.$this->make_action('disdown',$info['id'],$this->get_lang('btn_disdown'));
             }
         } else {
-            $actions = $this->lang['no_url'];
+            $actions = $this->get_lang('no_url');
         }
         return $actions;
     }
 
-    protected function get_checkbox($info) {
-        if(array_key_exists('downloadurl',$info) && !empty($info['downloadurl']))
-            return array();
+    function get_checkbox($info) {
+        if(!empty($info['downloadurl'])) return array();
         return array('disabled'=>'disabled');
     }
 
@@ -117,7 +125,9 @@ class ap_search extends ap_manage {
             if(count($matches)) {
                 $count = count(array_intersect_key($this->filters,$matches));
                 if($count && $this->check($single)) {
-                    if(stripos($single['id'],$this->term)) $count += 3;
+                    if(stripos($single['id'],$this->term)) $count += 5;
+                    if(stripos($single['name'],$this->term)) $count += 3;
+                    if(stripos($single['id'],$this->term)) $count += 5;
                     $this->search_result[$count][$single['id']] = $single;
                 }
             }

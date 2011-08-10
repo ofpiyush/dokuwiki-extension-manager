@@ -5,10 +5,10 @@
  */
 class ap_info extends ap_plugin {
     function process() {
-        // sanity check
         if(!empty($this->plugin)) {
+            $tab = !empty($_REQUEST['template'])? 'template' : 'plugin';
             $this->showinfo = array_pop($this->plugin);
-            $this->refresh('plugin',array('info'=>$this->showinfo));
+            $this->refresh($tab,array('info'=>$this->showinfo));
         }
         parent::process();
     }

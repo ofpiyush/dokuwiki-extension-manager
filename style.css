@@ -30,21 +30,15 @@
 #plugin__manager p,
 #plugin__manager label {
     text-align: left;
+    margin:0;
 }
 
 #plugin__manager .hidden {
     display: none;
 }
 
-
-/* IE won't understand but doesn't require it */
-#plugin__manager input[disabled] {
-    color: #ccc;
-    border-color: #ccc;
-}
-
 #plugin__manager .pm_menu {
-    margin-left: 0;
+    margin: 0;
     text-align: left;
     float: left;
     width: 100%;
@@ -54,6 +48,10 @@
     list-style:none;
     padding:0 0.3em;
     margin:1em 0 0 1em;
+}
+
+#plugin__manager .pm_menu ul li {
+    list-style:none;
 }
 
 #plugin__manager .pm_menu ul li a {
@@ -90,10 +88,6 @@
     border: none;
 }
 
-#plugin__manager .common label {
-    padding: 0 0 0.5em 0;
-}
-
 #plugin__manager .common input.edit {
     width: 24em;
     margin: 0.5em;
@@ -112,6 +106,9 @@
     width:100%;
 }
 
+#plugin__manager table td {
+    vertical-align:middle;
+}
 #plugin__manager .checkbox {
     width:5%;
     text-align:center;
@@ -141,8 +138,9 @@
 }
 
 #plugin__manager .legend {
-    position:relative;
+    vertical-align:top;
     padding:0.2em;
+    padding-top:0.3em;
 }
 #plugin__manager .legend .head {
     clear: both;
@@ -162,6 +160,7 @@
 #plugin__manager .screenshot {
     padding: 5px;
     width: 90px;
+    text-align:center;
 }
 #plugin__manager .actions {
     font-size: 95%;

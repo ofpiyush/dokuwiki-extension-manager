@@ -19,18 +19,18 @@ class ap_update extends ap_download {
                     if($this->download($plugin_url, $this->overwrite,$default_base,$this->type,$info)) {
                         $base = $this->current['base'];
                         if($this->type == 'template') {
-                            msg(sprintf($this->lang['tempupdated'],$base),1);
+                            msg(sprintf($this->get_lang('tempupdated'),$base),1);
                         } else {
-                            msg(sprintf($this->lang['updated'],$base),1);
+                            msg(sprintf($this->get_lang('updated'),$base),1);
                         }
                     } else {
-                        msg("<strong>".$plugin.":</strong> ".$this->lang['update_error']."<br />".$this->manager->error,-1);
+                        msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->manager->error,-1);
                     }
                  } else {
-                    msg("<strong>".$plugin.":</strong> ".$this->lang['update_error']."<br />".$this->manager->error,-1);
+                    msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->manager->error,-1);
                  }
             } else {
-                msg("<strong>".$plugin.":</strong> ".$this->lang['update_error']."<br />".$this->lang['no_manager'],-1);
+                msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->get_lang('no_manager'),-1);
             }
             
         }

@@ -9,10 +9,10 @@ class ap_plugin extends ap_manage {
     function process() {
         global $plugin_protected;
         $this->actions_list = array(
-            'enable'=>$this->lang['enable'],
-            'disable'=>$this->lang['btn_disable'],
-            'delete'=>$this->lang['btn_delete'],
-            'update'=>$this->lang['btn_update'],
+            'enable'=>$this->get_lang('enable'),
+            'disable'=>$this->get_lang('btn_disable'),
+            'delete'=>$this->get_lang('btn_delete'),
+            'update'=>$this->get_lang('btn_update'),
         );
         $list = $this->manager->plugin_list;
         if(!empty($_REQUEST['info']))
@@ -43,16 +43,16 @@ class ap_plugin extends ap_manage {
         global $lang;
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
-        $this->render_search('pm__search',$this->lang['search_plugin']);
+        $this->render_search('pm__search',$this->get_lang('search_plugin'));
         /**
          * List plugins
          */
-        ptln('<h2>'.$this->lang['manage'].'</h2>');
         if(is_array($this->plugins) && count($this->plugins)) {
             $list = new plugins_list($this,'plugins__list',$this->actions_list);
+            $list->add_header($this->get_lang('manage'));
+            $list->start_form();
             if(!empty($this->showinfo) && !$this->showinfo['protected']) {
-                $class  = $this->get_class($this->showinfo['info'],$this->showinfo['status']);
-                $class .=" infoed";
+                $class  = $this->get_class($this->showinfo['info'],$this->showinfo['status']." infoed");
                 $actions = $this->get_actions($this->showinfo['info'],$this->showinfo['status']);
                 $list->add_row($class,$this->showinfo['info'],$actions);
                 unset($this->showinfo);
@@ -64,60 +64,30 @@ class ap_plugin extends ap_manage {
                     $list->add_row($class,$info,$actions);
                 }
             }
-            $list->render('PLUGIN_PLUGINMANAGER_RENDER_PLUGINSLIST');
+            $list->end_form();
+            $list->render();
         }
-
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
-            ptln('<div id="plugins__protected">');
-            ptln('  <h2>'.$this->lang['protected_head'].'</h2>');
-            ptln('  <p>');
-            ptln($this->lang['protected_desc']);
-            ptln('  </p>');
-            ptln('  <table class="inline">');
+            $protected_list = new plugins_list($this,'plugins__protected');
+            $protected_list->add_header($this->get_lang('protected_head'));
+            $protected_list->add_p($this->get_lang('protected_desc'));  
+            $protected_list->start_form();          
+            $checkbox = array('disabled'=>'disabled');
             if(!empty($this->showinfo) && $this->showinfo['protected']) {
-                $this->add_protected_row($this->showinfo['info'],$list," infoed");
+                $class = $this->get_class($this->showinfo['info'],"infoed");
+                $actions = $this->get_actions($this->showinfo['info'],'protected');
+                $protected_list->add_row($class,$this->showinfo['info'],$actions,$checkbox);
             }
             foreach($this->protected_plugins as $info) {
-                $this->add_protected_row($info,$list);
+                $class = $this->get_class($info,"protected");
+                $actions = $this->get_actions($info,'protected');
+                $protected_list->add_row($class,$info,$actions,$checkbox);
             }
-            ptln('  </table>');
-            ptln('</div>');
+            $protected_list->rowadded =false;
+            $protected_list->end_form();
+            $protected_list->render();
         }
         //end list plugins
-    }
-
-    function add_protected_row($info,$list,$class="") {
-        ptln('    <tr class="protected'.$class.'">');
-        ptln('      <td class="checkbox"><input type="checkbox" checked="checked" disabled="disabled" /></td>');
-        ptln('      <td class="legend">');
-        ptln('        <span class="head">'.$list->make_title($info).'</span>');
-        if(stripos($class,'infoed') !== false) {
-            ptln('<span class="inforight"><p>');
-            if(!empty($info['author'])) {
-                if(!empty($info['email']))
-                    ptln('<strong>'.hsc($this->lang['author']).'</strong> <a href="mailto:'.hsc($info['email']).'">'.hsc($info['author']).'</a><br/>');
-                else
-                    ptln('<strong>'.hsc($this->lang['author']).'</strong> '.hsc($info['author']).'<br/>');
-            }
-            if(!empty($info['tags']))
-                ptln('<strong>'.hsc($this->lang['tags']).'</strong> '.hsc(implode(', ',(array)$info['tags']['tag'])).'<br/>');
-            ptln('</p></span>');
-        }
-        if(isset($info['description'])) {
-            ptln('        <p>'.hsc($info['description']).'</p>');
-        }
-        if(stripos($class,'infoed') !== false) {
-            ptln('<p>');
-            if(!empty($info['type'])) {
-                ptln('<strong>'.hsc($this->lang['components']).':</strong> '.hsc($info['type']).'<br/>');
-            }
-            ptln('<p>');
-        }
-        ptln('      </td>');
-        ptln('      <td class="actions">');
-        ptln('        <p>'.$this->make_action('info',$info['id'],$this->lang['btn_info']).'</p>');
-        ptln('      </td>');
-        ptln('    </tr>');
     }
     protected function show_results() {
         if(is_array($this->result) && count($this->result)) {
@@ -127,20 +97,24 @@ class ap_plugin extends ap_manage {
         }
     }
 
-    function get_actions($info,$type) {
-        $actions = $this->make_action('info',$info['id'],$this->lang['btn_info']);
-        if(!empty($info['newversion']) || stripos($info['version'],$this->lang['unknown'])!==false)
-            $actions .= ' | '.$this->make_action('update',$info['id'],$this->lang['btn_update']);
+    function get_actions(array $info,$type) {
+        $actions = $this->make_action('info',$info['id'],$this->get_lang('btn_info'));
+        if(!empty($info['newversion']) || stripos($info['version'],$this->get_lang('unknown'))!==false)
+            $actions .= ' | '.$this->make_action('update',$info['id'],$this->get_lang('btn_update'));
         if($type =="enabled")
-            $actions .= ' | '.$this->make_action('disable',$info['id'],$this->lang['btn_disable']);
-        else
-            $actions .= ' | '.$this->make_action('enable',$info['id'],$this->lang['enable']);
+            $actions .= ' | '.$this->make_action('disable',$info['id'],$this->get_lang('btn_disable'));
+        elseif($type == 'disabled')
+            $actions .= ' | '.$this->make_action('enable',$info['id'],$this->get_lang('enable'));
         if(!in_array($info['id'],$this->_bundled))
-            $actions .= ' | '.$this->make_action('delete',$info['id'],$this->lang['btn_delete']);
+            $actions .= ' | '.$this->make_action('delete',$info['id'],$this->get_lang('btn_delete'));
         return $actions;
     }
 
-    function get_class($info,$class) {
+    function get_checkbox($type) {
+        if($type == 'protected') return array('disabled'=>'disabled');
+        return array();
+    }
+    function get_class(array $info,$class) {
         if(!empty($info['securityissue'])) $class .= ' secissue';
         return $class;
     }

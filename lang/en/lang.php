@@ -91,7 +91,7 @@ $lang['repocache_error']        = "There was an error retrieving the plugin list
 $lang['repoxmlformat_error']    = 'Repository XML unformatted';
 $lang['security_issue']         = 'Security Issue:';
 $lang['security_warning']       = 'Security Warning:';
-$lang['no_result']              = 'Please try with a simpler query or <a href="%s" title="%s" />click here</a>'.
+$lang['no_result']              = 'Please try with a simpler query or <a href="%s" title="%s" />click here</a> '.
                                   'to browse all plugins.';
 $lang['not_found']              = 'The term "%s" was not found';
 $lang['no_url']                 = 'No download URL';

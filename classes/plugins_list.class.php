@@ -8,32 +8,36 @@
 
 class plugins_list {
 
+    var $rowadded = false;
     protected $form = null;
     protected $actions = array();
     protected $type = "plugin";
-    protected $rowadded = false;
     protected $id = null;
+    protected $m = null;
+    protected $columns = array();
+    
 
     /**
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
     function __construct(ap_manage $manager,$id,$actions = array(),$type ="plugin") {
-        $this->manager = $manager;
-        $this->lang = $manager->lang;
+        $this->m = $manager;
         $this->type = $type;
         $this->id = $id;
-        $this->actions[''] = $this->lang['please_choose'];
+        $this->actions[''] = $this->m->get_lang('please_choose');
         $this->actions = array_merge($this->actions,$actions);
-        $this->form = '';
-        $this->form .='<form id="'.$id.'" accept-charset="utf-8" method="post" action="">';
+        $this->form = '<div class="common">';
+    }
+    function start_form() {
+        $this->form .= '<form id="'.$this->id.'" accept-charset="utf-8" method="post" action="">';
         $hidden['page'] = 'plugin';
         $hidden['fn'] = 'multiselect';
         $hidden['do'] = 'admin';
         if($type == "template")
             $hidden['template'] = 'template';
         $this->add_hidden($hidden);
-        $this->form .='<table class="inline">';
+        $this->form .= '<table class="inline">';
     }
     /**
      * Build single row of plugin table
@@ -43,112 +47,70 @@ class plugins_list {
      * @param array  $checkbox the optional parameters to be passed in for the checkbox (use-case disabling downloads)
      */
     function add_row($class,$info,$actions,$checkbox = array()) {
-        //TODO remove this check when moving to the other template view
-        if(!($this->type =='template' && stripos($class,'enabled')))
-            $this->rowadded = true;
-        $this->form .='<tr class="'.$class.'">';
-        $checked ="";
-        if(!empty($checkbox)) {
-            foreach($checkbox as $key=>$value)
-                $checked .= $key.'="'.$value.'"';
-        }
-        $this->form .='<td class="checkbox"><label for="'.$this->id.hsc($info['id']).'" ><input id="'.$this->id.hsc($info['id']).'" type="checkbox" name="checked[]" value="'.$info['id'].'" '.$checked.' /></label></td>';
-        $this->form .='<td class="legend">';
-        $this->form .='<p class="head"><label for="'.$this->id.hsc($info['id']).'">'.$this->make_title($info).'</label></p>';
-        if(!empty($info['description'])) {
-            $this->form .='<p><label for="'.$this->id.hsc($info['id']).'">'.hsc($info['description']).'</label></p>';
-        }
-        if(!empty($info['newversion'])) {
-            $this->form .='<div class="notify">'.sprintf($this->lang['update_available'],hsc($info['newversion'])).'</div>';
-        }
-        if(!empty($info['securityissue'])) {
-            $this->form .='<div class="error">'.'<strong>'.$this->lang['security_issue'].'</strong> '.hsc($info['securityissue']).'</div>';
-        }
-        if(!empty($info['securitywarning'])) {
-            $this->form .='<div class="notify">'.'<strong>'.$this->lang['security_warning'].'</strong> '.hsc($info['securitywarning']).'</div>';
-        }
-        if(stripos($class,'infoed') !== false) {
-            $this->add_infoed($info);
-        }
-        $this->form .='</td><td class="inforight"><p><label for="'.$this->id.hsc($info['id']).'">';
-        $this->add_inforight($class,$info);
-        $this->form .='</label></p>';
+        $this->rowadded = true;
+        $this->start_row($class);
+        $this->populate_column('checkbox',$this->make_checkbox($info,$checkbox));
+        $this->populate_column('legend',$this->make_legend($info,$class));
+        $this->populate_column('inforight',$this->make_inforight($info,$class));
         if(stripos($class,'template') !== false ) {
-            $this->add_screenshot($info);
+            $this->populate_column('screenshot',$this->make_screenshot($info));
         }
-        $this->form .='</td>';
-        $this->form .='<td class="actions"><p>'.$actions.'</p></td></tr>';
+        $this->populate_column('actions','<p>'.$actions.'</p>');
+        $this->end_row();
     }
 
-    function add_screenshot($info) {
-        $this->form .='</td><td class="screenshot"><label for="'.$this->id.hsc($info['id']).'">';
-        if(!empty($info['screenshoturl'])) {
-            if($info['screenshoturl'][0] == ':') {
-                $info['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$info['screenshoturl'];
-            }
-            $this->form .='<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'"><img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" /></a></label>';
-        }
+    function add_header($header,$level=2) {
+        $this->form .='<h'.$level.'>'.hsc($header).'</h'.$level.'>';
+    }
+    function add_p($data) {
+        $this->form .= '<p>'.$data.'</p>';
+    }
+    function add_hidden(array $array) {
+        foreach ($array as $key => $value) {
+            $this->form .= '<div class="no"><input type="hidden" name="'.$key.'" value="'.$value.'" /></div>';
+        }        
     }
 
-    function add_infoed($info) {
-        $this->form .='<p>';
-        $default = "<em>".$this->lang['unknown']."</em>";
-        $this->form .='<strong>'.hsc($this->lang['author']).'</strong> '.$this->make_author($info).'<br/>';
-         $this->form .='<strong>'.hsc($this->lang['source']).'</strong> '.
-                (!empty($info['downloadurl']) ? hsc($info['downloadurl']) : $default).'<br/>';
-        $this->form .='<strong>'.hsc($this->lang['components']).':</strong> '.
-                (!empty($info['type']) ? hsc($info['type']) : $default).'<br/>';
-        $this->form .='<strong>'.hsc($this->lang['installed']).'</strong> <em>'.
-                (!empty($info['installed']) ? hsc($info['installed']): $default).'</em><br/>';
-        $this->form .='<strong>'.hsc($this->lang['lastupdate']).'</strong> <em>'.
-                (!empty($info['updated']) ? hsc($info['updated']) : $default).'</em><br/>';
-        $this->form .='<strong>'.$this->lang['tags'].'</strong> '.
-                (!empty($info['tags']) ? hsc(implode(', ',(array)$info['tags']['tag'])) : $default).'<br/>';
-        $this->form .='</p>';
-    }
     /**
-     * Add closing tags and render the form
-     * @param string $name Name of the event to trigger
+     * Add closing tags
      */
-    function render() {
-        $this->form .='</table>';
+    function end_form() {
+        $this->form .= '</table>';
         if($this->rowadded) {
-            $this->form .='<div class="bottom">';
-            $this->form .='<label for="'.$this->id.'submit"><span>'.$this->lang['action'].':</span> ';
-            $this->form .='<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
+            $this->form .= '<div class="bottom">';
+            $this->form .= '<label for="'.$this->id.'submit"><span>'.$this->m->get_lang('action').':</span> ';
+            $this->form .= '<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
             foreach($this->actions as $value => $text) {
-                $this->form .='<option value="'.$value.'">'.hsc($text).'</option>';
+                $this->form .= '<option value="'.$value.'">'.hsc($text).'</option>';
             }
-            $this->form .='</select>';
-            $this->form .='</label>';
-            $this->form .=' <input class="button" type="submit" value="'.$this->lang['btn_go'].'" />';
-            $this->form .='</div>';
+            $this->form .= '</select>';
+            $this->form .= '</label>';
+            $this->form .= '<input class="button" type="submit" value="'.$this->m->get_lang('btn_go').'" />';
+            $this->form .= '</div>';
         }
-        $this->form .='</form>';
+        $this->form .= '</form>';
+        $this->form .= '</div>';
+    }
+    function render() {
         echo $this->form;
     }
-
-    function get_form() {
-        return $this->form;
+    private function start_row($class) {
+        $this->form .= '<tr class="'.$class.'">'; 
+    }
+    private function populate_column($class,$html) {
+        $this->form .= '<td class="'.$class.'">'.$html.'</td>';
+    }
+    private function end_row() {
+        $this->form .= '</tr>';
     }
 
-    function add_inforight($class,$info) {
-        if(in_array($this->id,array('plugins__list','templates__list'))) {
-            $this->form .='<strong>'.$this->lang['version'].'</strong> '.$info['version'];
-        } elseif(in_array($this->id,array('browse__list','search__result'))) {
-            $this->form .='<strong>'.$this->lang['version'].'</strong> ';
-            if(!empty($info['lastupdate']))
-                $this->form .= $info['lastupdate'];
-            else
-                $this->form .= '<em>'.$this->lang['unknown'].'</em>';
-        }
-    }
+
     /**
      * Generate title url for a single plugin
      * @param array $info a single plugin from repo cache
      * @return string url or title of the plugin
      */
-    function make_title($info) {
+    private function make_title($info) {
         $name = hsc($info['name']);
         if(!empty($info['dokulink'])) {
             $info['url'] = "http://www.dokuwiki.org/".$info['dokulink'];
@@ -165,39 +127,121 @@ class plugins_list {
         return  hsc($info['name']);
     }
 
-    function add_hidden(array $array) {
-        foreach ($array as $key => $value) {
-            $this->form .='<div class="no"><input type="hidden" name="'.$key.'" value="'.$value.'" /></div>';
-        }        
-    }
-    
-    function make_author($info) {
+    private function make_author($info) {
         if(!empty($info['author'])) {
             if(!empty($info['email'])) {
                 return '<a href="mailto:'.hsc($info['email']).'">'.hsc($info['author']).'</a>';
             }
             return hsc($info['author']);
         }
-        return "<em>".$this->lang['unknown']."</em>";
+        return "<em>".$this->m->get_lang('unknown')."</em>";
     }
-    function make_link($info, $class) {
+    private function make_link($info, $class) {
         return '<a href="'.hsc($info['url']).'" title="'.hsc($info['url']).'" class ="'.$class.'">'.hsc($info['name']).'</a>';
     }
 
+    private function make_inforight($info,$class) {
+        $return = '<p><label for="'.$this->id.hsc($info['id']).'">';
+        $return .= '<strong>'.$this->m->get_lang('version').'</strong> ';
+        if(in_array($this->id,array('plugins__list','templates__list','plugins__protected'))) {
+            $version = $info['version'];
+        } elseif(in_array($this->id,array('browse__list','search__result'))) {
+            if(!empty($info['lastupdate']))
+                $version =  $info['lastupdate'];
+        }
+        if(empty($version)) $version = '<em>'.$this->m->get_lang('unknown').'</em>';
+        $return .= $version."</label></p>";
+        return $return;
+    }
+
+    private function make_screenshot($info) {
+        $return = '<label for="'.$this->id.hsc($info['id']).'">';
+        if(!empty($info['screenshoturl'])) {        
+            if($info['screenshoturl'][0] == ':')
+                $info['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$info['screenshoturl'];
+            $return .= '<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'">'.
+                    '<img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" />'.
+                    '</a>';
+        }
+        $return .= '</label>';
+        return $return;
+    }
+    private function make_legend($info,$class) {
+        $return = '<p class="head">'.
+                    '<label for="'.$this->id.hsc($info['id']).'">'.
+                    $this->make_title($info).
+                    '</label>'.
+                  '</p>';
+        if(!empty($info['description'])) {
+            $return .=  '<p><label for="'.$this->id.hsc($info['id']).'">'.
+                        hsc($info['description']).'</label></p>';
+        }
+        if(!empty($info['newversion'])) {
+            $return .=  '<div class="notify">'.
+                            sprintf($this->m->get_lang('update_available'),hsc($info['newversion'])).
+                        '</div>';
+        }
+        if(!empty($info['securityissue'])) {
+            $return .= '<div class="error">'.
+                            '<strong>'.$this->m->get_lang('security_issue').'</strong> '.
+                            hsc($info['securityissue']).
+                        '</div>';
+        }
+        if(!empty($info['securitywarning'])) {
+            $return .= '<div class="notify">'.
+                            '<strong>'.$this->m->get_lang('security_warning').'</strong> '.
+                            hsc($info['securitywarning']).
+                        '</div>';
+        }
+        if(stripos($class,'infoed') !== false) {
+            $return .= $this->make_infoed($info);
+        }
+        return $return;
+    }
+    private function make_infoed($info) {
+        $return .= '<p>';
+        $default = "<em>".$this->m->get_lang('unknown')."</em>";
+        $return .= '<strong>'.hsc($this->m->get_lang('author')).'</strong> '.$this->make_author($info).'<br/>';
+        $return .= '<strong>'.hsc($this->m->get_lang('source')).'</strong> '.
+                (!empty($info['downloadurl']) ? hsc($info['downloadurl']) : $default).'<br/>';
+        $return .= '<strong>'.hsc($this->m->get_lang('components')).':</strong> '.
+                (!empty($info['type']) ? hsc($info['type']) : $default).'<br/>';
+        $return .= '<strong>'.hsc($this->m->get_lang('installed')).'</strong> <em>'.
+                (!empty($info['installed']) ? hsc($info['installed']): $default).'</em><br/>';
+        $return .= '<strong>'.hsc($this->m->get_lang('lastupdate')).'</strong> <em>'.
+                (!empty($info['updated']) ? hsc($info['updated']) : $default).'</em><br/>';
+        $return .= '<strong>'.$this->m->get_lang('tags').'</strong> '.
+                (!empty($info['tags']) ? hsc(implode(', ',(array)$info['tags']['tag'])) : $default).'<br/>';
+        $return .= '</p>';
+        return $return;
+    }
+    private function make_checkbox($info,$checkbox) {
+        $checked =" ";
+        if(!empty($checkbox)) {
+            foreach($checkbox as $key=>$value)
+                $checked .= $key.'="'.$value.'" ';
+        }
+        return  '<label for="'.$this->id.hsc($info['id']).'" >'.
+                    '<input id="'.$this->id.hsc($info['id']).'" type="checkbox"'.
+                    ' name="checked[]" value="'.$info['id'].'" '.$checked.' />'.
+                '</label>';
+    }
+    // not being used now
     function enabled_tpl_row($enabled,$actions) {
         $class ="enabled template";
         if(!empty($this->enabled['securityissue'])) $class .= " secissue";
-        $this->form .='<tr class="'.$class.'"><td colspan="5" >';
+        $this->form .= '<tr class="'.$class.'"><td colspan="5" >';
         if(!empty($enabled['screenshoturl'])) {
             if($enabled['screenshoturl'][0] == ':') $enabled['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$enabled['screenshoturl'];
-            $this->form .='<img alt="'.$enabled['name'].'" src="'.hsc($enabled['screenshoturl']).'" />';
+            $this->form .= '<img alt="'.$enabled['name'].'" src="'.hsc($enabled['screenshoturl']).'" />';
         }
-        $this->form .='<div class="legend"><span class="head">';
-        $this->form .=$this->make_title($enabled);
-        $this->form .='</span></div>';
+        $this->form .= '<div class="legend"><span class="head">';
+        $this->form .= $this->make_title($enabled);
+        $this->form .= '</span></div>';
         if(!empty($enabled['description'])) {
-            $this->form .='<p>'.hsc($enabled['description']).'</p>';
+            $this->form .= '<p>'.hsc($enabled['description']).'</p>';
         }
-        $this->form .='</td></tr>';
+        $this->form .= '</td></tr>';
     }
+    
 }

@@ -26,9 +26,9 @@ class ap_download extends ap_plugin {
             if($this->download($plugin_url, $this->overwrite)) {
                 $base = $this->current['base'];
                 if($this->current['type'] = "template")
-                    msg(sprintf($this->lang['tempdownloaded'],$base),1);
+                    msg(sprintf($this->get_lang('tempdownloaded'),$base),1);
                 else
-                   msg(sprintf($this->lang['downloaded'],$base),1);
+                   msg(sprintf($this->get_lang('downloaded'),$base),1);
             }
             else {
                 msg($this->manager->error,-1);
@@ -43,12 +43,12 @@ class ap_download extends ap_plugin {
                 if($this->download($plugin['downloadurl'], $this->overwrite,$default_base,$type,$plugin)) {
                     $base = $this->current['base'];
                     if($this->current['type'] == 'template') {
-                        msg(sprintf($this->lang['tempdownloaded'],$base),1);
+                        msg(sprintf($this->get_lang('tempdownloaded'),$base),1);
                     } else {
-                        msg(sprintf($this->lang['downloaded'],$base),1);
+                        msg(sprintf($this->get_lang('downloaded'),$base),1);
                     }
                 } else {
-                    msg(sprintf($this->lang['notdownloaded'],$plugin['id'])." <br />".$this->manager->error,-1);
+                    msg(sprintf($this->get_lang('notdownloaded'),$plugin['id'])." <br />".$this->manager->error,-1);
                 }
             }
         }
@@ -62,23 +62,23 @@ class ap_download extends ap_plugin {
         // check the url
         $matches = array();
         if (!preg_match("/[^\/]*$/", $url, $matches) || !$matches[0]) {
-            $this->manager->error = $this->lang['error_badurl']."\n";
+            $this->manager->error = $this->get_lang('error_badurl')."\n";
             return false;
         }
 
         $file = $matches[0];
 
         if (!($tmp = io_mktmpdir())) {
-            $this->manager->error = $this->lang['error_dircreate']."\n";
+            $this->manager->error = $this->get_lang('error_dircreate')."\n";
             return false;
         }
 
         if (!$file = io_download($url, "$tmp/", true, $file)) {
-            $this->manager->error = sprintf($this->lang['error_download'],$url)."\n";
+            $this->manager->error = sprintf($this->get_lang('error_download'),$url)."\n";
         }
 
         if (!$this->manager->error && !$this->decompress("$tmp/$file", $tmp)) {
-            $this->manager->error = sprintf($this->lang['error_decompress'],$file)."\n";
+            $this->manager->error = sprintf($this->get_lang('error_decompress'),$file)."\n";
         }
 
         // search $tmp for the folder(s) that has been created
@@ -122,12 +122,12 @@ class ap_download extends ap_plugin {
                             $version = date('Y-m-d',strtotime($plugin['lastupdate']));
                         $this->plugin_writelog($target, $instruction, array('url' =>$url,'version'=>$version));
                     } else {
-                        $this->manager->error .= sprintf($this->lang['error_copy']."\n", $item['base']);
+                        $this->manager->error .= sprintf($this->get_lang('error_copy')."\n", $item['base']);
                     }
                 }
 
             } else {
-                $this->manager->error = $this->lang['error']."\n";
+                $this->manager->error = $this->get_lang('error')."\n";
             }
         }
 

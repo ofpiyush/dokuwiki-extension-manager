@@ -21,11 +21,11 @@ class ap_disable extends ap_plugin {
     }
 
     function say_disabled($plugin,$key) {
-        msg(sprintf($this->lang['disabled'],$plugin),1);
+        msg(sprintf($this->get_lang('disabled'),$plugin),1);
     }
 
     function say_notdisabled($plugin,$key) {
-        msg(sprintf($this->lang['notdisabled'],$plugin),-1);
+        msg(sprintf($this->get_lang('notdisabled'),$plugin),-1);
     }
 }
 

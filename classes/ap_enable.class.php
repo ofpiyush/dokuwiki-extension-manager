@@ -14,10 +14,10 @@ class ap_enable extends ap_plugin {
     }
 
     function say_enabled($plugin,$key) {
-        msg(sprintf($this->lang['enabled'],$plugin),1);
+        msg(sprintf($this->get_lang('enabled'),$plugin),1);
     }
 
     function say_notenabled($plugin,$key) {
-        msg(sprintf($this->lang['notenabled'],$plugin),-1);
+        msg(sprintf($this->get_lang('notenabled'),$plugin),-1);
     }
 }

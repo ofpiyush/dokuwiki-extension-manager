@@ -18,7 +18,6 @@ abstract class ap_manage {
         $this->tpl_dir = DOKU_INC.'lib/tpl/';
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
-        $this->lang = $manager->lang;
         $this->repo_cache = new cache('plugin_manager', '.sa');
         $this->check_load_cache();
         $this->repo = $this->fetch_cache();
@@ -28,13 +27,17 @@ abstract class ap_manage {
 
     abstract function html();
 
+    abstract function get_actions(array $info, $type);
+
+    abstract function get_class(array $info, $class);
+    abstract function get_checkbox($input);
     // build our standard menu
     function html_menu() {
         global $ID;
             $tabs_array = array(
-                'plugin' => rtrim($this->lang['plugin'],":"),
-                'template' =>$this->lang['template'],
-                'search' =>$this->lang['install']
+                'plugin' => rtrim($this->get_lang('plugin'),":"),
+                'template' =>$this->get_lang('template'),
+                'search' =>$this->get_lang('install')
                 );
             $selected = array_key_exists($this->manager->cmd,$tabs_array)? $this->manager->cmd : 'plugin' ;
             ptln('<div class="pm_menu">');
@@ -51,13 +54,13 @@ abstract class ap_manage {
     protected function render_search($id,$head,$value = '',$type = null) {
         if($this->manager->cmd == 'search' || (empty($this->repo) && $this->manager->cmd == 'plugin')) {
             ptln('<div class="common">');
-            ptln('  <h2>'.$this->lang['download'].'</h2>');
+            ptln('  <h2>'.$this->get_lang('download').'</h2>');
             $url_form = new Doku_Form('install__url');
-            $url_form->startFieldset($this->lang['download']);
-            $url_form->addElement(form_makeTextField('url','',$this->lang['url'],'dw__url'));
+            $url_form->startFieldset($this->get_lang('download'));
+            $url_form->addElement(form_makeTextField('url','',$this->get_lang('url'),'dw__url'));
             $url_form->addHidden('page','plugin');
             $url_form->addHidden('fn','download');
-            $url_form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_download'] ));
+            $url_form->addElement(form_makeButton('submit', 'admin', $this->get_lang('btn_download') ));
             $url_form->endFieldset();
             $url_form->printForm();
             ptln('</div>');
@@ -241,8 +244,8 @@ abstract class ap_manage {
         } elseif(!empty($return['downloadurl']) && 
             !in_array($this->manager->cmd,array('download','disdown','update'))) {
 
-            msg("<em>".hsc($return['id']).":</em>".$this->lang['no_manager'],2);
-            msg($this->lang['autogen_manager'],2);
+            msg("<em>".hsc($return['id']).":</em>".$this->get_lang('no_manager'),2);
+            msg($this->get_lang('autogen_manager'),2);
             $this->plugin_writelog($path,'install',array('url'=>$return['downloadurl']),false);
         }
         $return = $this->populate_version($return);
@@ -272,7 +275,7 @@ abstract class ap_manage {
         $time = 0;
         if(in_array($info['id'],$this->_bundled)) {
             $version = getVersionData();
-            $info['version'] = $this->lang['bundled'].'<br /> <em>('.$version['date'].')</em>';
+            $info['version'] = $this->get_lang('bundled').'<br /> <em>('.$version['date'].')</em>';
         } else {
             if(!empty($version)){
                 $time = $updated;
@@ -286,7 +289,7 @@ abstract class ap_manage {
             }
         }
         if(empty($info['version'])) {
-            $info['version'] = $this->lang['unknown'];
+            $info['version'] = $this->get_lang('unknown');
             if($time != 0) $info['version'] .= '<br /> <em>('.date('Y-m-d',$time).')</em>';
         }
         return $info;
@@ -310,7 +313,7 @@ abstract class ap_manage {
         if (!$fp = @fopen($file, 'w')) return false;
         fwrite($fp, $info);
         fclose($fp);
-        msg(sprintf($this->lang['autogen_info'],$return['base']),2);
+        msg(sprintf($this->get_lang('autogen_info'),$return['base']),2);
         return true;
     }
 
@@ -336,7 +339,12 @@ abstract class ap_manage {
 
         return false;
     }
-    
+    /**
+     * Place holder for Doku_Plugin::getLang() to avoid very calls to get strings
+     */
+    function get_lang($string) {
+        return $this->manager->getLang($string);
+    }
     /**
      * checks to see if a valid cache exists, if it doesnot, makes one...
      */
@@ -381,7 +389,7 @@ abstract class ap_manage {
         }
         if($error) {
             $this->repo_cache->storeCache(serialize(array()));
-            msg($this->lang['repocache_error'], -1);
+            msg($this->get_lang('repocache_error'), -1);
         }
     }
     
@@ -413,7 +421,7 @@ abstract class ap_manage {
         xml_parse_into_struct($parser,$string, $struct);
         xml_parser_free($parser);
         if(!is_array($struct))
-            throw new Exception($this->lang['repoxml_error']);
+            throw new Exception($this->get_lang('repoxml_error'));
         $xml = array();
         $levels = array();
         $current = &$xml;
