@@ -49,7 +49,7 @@ class ap_search extends ap_manage {
 
         if(is_array($this->search_result) && count($this->search_result)) {
             ptln('<h2>'.hsc(sprintf($this->lang['search_results'],$this->term)).'</h2>');
-            $list = new plugins_list($this,'search_result',$this->actions_list);
+            $list = new plugins_list($this,'search__result',$this->actions_list);
             foreach($this->search_result as $result)
                 foreach($result as $info) {
                     $class = $this->get_class($info,'result');

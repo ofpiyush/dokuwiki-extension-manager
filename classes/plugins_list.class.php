@@ -135,6 +135,12 @@ class plugins_list {
     function add_inforight($class,$info) {
         if(in_array($this->id,array('plugins__list','templates__list'))) {
             $this->form .='<strong>'.$this->lang['version'].'</strong> '.$info['version'];
+        } elseif(in_array($this->id,array('browse__list','search__result'))) {
+            $this->form .='<strong>'.$this->lang['version'].'</strong> ';
+            if(!empty($info['lastupdate']))
+                $this->form .= $info['lastupdate'];
+            else
+                $this->form .= '<em>'.$this->lang['unknown'].'</em>';
         }
     }
     /**
