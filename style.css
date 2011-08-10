@@ -147,15 +147,13 @@
 #plugin__manager .legend .head {
     clear: both;
     font-weight:bold;
+    margin:0;
 }
 
 #plugin__manager .legend p {
     margin:0 0 0 1.5em;
 }
 #plugin__manager .inforight {
-    top:0;
-    float:right;
-    width: 115px;
     font-size:0.8em;
 }
 #plugin__manager .screenshot {

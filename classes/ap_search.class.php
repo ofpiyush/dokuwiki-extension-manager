@@ -48,7 +48,7 @@ class ap_search extends ap_manage {
         $this->render_search('install__search', $this->lang['search_plugin'],$this->term,$this->search_types);
 
         if(is_array($this->search_result) && count($this->search_result)) {
-            ptln('<h2>'.hsc(sprintf($this->lang['search_results'],$this->term)).'</h2>');//TODO Add language
+            ptln('<h2>'.hsc(sprintf($this->lang['search_results'],$this->term)).'</h2>');
             $list = new plugins_list($this,'search_result',$this->actions_list);
             foreach($this->search_result as $result)
                 foreach($result as $info) {
@@ -59,12 +59,12 @@ class ap_search extends ap_manage {
                 }
             $list->render('PLUGIN_PLUGINMANAGER_RENDER_SEARCHRESULT');
         } elseif(!is_null($this->term)) {
-            ptln('<h2>'.hsc(sprintf($this->lang['not_found'],$this->term)).'</h2>');//TODO Add language
+            ptln('<h2>'.hsc(sprintf($this->lang['not_found'],$this->term)).'</h2>');
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
             ptln('<p>'.sprintf($this->lang['no_result'],$url,$url).'</p>');
         } else {
-            ptln('<h2>'.$this->lang['browse'].'</h2>');//TODO Add language
-            $list = new plugins_list($this,'plugins__list',$this->actions_list);
+            ptln('<h2>'.$this->lang['browse'].'</h2>');
+            $list = new plugins_list($this,'browse__list',$this->actions_list);
             foreach($this->filtered_repo as $info) {
                 $class = $this->get_class($info,'all');
                 $actions = $this->get_actions($info);

@@ -272,7 +272,7 @@ abstract class ap_manage {
         $time = 0;
         if(in_array($info['id'],$this->_bundled)) {
             $version = getVersionData();
-            $info['version'] = $version['date'];
+            $info['version'] = $this->lang['bundled'].'<br /> <em>('.$version['date'].')</em>';
         } else {
             if(!empty($version)){
                 $time = $updated;

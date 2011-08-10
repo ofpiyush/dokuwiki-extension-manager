@@ -27,7 +27,7 @@ class ap_template extends ap_manage {
         $this->html_menu();
         $this->render_search('tpl__search',$this->lang['tpl_search'],'','Template');
         ptln('<h2>'.$this->lang['tpl_manage'].'</h2>');
-        $list = new plugins_list($this,'templates_list',$this->actions_list,'template');
+        $list = new plugins_list($this,'templates__list',$this->actions_list,'template');
         $extra_actions = array('template'=>'template');
         // work on the view for enabled template
         //$list->enabled_tpl_row($this->enabled,$this->make_action('update',$this->enabled['id'],'Update',true));

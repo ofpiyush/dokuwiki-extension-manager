@@ -49,7 +49,7 @@ class ap_plugin extends ap_manage {
          */
         ptln('<h2>'.$this->lang['manage'].'</h2>');
         if(is_array($this->plugins) && count($this->plugins)) {
-            $list = new plugins_list($this,'plugins_list',$this->actions_list);
+            $list = new plugins_list($this,'plugins__list',$this->actions_list);
             if(!empty($this->showinfo) && !$this->showinfo['protected']) {
                 $class  = $this->get_class($this->showinfo['info'],$this->showinfo['status']);
                 $class .=" infoed";

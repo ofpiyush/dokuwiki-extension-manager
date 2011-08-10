@@ -18,36 +18,22 @@ class plugins_list {
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct(ap_manage $manager,$id,$actions,$type ="plugin") {
+    function __construct(ap_manage $manager,$id,$actions = array(),$type ="plugin") {
         $this->manager = $manager;
         $this->lang = $manager->lang;
         $this->type = $type;
         $this->id = $id;
         $this->actions[''] = $this->lang['please_choose'];
         $this->actions = array_merge($this->actions,$actions);
-        $this->form = new Doku_Form($id);
-        $this->form->addHidden('page','plugin');
-        $this->form->addHidden('fn','multiselect');
-        $this->form->addElement('<table class="inline">');
+        $this->form = '';
+        $this->form .='<form id="'.$id.'" accept-charset="utf-8" method="post" action="">';
+        $hidden['page'] = 'plugin';
+        $hidden['fn'] = 'multiselect';
+        $hidden['do'] = 'admin';
         if($type == "template")
-            $this->form->addHidden('template','template');
-    }
-
-    function enabled_tpl_row($enabled,$actions) {
-        $class ="enabled template";
-        if(!empty($this->enabled['securityissue'])) $class .= " secissue";
-        $this->form->addElement('<tr class="'.$class.'"><td colspan="4" >');
-        if(!empty($enabled['screenshoturl'])) {
-            if($enabled['screenshoturl'][0] == ':') $enabled['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$enabled['screenshoturl'];
-            $this->form->addElement('<img alt="'.$enabled['name'].'" src="'.hsc($enabled['screenshoturl']).'" />');
-        }
-        $this->form->addElement('<div class="legend"><span class="head">');
-        $this->form->addElement($this->make_title($enabled));
-        $this->form->addElement('</span></div>');
-        if(!empty($enabled['description'])) {
-            $this->form->addElement('<p>'.hsc($enabled['description']).'</p>');
-        }
-        $this->form->addElement('</td></tr>');
+            $hidden['template'] = 'template';
+        $this->add_hidden($hidden);
+        $this->form .='<table class="inline">';
     }
     /**
      * Build single row of plugin table
@@ -60,82 +46,86 @@ class plugins_list {
         //TODO remove this check when moving to the other template view
         if(!($this->type =='template' && stripos($class,'enabled')))
             $this->rowadded = true;
-        $this->form->addElement('<tr class="'.$class.'">');
+        $this->form .='<tr class="'.$class.'">';
         $checked ="";
         if(!empty($checkbox)) {
             foreach($checkbox as $key=>$value)
                 $checked .= $key.'="'.$value.'"';
         }
-        $this->form->addElement('<td class="checkbox"><input type="checkbox" name="checked[]" value="'.$info['id'].'" '.$checked.' /></td>');
-        $this->form->addElement('<td class="legend">');
-        $this->form->addElement('<span class="head">'.$this->make_title($info).'</span>');
-        $this->form->addElement('<div class="inforight"><p>');
-        $this->add_inforight($class,$info);
-        $this->form->addElement('</p></div>');
+        $this->form .='<td class="checkbox"><label for="'.$this->id.hsc($info['id']).'" ><input id="'.$this->id.hsc($info['id']).'" type="checkbox" name="checked[]" value="'.$info['id'].'" '.$checked.' /></label></td>';
+        $this->form .='<td class="legend">';
+        $this->form .='<p class="head"><label for="'.$this->id.hsc($info['id']).'">'.$this->make_title($info).'</label></p>';
         if(!empty($info['description'])) {
-            $this->form->addElement("<p>".hsc($info['description'])."</p>");
+            $this->form .='<p><label for="'.$this->id.hsc($info['id']).'">'.hsc($info['description']).'</label></p>';
         }
         if(!empty($info['newversion'])) {
-            $this->form->addElement('<div class="notify">'.sprintf($this->lang['update_available'],hsc($info['newversion'])).'</div>');
+            $this->form .='<div class="notify">'.sprintf($this->lang['update_available'],hsc($info['newversion'])).'</div>';
         }
         if(!empty($info['securityissue'])) {
-            $this->form->addElement('<div class="error">'.'<strong>'.$this->lang['security_issue'].'</strong> '.hsc($info['securityissue']).'</div>');
+            $this->form .='<div class="error">'.'<strong>'.$this->lang['security_issue'].'</strong> '.hsc($info['securityissue']).'</div>';
         }
         if(!empty($info['securitywarning'])) {
-            $this->form->addElement('<div class="notify">'.'<strong>'.$this->lang['security_warning'].'</strong> '.hsc($info['securitywarning']).'</div>');
+            $this->form .='<div class="notify">'.'<strong>'.$this->lang['security_warning'].'</strong> '.hsc($info['securitywarning']).'</div>';
         }
         if(stripos($class,'infoed') !== false) {
             $this->add_infoed($info);
         }
+        $this->form .='</td><td class="inforight"><p><label for="'.$this->id.hsc($info['id']).'">';
+        $this->add_inforight($class,$info);
+        $this->form .='</label></p>';
         if(stripos($class,'template') !== false ) {
             $this->add_screenshot($info);
         }
-        $this->form->addElement('</td>');
-        $this->form->addElement('<td class="actions"><p>'.$actions.'</p></td></tr>');
+        $this->form .='</td>';
+        $this->form .='<td class="actions"><p>'.$actions.'</p></td></tr>';
     }
 
     function add_screenshot($info) {
-        $this->form->addElement('</td><td class="screenshot">');
+        $this->form .='</td><td class="screenshot"><label for="'.$this->id.hsc($info['id']).'">';
         if(!empty($info['screenshoturl'])) {
             if($info['screenshoturl'][0] == ':') {
                 $info['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$info['screenshoturl'];
             }
-            $this->form->addElement('<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'"><img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" /></a>');
+            $this->form .='<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'"><img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" /></a></label>';
         }
     }
 
     function add_infoed($info) {
-        $this->form->addElement('<p>');
+        $this->form .='<p>';
         $default = "<em>".$this->lang['unknown']."</em>";
-        $this->form->addElement('<strong>'.hsc($this->lang['author']).'</strong> '.$this->make_author($info).'<br/>');
-         $this->form->addElement('<strong>'.hsc($this->lang['source']).'</strong> '.
-                (!empty($info['downloadurl']) ? hsc($info['downloadurl']) : $default).'<br/>');
-        $this->form->addElement('<strong>'.hsc($this->lang['components']).':</strong> '.
-                (!empty($info['type']) ? hsc($info['type']) : $default).'<br/>');
-        $this->form->addElement('<strong>'.hsc($this->lang['installed']).'</strong> <em>'.
-                (!empty($info['installed']) ? hsc($info['installed']): $default).'</em><br/>');
-        $this->form->addElement('<strong>'.hsc($this->lang['lastupdate']).'</strong> <em>'.
-                (!empty($info['updated']) ? hsc($info['updated']) : $default).'</em><br/>');
-        $this->form->addElement('<strong>'.$this->lang['tags'].'</strong> '.
-                (!empty($info['tags']) ? hsc(implode(', ',(array)$info['tags']['tag'])) : $default).'<br/>');
-        $this->form->addElement('</p>');
+        $this->form .='<strong>'.hsc($this->lang['author']).'</strong> '.$this->make_author($info).'<br/>';
+         $this->form .='<strong>'.hsc($this->lang['source']).'</strong> '.
+                (!empty($info['downloadurl']) ? hsc($info['downloadurl']) : $default).'<br/>';
+        $this->form .='<strong>'.hsc($this->lang['components']).':</strong> '.
+                (!empty($info['type']) ? hsc($info['type']) : $default).'<br/>';
+        $this->form .='<strong>'.hsc($this->lang['installed']).'</strong> <em>'.
+                (!empty($info['installed']) ? hsc($info['installed']): $default).'</em><br/>';
+        $this->form .='<strong>'.hsc($this->lang['lastupdate']).'</strong> <em>'.
+                (!empty($info['updated']) ? hsc($info['updated']) : $default).'</em><br/>';
+        $this->form .='<strong>'.$this->lang['tags'].'</strong> '.
+                (!empty($info['tags']) ? hsc(implode(', ',(array)$info['tags']['tag'])) : $default).'<br/>';
+        $this->form .='</p>';
     }
     /**
      * Add closing tags and render the form
      * @param string $name Name of the event to trigger
      */
-    function render($name = null) {
-        $this->form->addElement('</table>');
+    function render() {
+        $this->form .='</table>';
         if($this->rowadded) {
-            $this->form->addElement('<div class="bottom">');
-            $this->form->addElement(form_makeMenuField('action',$this->actions,'',$this->lang['action'].': ','','',array('class'=>'quickselect')));
-            $this->form->addElement("</div>");
-            $this->form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_go'] ));
+            $this->form .='<div class="bottom">';
+            $this->form .='<label for="'.$this->id.'submit"><span>'.$this->lang['action'].':</span> ';
+            $this->form .='<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
+            foreach($this->actions as $value => $text) {
+                $this->form .='<option value="'.$value.'">'.hsc($text).'</option>';
+            }
+            $this->form .='</select>';
+            $this->form .='</label>';
+            $this->form .=' <input class="button" type="submit" value="'.$this->lang['btn_go'].'" />';
+            $this->form .='</div>';
         }
-        if($name !== null)
-            html_form($name,$this->form);
-        else
-            $this->form->printForm();
+        $this->form .='</form>';
+        echo $this->form;
     }
 
     function get_form() {
@@ -143,8 +133,8 @@ class plugins_list {
     }
 
     function add_inforight($class,$info) {
-        if(in_array($this->id,array('plugins_list','templates_list'))) {
-            $this->form->addElement('<strong>'.$this->lang['version'].'</strong> '.$info['version']);
+        if(in_array($this->id,array('plugins__list','templates__list'))) {
+            $this->form .='<strong>'.$this->lang['version'].'</strong> '.$info['version'];
         }
     }
     /**
@@ -169,6 +159,12 @@ class plugins_list {
         return  hsc($info['name']);
     }
 
+    function add_hidden(array $array) {
+        foreach ($array as $key => $value) {
+            $this->form .='<div class="no"><input type="hidden" name="'.$key.'" value="'.$value.'" /></div>';
+        }        
+    }
+    
     function make_author($info) {
         if(!empty($info['author'])) {
             if(!empty($info['email'])) {
@@ -180,5 +176,22 @@ class plugins_list {
     }
     function make_link($info, $class) {
         return '<a href="'.hsc($info['url']).'" title="'.hsc($info['url']).'" class ="'.$class.'">'.hsc($info['name']).'</a>';
+    }
+
+    function enabled_tpl_row($enabled,$actions) {
+        $class ="enabled template";
+        if(!empty($this->enabled['securityissue'])) $class .= " secissue";
+        $this->form .='<tr class="'.$class.'"><td colspan="5" >';
+        if(!empty($enabled['screenshoturl'])) {
+            if($enabled['screenshoturl'][0] == ':') $enabled['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$enabled['screenshoturl'];
+            $this->form .='<img alt="'.$enabled['name'].'" src="'.hsc($enabled['screenshoturl']).'" />';
+        }
+        $this->form .='<div class="legend"><span class="head">';
+        $this->form .=$this->make_title($enabled);
+        $this->form .='</span></div>';
+        if(!empty($enabled['description'])) {
+            $this->form .='<p>'.hsc($enabled['description']).'</p>';
+        }
+        $this->form .='</td></tr>';
     }
 }
