@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Manage class (Base class with most common functions for more than 1 tabs)
+ */
 abstract class ap_manage {
 
     var $manager = NULL;
@@ -37,31 +39,51 @@ abstract class ap_manage {
             $selected = array_key_exists($this->manager->cmd,$tabs_array)? $this->manager->cmd : 'plugin' ;
             ptln('<div class="pm_menu">');
 		    ptln('    <ul>');
-		    foreach($tabs_array as $tab =>$text)
+		    foreach($tabs_array as $tab =>$text) {
+		        // not showing search tab when no repo is present
+		        if(empty($this->repo) && $tab == 'search') continue;
 		        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
+		    }
 		    ptln('    </ul>');
             ptln('</div>');
     }
 
     protected function render_search($id,$head,$value = '',$type = null) {
-        global $lang,$ID;
-        ptln('<div class="common">');
-        ptln('  <h2>'.hsc($head).'</h2>');
-        $search_form = new Doku_Form($id);
-        $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('term',hsc($value),$lang['btn_search'],'pm__sfield'));
-        $search_form->addHidden('page','plugin');
-        $search_form->addHidden('tab','search');
-        $search_form->addHidden('fn','search');
-        if($type !== null)
-            if(is_array($type) && count($type))
-                $search_form->addElement(form_makeMenuField('type',$type,'',''));
-            else
-                $search_form->addHidden('type',$type);
-        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
-        $search_form->endFieldset();
-        $search_form->printForm();
-        ptln('</div>');
+        if($this->manager->cmd == 'search' || (empty($this->repo) && $this->manager->cmd == 'plugin')) {
+            ptln('<div class="common">');
+            ptln('  <h2>'.$this->lang['download'].'</h2>');
+            $url_form = new Doku_Form('install__url');
+            $url_form->startFieldset($this->lang['download']);
+            $url_form->addElement(form_makeTextField('url','',$this->lang['url'],'dw__url'));
+            $url_form->addHidden('page','plugin');
+            $url_form->addHidden('fn','download');
+            $url_form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_download'] ));
+            $url_form->endFieldset();
+            $url_form->printForm();
+            ptln('</div>');
+        }
+        // No point producing search when there is no repo
+        if(!empty($this->repo)) {
+            global $lang,$ID;
+            ptln('<div class="common">');
+            ptln('  <h2>'.hsc($head).'</h2>');
+            $search_form = new Doku_Form($id);
+            $search_form->startFieldset($lang['btn_search']);
+            $search_form->addElement(form_makeTextField('term',hsc($value),$lang['btn_search'],'pm__sfield'));
+            $search_form->addHidden('page','plugin');
+            $search_form->addHidden('tab','search');
+            $search_form->addHidden('fn','search');
+            if($type !== null)
+                if(is_array($type) && count($type))
+                    $search_form->addElement(form_makeMenuField('type',$type,'',''));
+                else
+                    $search_form->addHidden('type',$type);
+            $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
+            $search_form->endFieldset();
+            $search_form->printForm();
+            ptln('</div>');
+            //ptln('<div class="del_confirm"></div>');FIXME for future use as dialog
+        }
     }
 
     function make_action($action,$plugin,$value,$extra = false) {
@@ -76,7 +98,7 @@ abstract class ap_manage {
         );
         if(!empty($extra)) $params = array_merge($params,$extra);
         $url = wl($ID,$params);
-        return '<a href="'.$url.'" title="'.$url.'">'.hsc($value).'</a>';
+        return '<a href="'.$url.'" class="'.$action.'" title="'.$url.'">'.hsc($value).'</a>';
     }
     /**
      *  Refresh plugin list
@@ -219,7 +241,7 @@ abstract class ap_manage {
         } elseif(!empty($return['downloadurl']) && 
             !in_array($this->manager->cmd,array('download','disdown','update'))) {
 
-            msg($this->lang['no_manager'],2);
+            msg("<em>".hsc($return['id']).":</em>".$this->lang['no_manager'],2);
             msg($this->lang['autogen_manager'],2);
             $this->plugin_writelog($path,'install',array('url'=>$return['downloadurl']),false);
         }
@@ -235,6 +257,7 @@ abstract class ap_manage {
                 foreach($components as $component) {
                     $return['type'] .= ", ".$component['type'];
                 }
+                $return['type'] = ltrim($return['type'],',');
             }
         }
         return $return;

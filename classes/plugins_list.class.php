@@ -108,6 +108,8 @@ class plugins_list {
         $this->form->addElement('<p>');
         $default = "<em>".$this->lang['unknown']."</em>";
         $this->form->addElement('<strong>'.hsc($this->lang['author']).'</strong> '.$this->make_author($info).'<br/>');
+         $this->form->addElement('<strong>'.hsc($this->lang['source']).'</strong> '.
+                (!empty($info['downloadurl']) ? hsc($info['downloadurl']) : $default).'<br/>');
         $this->form->addElement('<strong>'.hsc($this->lang['components']).':</strong> '.
                 (!empty($info['type']) ? hsc($info['type']) : $default).'<br/>');
         $this->form->addElement('<strong>'.hsc($this->lang['installed']).'</strong> <em>'.

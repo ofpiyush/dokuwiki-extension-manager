@@ -25,7 +25,7 @@ class ap_disable extends ap_plugin {
     }
 
     function say_notdisabled($plugin,$key) {
-        msg(sprintf($this->lang['notdisabled']."<br /> The plugin might be protected",$plugin),-1);
+        msg(sprintf($this->lang['notdisabled'],$plugin),-1);
     }
 }
 

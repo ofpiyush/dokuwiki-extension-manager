@@ -92,7 +92,9 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
     }
     function invalid_request() {
+        //if command is empty, we need to make it
         if(empty($this->cmd)) return true;
+        
         if(in_array($this->cmd, $this->commands)) return false;
         if(in_array($this->cmd, $this->functions)) {
             if(count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)) return false;
@@ -129,6 +131,9 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         return $this->plugin_list;
     }
 
+    /**
+     * Returns a list of all templates, including the disabled ones
+     */
     private function _get_template_list() {
         if(empty($this->template_list)) {
             $tpl_dir = DOKU_INC.'lib/tpl/';

@@ -33,10 +33,10 @@ class ap_delete extends ap_plugin {
         msg(sprintf($this->lang['error_delete'],$plugin),-1);
     }
     function say_templatedeleted($plugin,$key) {
-        msg(sprintf("Template %s deleted",$plugin),1);
+        msg(sprintf($this->lang['template_deleted'],$plugin),1);
     }
 
     function say_templatenotdeleted($plugin,$key) {
-        msg(sprintf("Template %s count not be deleted",$plugin),-1);
+        msg(sprintf($this->lang['template_error_delete'],$plugin),-1);
     }
 }

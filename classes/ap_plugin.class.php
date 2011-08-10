@@ -37,7 +37,6 @@ class ap_plugin extends ap_manage {
         usort($this->plugins['disabled'],array($this,'_sort'));
         $this->protected_plugins = array_map(array($this,'_info_list'),$plugin_protected);
         usort($this->protected_plugins,array($this,'_sort'));
-        //TODO pull up plugins list type 32 or Temnplate from the cache!!!
     }
 
     function html() {

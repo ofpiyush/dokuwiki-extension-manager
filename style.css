@@ -48,14 +48,8 @@
     text-align: left;
     float: left;
     width: 100%;
-}
-
-#plugin__manager .pm_menu {
-
     border-bottom:1px solid __border__;
 }
-
-
 #plugin__manager .pm_menu ul {
     list-style:none;
     padding:0 0.3em;

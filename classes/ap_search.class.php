@@ -12,10 +12,12 @@ class ap_search extends ap_manage {
     var $search_types = array();
 
     function process() {
+        if(empty($this->repo)) $this->refresh();
         $this->clean_repo();
         $this->actions_list = array(
                 'download'=>$this->lang['btn_download'],
-                'disdown'=>$this->lang['btn_disdown']);
+                'disdown'=>$this->lang['btn_disdown']
+                );
         $this->search_types = array(
             ''=>$this->lang['all'],
             'Syntax'=>$this->lang['syntax'],
@@ -43,19 +45,6 @@ class ap_search extends ap_manage {
 
     function html() {
         $this->html_menu();
-
-        ptln('<div class="common">');
-        ptln('  <h2>'.$this->lang['download'].'</h2>');
-        $url_form = new Doku_Form('install__url');
-        $url_form->startFieldset($this->lang['download']);
-        $url_form->addElement(form_makeTextField('url','',$this->lang['url'],'dw__url'));
-        $url_form->addHidden('page','plugin');
-        $url_form->addHidden('fn','download');
-        $url_form->addElement(form_makeButton('submit', 'admin', $this->lang['btn_download'] ));
-        $url_form->endFieldset();
-        $url_form->printForm();
-        ptln('</div>');
-
         $this->render_search('install__search', $this->lang['search_plugin'],$this->term,$this->search_types);
 
         if(is_array($this->search_result) && count($this->search_result)) {
