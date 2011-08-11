@@ -134,41 +134,36 @@
     color: __text_alt__;
 }
 
+#plugin__manager .infoed {
+    background: __background__;
+    color: __text__;
+}
+
 #plugin__manager .secissue {
     background: #fcc;
     color: #000;
 }
-#plugin__manager .issue , #plugin__manager .warn {
-    padding:0.3em;
-    margin:0.1em 0.5em;
-    border: 1px solid __border__;
-    text-align:center;
-    background: #faa;
-    color:#000;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    -ms-border-radius: 0.2em;
-    -o-border-radius: 0.2em;
-    border-radius: 0.2em;
-}
 
-#plugin__manager .warn {
-    background: #ffc;
-}
 #plugin__manager .legend {
+    position:relative;
     padding:0.2em;
 }
 #plugin__manager .legend .head {
     clear: both;
     font-weight:bold;
 }
+
+#plugin__manager .legend p {
+    margin:0 0 0 1.5em;
+}
+#plugin__manager .inforight {
+    top:0;
+    float:right;
+    margin:0.2em;
+}
 #plugin__manager .screenshot {
     padding: 5px;
     width: 90px;
-}
-#plugin__manager .legend p {
-    margin:0 1.5em 0;
 }
 #plugin__manager .actions {
     font-size: 95%;

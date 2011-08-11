@@ -59,7 +59,7 @@ class ap_search extends ap_manage {
 
         if(is_array($this->search_result) && count($this->search_result)) {
             ptln('<h2>'.'Search results for "'.$this->term.'"</h2>');//TODO Add language
-            $list = new plugins_list('search_result',$this->actions_list);
+            $list = new plugins_list($this,'search_result',$this->actions_list);
             foreach($this->search_result as $result)
                 foreach($result as $info) {
                     $class = $this->get_class($info,'result');
@@ -74,7 +74,7 @@ class ap_search extends ap_manage {
             ptln('<p>Please try with a simpler query or <a href="'.$url.'" title="'.$url.'" />click here</a> to browse all plugins</p>');
         } else {
             ptln('<h2>'.'Browse all plugins'.'</h2>');//TODO Add language
-            $list = new plugins_list('plugins__list',$this->actions_list);
+            $list = new plugins_list($this,'plugins__list',$this->actions_list);
             foreach($this->filtered_repo as $info) {
                 $class = $this->get_class($info,'all');
                 $actions = $this->get_actions($info);
@@ -126,11 +126,13 @@ class ap_search extends ap_manage {
             $matches = array_filter($single,array($this,'search'));
             if(count($matches)) {
                 $count = count(array_intersect_key($this->filters,$matches));
-                if($count && $this->check($single))
+                if($count && $this->check($single)) {
+                    if(stripos($single['id'],$this->term)) $count += 3;
                     $this->search_result[$count][$single['id']] = $single;
+                }
             }
         }
-        return krsort($this->result);
+        return krsort($this->search_result);
     }
 
     /**

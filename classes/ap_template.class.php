@@ -27,18 +27,19 @@ class ap_template extends ap_manage {
         $this->html_menu();
         $this->render_search('tpl__search','Search for a new Template','','Template');
         ptln('<h2>'.'Installed Templates'.'</h2>');
-        $list = new plugins_list('templates_list',$this->actions_list,'template');
+        $list = new plugins_list($this,'templates_list',$this->actions_list,'template');
+        $extra_actions = array('template'=>'template');
         // work on the view for enabled template
         //$list->enabled_tpl_row($this->enabled,$this->make_action('update',$this->enabled['id'],'Update',true));
         $actions = "";
         if($this->enabled['id'] !='default')
-            $actions .=$this->make_action('update',$this->enabled['id'],'Update',true);
+            $actions .=$this->make_action('update',$this->enabled['id'],'Update',$extra_actions);
         $list->add_row("template enabled",$this->enabled,$actions);
         if(!empty($this->templates)) {
             $class = 'template disabled';            
             foreach($this->templates as $template) {
-                $actions = $this->make_action('update',$template['id'],'Update',true);
-                $actions .= ' | '.$this->make_action('delete',$template['id'],'Delete',true);
+                $actions = $this->make_action('update',$template['id'],'Update',$extra_actions);
+                $actions .= ' | '.$this->make_action('delete',$template['id'],'Delete',$extra_actions);
                 $list->add_row($class,$template,$actions);
             }
         }

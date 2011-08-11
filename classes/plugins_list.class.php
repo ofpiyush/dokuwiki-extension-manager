@@ -17,14 +17,15 @@ class plugins_list {
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct($id,$actions,$type ="plugin") {
+    function __construct(ap_manage $manager,$id,$actions,$type ="plugin") {
+        $this->manager = $manager;
         $this->type = $type;
         $this->actions[''] = '-Please Choose-';
         $this->actions = array_merge($this->actions,$actions);
         $this->form = new Doku_Form($id);
         $this->form->addHidden('page','plugin');
         $this->form->addHidden('fn','multiselect');
-        $this->form->addElement(form_makeOpenTag('table',array('class'=>'inline')));
+        $this->form->addElement('<table class="inline">');
         if($type == "template")
             $this->form->addHidden('template','template');
     }
@@ -38,7 +39,9 @@ class plugins_list {
         $this->form->addElement('<div class="legend"><span class="head">');
         $this->form->addElement($this->make_title($enabled));
         $this->form->addElement('</span></div>');
-        $this->form->addElement('<p>'.hsc($enabled['description']).'</p>');
+        if(!empty($enabled['description'])) {
+            $this->form->addElement('<p>'.hsc($enabled['description']).'</p>');
+        }
         $this->form->addElement('</td></tr>');
     }
     /**
@@ -50,43 +53,54 @@ class plugins_list {
      */
     function add_row($class,$info,$actions,$checkbox = array()) {
         $this->rowadded = true;
-        $this->form->addElement(form_makeOpenTag('tr',array('class'=>$class)));
-        $this->form->addElement(form_makeOpenTag('td',array('class'=>'checkbox')));
-        $this->form->addElement(form_makeCheckboxField('checked[]',$info['id'],'','','',$checkbox));
-        $this->form->addElement(form_makeCloseTag('td'));
-        $this->form->addElement(form_makeOpenTag('td',array('class'=>'legend')));
-        $this->form->addElement(form_makeOpenTag('span',array('class'=>'head')));
-        $this->form->addElement($this->make_title($info));
-        $this->form->addElement(form_makeCloseTag('span'));
+        $this->form->addElement('<tr class="'.$class.'">');
+        $checked ="";
+        if(!empty($checkbox)) {
+            foreach($checkbox as $key=>$value)
+                $checked .= $key.'="'.$value.'"';
+        }
+        $this->form->addElement('<td class="checkbox"><input type="checkbox" name="checked[]" value="'.$info['id'].'" '.$checked.' /></td>');
+        $this->form->addElement('<td class="legend">');
+        $this->form->addElement('<span class="head">'.$this->make_title($info).'</span>');
+        if(stripos($class,'infoed') !== false) {
+            $this->form->addElement('<span class="inforight"><p>');
+            if(!empty($info['author'])) {
+                if(!empty($info['email']))
+                    $this->form->addElement('<strong>'.hsc($this->manager->lang['author']).'</strong> <a href="mailto:'.hsc($info['email']).'">'.hsc($info['author']).'</a><br/>');
+                else
+                    $this->form->addElement('<strong>'.hsc($this->manager->lang['author']).'</strong> '.hsc($info['author']).'<br/>');
+            }
+            if(!empty($info['tags']))
+                $this->form->addElement('<strong>'.hsc($this->manager->lang['tags']).'</strong> '.hsc(implode(', ',(array)$info['tags']['tag'])).'<br/>');
+            $this->form->addElement('</p></span>');
+        }
         if(!empty($info['description'])) {
-            $this->form->addElement(form_makeOpenTag('p'));
-            $this->form->addElement(hsc($info['description']));
-            $this->form->addElement(form_makeCloseTag('p'));
+            $this->form->addElement("<p>".hsc($info['description'])."</p>");
         }
         if(!empty($info['securityissue'])) {
-            $this->form->addElement(form_makeOpenTag('div',array('class'=>'issue')));
-            $this->form->addElement('<strong>Security Issue:</strong> '.hsc($info['securityissue']));
-            $this->form->addElement(form_makeCloseTag('div'));
+            $this->form->addElement('<div class="error">'.'<strong>Security Issue:</strong> '.hsc($info['securityissue']).'</div>');
         }
         if(!empty($info['securitywarning'])) {
-            $this->form->addElement(form_makeOpenTag('div',array('class'=>'warn')));
-            $this->form->addElement('<strong>Security Warning:</strong> '.hsc($info['securitywarning']));
-            $this->form->addElement(form_makeCloseTag('div'));
+            $this->form->addElement('<div class="notify">'.'<strong>Security Warning:</strong> '.hsc($info['securitywarning']).'</div>');
+        }
+        if(stripos($class,'infoed') !== false) {
+            $this->form->addElement('<p>');
+            if(!empty($info['type'])) {
+                $this->form->addElement('<strong>'.hsc($this->manager->lang['components']).':</strong> '.hsc($info['type']).'<br/>');
+            }
+            if(!empty($info['installed']))
+                $this->form->addElement('<strong>'.hsc($this->manager->lang['installed']).'</strong> <em>'.hsc($info['installed']).'</em><br/>');
+            if(!empty($info['updated']))
+                $this->form->addElement('<strong>'.hsc($this->manager->lang['lastupdate']).'</strong> <em>'.hsc($info['updated']).'</em><br/>');
+            $this->form->addElement('</p>');
         }
         if(stripos($class,'template') !== false ) {
-            $this->form->addElement(form_makeCloseTag('td'));
-            $this->form->addElement(form_makeOpenTag('td',array('class'=>'screenshot')));
+            $this->form->addElement('</td><td class="screenshot">');
             if(!empty($info['screenshoturl']))
-                $this->form->addElement('<img alt="'.$info['name'].'" width="80" src="'.hsc($info['screenshoturl']).'" />');
-            $this->form->addElement(form_makeCloseTag('td'));
+                $this->form->addElement('<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'"><img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" /></a>');
         }
-        $this->form->addElement(form_makeCloseTag('td'));
-        $this->form->addElement(form_makeOpenTag('td',array('class'=>'actions')));
-        $this->form->addElement(form_makeOpenTag('p'));
-        $this->form->addElement($actions);
-        $this->form->addElement(form_makeCloseTag('p'));
-        $this->form->addElement(form_makeCloseTag('td'));
-        $this->form->addElement(form_makeCloseTag('tr'));
+        $this->form->addElement('</td>');
+        $this->form->addElement('<td class="actions"><p>'.$actions.'</p></td></tr>');
     }
 
     /**
@@ -94,11 +108,11 @@ class plugins_list {
      * @param string $name Name of the event to trigger
      */
     function render($name = null) {
-        $this->form->addElement(form_makeCloseTag('table'));
+        $this->form->addElement('</table>');
         if($this->rowadded) {
-            $this->form->addElement(form_makeOpenTag('div',array('class'=>'bottom')));
+            $this->form->addElement('<div class="bottom">');
             $this->form->addElement(form_makeMenuField('action',$this->actions,'','Action: ','','',array('class'=>'quickselect')));//TODO add language
-            $this->form->addElement(form_makeCloseTag('div'));
+            $this->form->addElement("</div>");
             $this->form->addElement(form_makeButton('submit', 'admin', 'Go' ));
         }
         if($name !== null)

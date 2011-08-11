@@ -64,7 +64,7 @@ abstract class ap_manage {
         ptln('</div>');
     }
 
-    function make_action($action,$plugin,$value,$template = false) {
+    function make_action($action,$plugin,$value,$extra = false) {
         global $ID;
         $params = array(
             'do'=>'admin',
@@ -74,14 +74,14 @@ abstract class ap_manage {
             'checked[]'=>$plugin,
             'sectok'=>getSecurityToken()
         );
-        if($template) $params['template'] = 'template';
+        if(!empty($extra)) $params = array_merge($params,$extra);
         $url = wl($ID,$params);
         return '<a href="'.$url.'" title="'.$url.'">'.$value.'</a>';
     }
     /**
      *  Refresh plugin list
      */
-    function refresh($tab = "plugin") {
+    function refresh($tab = "plugin",$extra =false) {
         global $config_cascade;
 
         // expire dokuwiki caches
@@ -90,7 +90,9 @@ abstract class ap_manage {
 
         // update latest plugin date - FIXME
         global $ID;
-        send_redirect(wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab),true, '&'));
+        $params =array('do'=>'admin','page'=>'plugin','tab'=>$tab);
+        if(!empty($extra)) $params = array_merge($params,$extra);
+        send_redirect(wl($ID,$params,true, '&'));
     }
 
     /**
@@ -147,36 +149,43 @@ abstract class ap_manage {
     function get_plugin_components($plugin) {
 
         global $plugin_types;
-        $components = array();
-        $path = DOKU_PLUGIN.plugin_directory($plugin).'/';
+        static $plugins;
+        if(empty($plugins[$plugin])) {
+            $components = array();
+            $path = DOKU_PLUGIN.plugin_directory($plugin).'/';
 
-        foreach ($plugin_types as $type) {
-            if (@file_exists($path.$type.'.php')) { $components[] = array('name'=>$plugin, 'type'=>$type); continue; }
+            foreach ($plugin_types as $type) {
+                if (@file_exists($path.$type.'.php')) { $components[] = array('name'=>$plugin, 'type'=>$type); continue; }
 
-            if ($dh = @opendir($path.$type.'/')) {
-                while (false !== ($cp = readdir($dh))) {
-                    if ($cp == '.' || $cp == '..' || strtolower(substr($cp,-4)) != '.php') continue;
+                if ($dh = @opendir($path.$type.'/')) {
+                    while (false !== ($cp = readdir($dh))) {
+                        if ($cp == '.' || $cp == '..' || strtolower(substr($cp,-4)) != '.php') continue;
 
-                    $components[] = array('name'=>$plugin.'_'.substr($cp, 0, -4), 'type'=>$type);
+                        $components[] = array('name'=>$plugin.'_'.substr($cp, 0, -4), 'type'=>$type);
+                    }
+                    closedir($dh);
                 }
-                closedir($dh);
             }
+            $plugins[$plugin] = $components;
         }
-
-        return $components;
+        return $plugins[$plugin];
     }
 
     /**
      * Read info and return an array compatible with plugins_list table
      */
-    protected function _info_list($index,$type = "plugin") {
+    protected function _info_list($index,$type = "plugin",$fetch_full =false) {
         $info_autogenerate = false;
+        // determine path of the folder
         $path = ($type == "plugin") ? DOKU_PLUGIN.plugin_directory($index).'/': DOKU_INC."lib/tpl/$index/";
-        $info_path = $path.$type.'.info.txt';
+        $info_path = $path.$type.'.info.txt';//full path to *.info.txt
+        // initialize the necessary ones for overriding
         $return = array('id'=>$index,'name' => $index,'base'=>$index);
+        // check load the file
         if(@file_exists($info_path)) {
             $return = array_merge($return,confToHash($info_path));
         } elseif($type == 'plugin') {
+            //fetch and save the info.txt for faster future loads
             $components = $this->get_plugin_components($index);
             if(!empty($components)) {
                 $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
@@ -189,6 +198,7 @@ abstract class ap_manage {
                 unset($obj);
             }
         } else {
+            //its a template. lets see if we can get it to autogen from the repo
             $info_autogenerate = true;
         }
 
@@ -208,6 +218,16 @@ abstract class ap_manage {
         }
         if($info_autogenerate && !empty($return['description'])) {
             $this->info_autogen($info_path,$return);
+        }
+        //Walk the extra mile for a full fetch
+        if($fetch_full) {
+            if(empty($return['type']) && $type == 'plugin') {
+                $return['type'] = '';
+                $components = $this->get_plugin_components($index);
+                foreach($components as $component) {
+                    $return['type'] .= ", ".$component['type'];
+                }
+            }
         }
         return $return;
     }

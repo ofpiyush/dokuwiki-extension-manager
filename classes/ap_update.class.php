@@ -17,7 +17,7 @@ class ap_update extends ap_download {
             if(!empty($plugin_url)) {
                 if($this->download($plugin_url, $this->overwrite,$default_base,$this->type)) {
                     $base = $this->current['base'];
-                    if($type == 'template') {
+                    if($this->type == 'template') {
                         msg(sprintf("Template %s successfully updated",$base),1);
                     } else {
                         msg(sprintf($this->lang['updated'],$base),1);

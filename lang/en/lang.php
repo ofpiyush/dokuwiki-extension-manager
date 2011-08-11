@@ -52,7 +52,7 @@ $lang['type']             = 'Type:';
 $lang['desc']             = 'Description:';
 $lang['author']           = 'Author:';
 $lang['www']              = 'Web:';
-
+$lang['tags']             = 'Tags:';
 // error messages
 $lang['error']            = 'An unknown error occurred.';
 $lang['error_download']   = 'Unable to download the plugin file: %s';
