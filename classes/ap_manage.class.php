@@ -125,6 +125,7 @@ abstract class ap_manage {
     function plugin_writelog($target, $cmd, $data,$date = true) {
         $file = $target.'/manager.dat';
         $out = "";
+        $write =false;
         if(!empty($data['url'])) {
             $out = "downloadurl=".$data['url'].PHP_EOL;
         }
@@ -138,15 +139,18 @@ abstract class ap_manage {
             if($date)
                 $out .= "installed=".date('r').PHP_EOL;
             if(!$fp = @fopen($file, 'wb')) return false;
-            fwrite($fp, $out);
+            $write = fwrite($fp, $out);
             fclose($fp);
         } elseif($cmd == 'update') {
             if($date)
                 $out .= "updated=".date('r').PHP_EOL;
             if (!$fp = @fopen($file, 'a')) return false;
-            fwrite($fp, $out);
+            $write = fwrite($fp, $out);
             fclose($fp);
+        } else {
+            return false;
         }
+        return $write;
     }
 
     function fetch_log($path,$field = 'ALL') {
@@ -246,6 +250,8 @@ abstract class ap_manage {
         if(!empty($this->repo[$repo_key])) {
             $return = array_merge($return,$this->repo[$repo_key]);
         }
+        //rewrite the name after getting it from repo
+        $return['id'] = $index;
         if(!empty($return['desc'])) {
             $return['description'] = $return['desc'];
         }
@@ -258,7 +264,7 @@ abstract class ap_manage {
         } elseif(!empty($return['downloadurl'])  && !empty($log['downloadurl']) &&
                 $return['downloadurl'] != $log['downloadurl']) {
             if($this->plugin_writelog($path,'update',array('url'=>$return['downloadurl']),false)) {
-                msg(sprintf($this->get_lang('change_url'),hsc($return['id']),hsc($return['downloadurl']),hsc($log['downloadurl']),hsc($return['name']),$this->get_lang('btn_info'),
+                msg(sprintf($this->get_lang('url_change'),hsc($return['id']),hsc($return['downloadurl']),hsc($log['downloadurl']),hsc($return['name']),$this->get_lang('btn_info'),
                     $this->get_lang('source'),hsc($path)),2);
             }
         }

@@ -66,11 +66,12 @@ $lang['downloads']              = 'The following plugins have been installed suc
 $lang['download_none']          = 'No plugins found, or there has been an unknown problem during downloading and installing.';
 // Notices
 $lang['autogen_info']           = "Auto generated and saved info.txt for <em>%s</em>";
-$lang['url_change']             = "The download URL for %s has been changed to %s from %s on the DokuWiki server".
-                                  "The new URL will be used next time you update or re-install %s. Click <em>%s</em> ".
-                                  "to see the URL again next to %s. To prevent accidental overwriting, ".
-                                  "make sure the directory %s is <strong>not</strong> writeable by your ".
-                                  "web server";
+$lang['url_change']             = "The download URL for <strong>%s</strong> has been changed to <br /> %s <br /> from <br/> %s ".
+                                  "on the DokuWiki server. <br />".
+                                  "The new URL will be used next time you update or re-install <strong>%s.</strong><br />".
+                                  "Click <em>%s</em> to see the URL again next to <em>%s</em><br />".
+                                  "To prevent accidental overwriting, ".
+                                  "make sure the directory %s is <strong>not</strong> writeable by your web server".
 //plugin types
 $lang['all']                    = 'All';
 $lang['syntax']                 = 'Syntax';
