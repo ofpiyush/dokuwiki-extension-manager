@@ -34,8 +34,10 @@ class plugins_list {
         $class ="enabled template";
         if(!empty($this->enabled['securityissue'])) $class .= " secissue";
         $this->form->addElement('<tr class="'.$class.'"><td colspan="4" >');
-        if(!empty($enabled['screenshoturl']))
+        if(!empty($enabled['screenshoturl'])) {
+            if($enabled['screenshoturl'][0] == ':') $enabled['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$enabled['screenshoturl'];
             $this->form->addElement('<img alt="'.$enabled['name'].'" src="'.hsc($enabled['screenshoturl']).'" />');
+        }
         $this->form->addElement('<div class="legend"><span class="head">');
         $this->form->addElement($this->make_title($enabled));
         $this->form->addElement('</span></div>');
@@ -96,8 +98,10 @@ class plugins_list {
         }
         if(stripos($class,'template') !== false ) {
             $this->form->addElement('</td><td class="screenshot">');
-            if(!empty($info['screenshoturl']))
+            if(!empty($info['screenshoturl'])) {
+                if($info['screenshoturl'][0] == ':') $info['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$info['screenshoturl'];
                 $this->form->addElement('<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'"><img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" /></a>');
+            }
         }
         $this->form->addElement('</td>');
         $this->form->addElement('<td class="actions"><p>'.$actions.'</p></td></tr>');
