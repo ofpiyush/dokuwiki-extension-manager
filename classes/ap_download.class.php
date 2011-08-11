@@ -23,7 +23,7 @@ class ap_download extends ap_plugin {
     //FIXME needs serious refactoring (probably after GSoC)
         if(array_key_exists('url',$_REQUEST)) {
             $plugin_url = $_REQUEST['url'];
-            if($this->download($plugin_url, $this->overwrite)) {
+            if($this->download(array('downloadurl' =>$plugin_url), $this->overwrite)) {
                 $base = $this->current['base'];
                 if($this->current['type'] = "template")
                     msg(sprintf($this->get_lang('tempdownloaded'),$base),1);
@@ -39,8 +39,8 @@ class ap_download extends ap_plugin {
                 $this->current = null;
                 $this->manager->error = null;
                 $type = (stripos($plugin['type'],'Template') !== false ) ? 'template' : 'plugin';
-                $default_base = ($type == 'template') ? str_replace('template:','',$plugin['id']) :$plugin['id'];
-                if($this->download($plugin['downloadurl'], $this->overwrite,$default_base,$type,$plugin)) {
+                $default_base = ($type == 'template') ? str_replace('template:','',$plugin['id']) :'';
+                if($this->download($plugin, $this->overwrite,$default_base,$type)) {
                     $base = $this->current['base'];
                     if($this->current['type'] == 'template') {
                         msg(sprintf($this->get_lang('tempdownloaded'),$base),1);
@@ -57,8 +57,9 @@ class ap_download extends ap_plugin {
     /**
      * Process the downloaded file
      */
-    function download($url, $overwrite=false,$default_base = null, $default_type = "plugin",$plugin =array()) {
+    function download($plugin , $overwrite=false,$default_base = null, $default_type = "plugin") {
         global $lang;
+        $url = $plugin['downloadurl'];
         // check the url
         $matches = array();
         if (!preg_match("/[^\/]*$/", $url, $matches) || !$matches[0]) {
@@ -118,7 +119,7 @@ class ap_download extends ap_plugin {
                         $version = $repoid = '';
                         if(!empty($plugin['lastupdate']))
                             $version = $plugin['lastupdate'];
-                        if(!empty($default_base) && !file_exists($target.'/plugin.info.txt'))
+                        if(!empty($default_base) && !file_exists($target.'/'.$item['type'].'.info.txt'))
                             $repoid = $default_base;
                         $this->plugin_writelog($target, $instruction, array('url' =>$url,'repoid'=>$repoid,'pm_date_version'=>$version));
                     } else {

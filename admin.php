@@ -70,6 +70,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         } else {
             $this->cmd = $_REQUEST['fn'];
         }
+        //still here to allow reverting to multiselect
         if($this->cmd == 'multiselect') {
             $this->cmd = $_REQUEST['action'];
         }

@@ -8,7 +8,7 @@ class ap_info extends ap_plugin {
         if(!empty($this->plugin)) {
             $tab = !empty($_REQUEST['template'])? 'template' : 'plugin';
             $this->showinfo = array_pop($this->plugin);
-            $this->refresh($tab,array('info'=>$this->showinfo));
+            $this->refresh($tab,array('info'=>$this->showinfo),'pminfoed__'.$this->showinfo);
         }
         parent::process();
     }

@@ -167,7 +167,7 @@ class plugins_list {
         return $return;
     }
     private function make_legend($info,$class) {
-        $return = '<p class="head">'.
+        $return = '<p class="head"> <a name="pminfoed__'.$info['id'].'" ></a>'.
                     '<label for="'.$this->id.hsc($info['id']).'">'.
                     $this->make_title($info).
                     '</label>'.

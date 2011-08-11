@@ -67,7 +67,7 @@ abstract class ap_manage {
         }
         // No point producing search when there is no repo
         if(!empty($this->repo)) {
-            global $lang,$ID;
+            global $lang;
             ptln('<div class="common">');
             ptln('  <h2>'.hsc($head).'</h2>');
             $search_form = new Doku_Form($id);
@@ -76,9 +76,11 @@ abstract class ap_manage {
             $search_form->addHidden('page','plugin');
             $search_form->addHidden('tab','search');
             $search_form->addHidden('fn','search');
+            $type_default = "";
+            if(!empty($this->extra['type'])) $type_default = $this->extra['type'];
             if($type !== null)
                 if(is_array($type) && count($type))
-                    $search_form->addElement(form_makeMenuField('type',$type,'',''));
+                    $search_form->addElement(form_makeMenuField('type',$type,$type_default,''));
                 else
                     $search_form->addHidden('type',$type);
             $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
@@ -105,7 +107,7 @@ abstract class ap_manage {
     /**
      *  Refresh plugin list
      */
-    function refresh($tab = "plugin",$extra =false) {
+    function refresh($tab = "plugin",$extra =false,$anchor = '') {
         global $config_cascade;
 
         // expire dokuwiki caches
@@ -116,7 +118,8 @@ abstract class ap_manage {
         global $ID;
         $params =array('do'=>'admin','page'=>'plugin','tab'=>$tab);
         if(!empty($extra)) $params = array_merge($params,$extra);
-        send_redirect(wl($ID,$params,true, '&'));
+        if(!empty($anchor)) $anchor = "#".$anchor;
+        send_redirect(wl($ID,$params,true, '&').$anchor);
     }
 
     /**

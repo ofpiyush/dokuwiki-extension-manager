@@ -12,10 +12,10 @@ class ap_update extends ap_download {
             $this->current = null;
             $this->manager->error = null;
             $info = $this->_info_list($plugin,$this->type);
+            
             if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info['downloadurl'])) {
-                $plugin_url = $info['downloadurl'];
-                if(!empty($plugin_url)) {
-                    if($this->download($plugin_url, $this->overwrite,$default_base,$this->type,$info)) {
+                if(!empty($info['downloadurl'])) {
+                    if($this->download($info, $this->overwrite,'',$this->type)) {
                         $base = $this->current['base'];
                         if($this->type == 'template') {
                             msg(sprintf($this->get_lang('tempupdated'),$base),1);

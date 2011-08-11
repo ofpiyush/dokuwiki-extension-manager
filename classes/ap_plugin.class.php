@@ -15,18 +15,8 @@ class ap_plugin extends ap_manage {
             'update'=>$this->get_lang('btn_update'),
         );
         $list = $this->manager->plugin_list;
-        if(!empty($_REQUEST['info']))
+        if(!empty($_REQUEST['info']) && in_array($_REQUEST['info'],$list))
             $this->showinfo = $_REQUEST['info'];
-        if(!empty($this->showinfo) && in_array($this->showinfo,$list)) {
-            $list = array_diff($list,array($this->showinfo));
-            $infoed = $this->showinfo;
-            $this->showinfo =array();
-            $this->showinfo['protected'] = in_array($infoed,$plugin_protected);
-            $this->showinfo['status'] = plugin_isdisabled($infoed)? 'disabled' : 'enabled';
-            $this->showinfo['info'] = $this->_info_list($infoed,'plugin',true);
-        } else {
-            $this->showinfo = null;
-        }
         $unprotected = array_diff($list,$plugin_protected);
         $enabled = array_intersect($unprotected,plugin_list());
         $disabled = array_filter($unprotected,'plugin_isdisabled');
@@ -51,12 +41,6 @@ class ap_plugin extends ap_manage {
             $list = new plugins_list($this,'plugins__list',$this->actions_list);
             $list->add_header($this->get_lang('manage'));
             $list->start_form();
-            if(!empty($this->showinfo) && !$this->showinfo['protected']) {
-                $class  = $this->get_class($this->showinfo['info'],$this->showinfo['status']." infoed");
-                $actions = $this->get_actions($this->showinfo['info'],$this->showinfo['status']);
-                $list->add_row($class,$this->showinfo['info'],$actions);
-                unset($this->showinfo);
-            }
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
                     $class = $this->get_class($info,$type);
@@ -73,11 +57,6 @@ class ap_plugin extends ap_manage {
             $protected_list->add_p($this->get_lang('protected_desc'));  
             $protected_list->start_form();          
             $checkbox = array('disabled'=>'disabled');
-            if(!empty($this->showinfo) && $this->showinfo['protected']) {
-                $class = $this->get_class($this->showinfo['info'],"infoed");
-                $actions = $this->get_actions($this->showinfo['info'],'protected');
-                $protected_list->add_row($class,$this->showinfo['info'],$actions,$checkbox);
-            }
             foreach($this->protected_plugins as $info) {
                 $class = $this->get_class($info,"protected");
                 $actions = $this->get_actions($info,'protected');
@@ -118,6 +97,7 @@ class ap_plugin extends ap_manage {
     }
     function get_class(array $info,$class) {
         if(!empty($info['securityissue'])) $class .= ' secissue';
+        if($info['id'] === $this->showinfo) $class .=" infoed";
         return $class;
     }
 }
