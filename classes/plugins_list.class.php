@@ -25,15 +25,16 @@ class plugins_list {
         $this->m = $manager;
         $this->type = $type;
         $this->id = $id;
-        $this->actions[''] = $this->m->get_lang('please_choose');
+        //$this->actions[''] = $this->m->get_lang('please_choose');
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
     }
     function start_form() {
         $this->form .= '<form id="'.$this->id.'" accept-charset="utf-8" method="post" action="">';
         $hidden['page'] = 'plugin';
-        $hidden['fn'] = 'multiselect';
+        //$hidden['fn']   ='multiselect';
         $hidden['do'] = 'admin';
+        $hidden['sectok'] = getSecurityToken();
         if($type == "template")
             $hidden['template'] = 'template';
         $this->add_hidden($hidden);
@@ -78,14 +79,13 @@ class plugins_list {
         $this->form .= '</table>';
         if($this->rowadded) {
             $this->form .= '<div class="bottom">';
-            $this->form .= '<label for="'.$this->id.'submit"><span>'.$this->m->get_lang('action').':</span> ';
-            $this->form .= '<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
+            //$this->form .= '<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
             foreach($this->actions as $value => $text) {
-                $this->form .= '<option value="'.$value.'">'.hsc($text).'</option>';
+                //$this->form .= '<option value="'.$value.'">'..'</option>';
+                $this->form .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }
-            $this->form .= '</select>';
-            $this->form .= '</label>';
-            $this->form .= '<input class="button" type="submit" value="'.$this->m->get_lang('btn_go').'" />';
+            //$this->form .= '</select>';
+            //$this->form .= '<input class="button" type="submit" value="'.$this->m->get_lang('btn_go').'" />';
             $this->form .= '</div>';
         }
         $this->form .= '</form>';
@@ -144,7 +144,7 @@ class plugins_list {
         $return = '<p><label for="'.$this->id.hsc($info['id']).'">';
         $return .= '<strong>'.$this->m->get_lang('version').'</strong> ';
         if(in_array($this->id,array('plugins__list','templates__list','plugins__protected'))) {
-            $version = $info['version'];
+            $version = $info['pm_date_version'];
         } elseif(in_array($this->id,array('browse__list','search__result'))) {
             if(!empty($info['lastupdate']))
                 $version =  $info['lastupdate'];

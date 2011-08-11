@@ -64,9 +64,16 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         $this->setupLocale();
         $tab = (array_key_exists('tab',$_REQUEST) && in_array($_REQUEST['tab'],$this->nav_tabs))? $_REQUEST['tab'] : 'plugin';
 
-        $this->cmd = $_REQUEST['fn'];
-        if($this->cmd == 'multiselect' && is_array($_REQUEST['checked'])) {
+        $fn = $_REQUEST['fn'];
+        if (is_array($fn)) {
+            $this->cmd = key($fn);
+        } else {
+            $this->cmd = $_REQUEST['fn'];
+        }
+        if($this->cmd == 'multiselect') {
             $this->cmd = $_REQUEST['action'];
+        }
+        if(!empty($_REQUEST['checked'])) {
             $this->plugin = $_REQUEST['checked'];
         }
         $this->_get_plugin_list();
@@ -96,11 +103,10 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         if(empty($this->cmd)) return true;
         
         if(in_array($this->cmd, $this->commands)) return false;
-        if(in_array($this->cmd, $this->functions)) {
+        if(in_array($this->cmd, $this->functions) && checkSecurityToken()) {
             if(count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)) return false;
             if(count(array_intersect($this->plugin, $this->template_list)) == count($this->plugin)) return false;
         }
-        if(checkSecurityToken()) return false;
         return true;
     }
 

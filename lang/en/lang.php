@@ -24,14 +24,15 @@ $lang['btn_info']               = 'info';
 $lang['btn_update']             = 'update';
 $lang['btn_delete']             = 'delete';
 $lang['enable']                 = 'enable';
-$lang['btn_go']                 = "Go";
+//$lang['btn_go']                 = "Go"; not necessary if using buttons
 $lang['btn_disable']            = 'disable';
 $lang['btn_settings']           = 'settings';
 $lang['btn_download']           = 'Download';
+$lang['btn_reinstall']          = 're-install';
 $lang['btn_disdown']            = 'Download as disabled';
 $lang['btn_enable']             = 'Save';
 $lang['browse']                 = 'Browse all plugins';
-$lang['please_choose']          = '-Please Choose-';
+//$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
 
 $lang['url']                    = 'URL';
@@ -65,7 +66,11 @@ $lang['downloads']              = 'The following plugins have been installed suc
 $lang['download_none']          = 'No plugins found, or there has been an unknown problem during downloading and installing.';
 // Notices
 $lang['autogen_info']           = "Auto generated and saved info.txt for <em>%s</em>";
-$lang['autogen_manager']        = "The manager.dat file has been auto generated from the download url in the repository";
+$lang['url_change']             = "The download URL for %s has been changed to %s from %s on the DokuWiki server".
+                                  "The new URL will be used next time you update or re-install %s. Click <em>%s</em> ".
+                                  "to see the URL again next to %s. To prevent accidental overwriting, ".
+                                  "make sure the directory %s is <strong>not</strong> writeable by your ".
+                                  "web server";
 //plugin types
 $lang['all']                    = 'All';
 $lang['syntax']                 = 'Syntax';

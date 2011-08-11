@@ -11,10 +11,9 @@ class ap_update extends ap_download {
             if(in_array($plugin,$this->_bundled)) continue;
             $this->current = null;
             $this->manager->error = null;
-            $info = $this->_info_list($plugin,$type);
-            $default_base = $info['base'];
-            if(@file_exists($base_path.$plugin.'/manager.dat')) {
-                $plugin_url = $this->fetch_log($base_path.$plugin.'/', 'downloadurl');
+            $info = $this->_info_list($plugin,$this->type);
+            if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info['downloadurl'])) {
+                $plugin_url = $info['downloadurl'];
                 if(!empty($plugin_url)) {
                     if($this->download($plugin_url, $this->overwrite,$default_base,$this->type,$info)) {
                         $base = $this->current['base'];
@@ -24,9 +23,11 @@ class ap_update extends ap_download {
                             msg(sprintf($this->get_lang('updated'),$base),1);
                         }
                     } else {
+                    echo "1";
                         msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->manager->error,-1);
                     }
                  } else {
+                 echo "2";
                     msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->manager->error,-1);
                  }
             } else {

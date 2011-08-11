@@ -101,6 +101,8 @@ class ap_plugin extends ap_manage {
         $actions = $this->make_action('info',$info['id'],$this->get_lang('btn_info'));
         if(!empty($info['newversion']) || stripos($info['version'],$this->get_lang('unknown'))!==false)
             $actions .= ' | '.$this->make_action('update',$info['id'],$this->get_lang('btn_update'));
+        else
+            $actions .= ' | '.$this->make_action('update',$info['id'],$this->get_lang('btn_reinstall'));
         if($type =="enabled")
             $actions .= ' | '.$this->make_action('disable',$info['id'],$this->get_lang('btn_disable'));
         elseif($type == 'disabled')

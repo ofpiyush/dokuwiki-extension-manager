@@ -102,8 +102,6 @@ class ap_download extends ap_plugin {
                             $item['base'] = $default_base;
                     }else{
                         $target_base_dir = DOKU_INC.'lib/plugins/';
-                        if(!empty($default_base) && !file_exists($item['tmp'].'/plugin.info.txt'))
-                            $item['base'] = $default_base;
                     }
                     $target = $target_base_dir.$item['base'];
                     // check to make sure we aren't overwriting anything
@@ -117,10 +115,12 @@ class ap_download extends ap_plugin {
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
                         $this->downloaded[$item['type']][] = $item['base'];
-                        $version = '';
+                        $version = $repoid = '';
                         if(!empty($plugin['lastupdate']))
-                            $version = date('Y-m-d',strtotime($plugin['lastupdate']));
-                        $this->plugin_writelog($target, $instruction, array('url' =>$url,'version'=>$version));
+                            $version = $plugin['lastupdate'];
+                        if(!empty($default_base) && !file_exists($target.'/plugin.info.txt'))
+                            $repoid = $default_base;
+                        $this->plugin_writelog($target, $instruction, array('url' =>$url,'repoid'=>$repoid,'pm_date_version'=>$version));
                     } else {
                         $this->manager->error .= sprintf($this->get_lang('error_copy')."\n", $item['base']);
                     }

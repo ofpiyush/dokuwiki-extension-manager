@@ -94,8 +94,7 @@ abstract class ap_manage {
         $params = array(
             'do'=>'admin',
             'page'=>'plugin',
-            'fn'=>'multiselect',
-            'action'=>$action,
+            'fn'=>$action,
             'checked[]'=>$plugin,
             'sectok'=>getSecurityToken()
         );
@@ -129,18 +128,22 @@ abstract class ap_manage {
         if(!empty($data['url'])) {
             $out = "downloadurl=".$data['url'].PHP_EOL;
         }
-        if(!empty($data['version'])) {
-            $out .= "version=".$data['version'].PHP_EOL;
+        if(!empty($data['pm_date_version'])) {
+            $out .= "pm_date_version=".$data['pm_date_version'].PHP_EOL;
+        }
+        if(!empty($data['repoid'])) {
+            $out .= "repoid=".$data['repoid'].PHP_EOL;
         }
         if($cmd == 'install') {
             if($date)
                 $out .= "installed=".date('r').PHP_EOL;
-            if(!$fp = @fopen($file, 'wb')) return;
+            if(!$fp = @fopen($file, 'wb')) return false;
             fwrite($fp, $out);
             fclose($fp);
         } elseif($cmd == 'update') {
-            $out .= "updated=".date('r').PHP_EOL;
-            if (!$fp = @fopen($file, 'a')) return;
+            if($date)
+                $out .= "updated=".date('r').PHP_EOL;
+            if (!$fp = @fopen($file, 'a')) return false;
             fwrite($fp, $out);
             fclose($fp);
         }
@@ -204,6 +207,9 @@ abstract class ap_manage {
      */
     protected function _info_list($index,$type = "plugin",$fetch_full =false) {
         $info_autogenerate = false;
+        if(!in_array($type,array('plugin','template'))) {
+            $type = "plugin";
+        }
         // determine path of the folder
         $path = ($type == "plugin") ? DOKU_PLUGIN.plugin_directory($index).'/': DOKU_INC."lib/tpl/$index/";
         $info_path = $path.$type.'.info.txt';//full path to *.info.txt
@@ -217,6 +223,8 @@ abstract class ap_manage {
             $components = $this->get_plugin_components($index);
             if(!empty($components)) {
                 $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
+                //echo $components[0]['type'];
+                //echo $components[0]['name'];
                 if(!empty($obj)) {
                     $obj_info = $obj->getInfo();
                     $return = array_merge($return,$obj_info);
@@ -230,24 +238,32 @@ abstract class ap_manage {
             $info_autogenerate = true;
         }
 
-        $repo_key = ($type == 'template') ? 'template:'.$return['base'] : $return['base'];
+        $log = $this->fetch_log($path);
+        if(!empty($log['repoid']))
+            $repo_key = ($type == 'template') ? 'template:'.$log['repoid'] : $log['repoid'];
+        else
+            $repo_key = ($type == 'template') ? 'template:'.$return['base'] : $return['base'];
         if(!empty($this->repo[$repo_key])) {
             $return = array_merge($return,$this->repo[$repo_key]);
         }
         if(!empty($return['desc'])) {
             $return['description'] = $return['desc'];
         }
-        $return['id'] = $index;
-        $log = $this->fetch_log($path);
+
         if(!empty($log)) {
             $return = array_merge($log,$return);
-        } elseif(!empty($return['downloadurl']) && 
-            !in_array($this->manager->cmd,array('download','disdown','update'))) {
-
-            msg("<em>".hsc($return['id']).":</em>".$this->get_lang('no_manager'),2);
-            msg($this->get_lang('autogen_manager'),2);
-            $this->plugin_writelog($path,'install',array('url'=>$return['downloadurl']),false);
         }
+        if(empty($return['downloadurl']) && !empty($log['downloadurl'])) {
+            $return['downloadurl'] = $log['downloadurl'];
+        } elseif(!empty($return['downloadurl'])  && !empty($log['downloadurl']) &&
+                $return['downloadurl'] != $log['downloadurl']) {
+            if($this->plugin_writelog($path,'update',array('url'=>$return['downloadurl']),false)) {
+                msg(sprintf($this->get_lang('change_url'),hsc($return['id']),hsc($return['downloadurl']),hsc($log['downloadurl']),hsc($return['name']),$this->get_lang('btn_info'),
+                    $this->get_lang('source'),hsc($path)),2);
+            }
+        }
+        // make sure it gets the correct id
+        $return['id'] = $index;
         $return = $this->populate_version($return);
         if($info_autogenerate && !empty($return['description'])) {
             $this->info_autogen($info_path,$return);
@@ -263,35 +279,32 @@ abstract class ap_manage {
                 $return['type'] = ltrim($return['type'],',');
             }
         }
+        $return['id'] = $index;
         return $return;
     }
     function populate_version($info) {
-        foreach(array('updated','installed','lastupdate','version') as $key) {
-            if(!empty($info[$key])) {
-                $$key = strtotime($info[$key]);
-                $info[$key] = date('Y-m-d',$$key);
-            }
-        }
         $time = 0;
         if(in_array($info['id'],$this->_bundled)) {
             $version = getVersionData();
-            $info['version'] = $this->get_lang('bundled').'<br /> <em>('.$version['date'].')</em>';
-        } else {
-            if(!empty($version)){
-                $time = $updated;
-            } elseif(!empty($updated)) {
-                $time = $updated;
-            } elseif(!empty($installed)) {
-                $time = $installed;
-            }
-            if(!empty($lastupdate) && !empty($time) && $lastupdate > $time) {
-                $info['newversion'] = $info['lastupdate'];
-            }
+            $info['pm_date_version'] = $this->get_lang('bundled').'<br /> <em>('.$version['date'].')</em>';
+        } elseif(!empty($info['pm_date_version'])) {
+            $time = $info['pm_date_version'];
+        } elseif(!empty($info['date'])) {
+            $time = $info['date'];
+            $info['pm_date_version'] = $info['date'];
+        }elseif(!empty($info['updated'])) {
+            $time = $info['updated'];
+        } elseif(!empty($info['installed'])) {
+            $time = $info['installed'];
         }
-        if(empty($info['version'])) {
-            $info['version'] = $this->get_lang('unknown');
-            if($time != 0) $info['version'] .= '<br /> <em>('.date('Y-m-d',$time).')</em>';
+        if(!empty($info['lastupdate']) && !empty($time) && $info['lastupdate'] > $time) {
+            $info['newversion'] = $info['lastupdate'];
         }
+        if(empty($info['pm_date_version'])) {
+            $info['pm_date_version'] = $this->get_lang('unknown');
+            if($time !== 0) $info['pm_date_version'] .= '<br /> <em>('.date('Y-m-d',strtotime($time)).')</em>';
+        }
+
         return $info;
     }
 
@@ -451,6 +464,6 @@ abstract class ap_manage {
     }
     //sorting based on name
     protected function _sort($a,$b) {
-        return strcmp($a['name'],$b['name']);
+        return strnatcasecmp($a['name'],$b['name']);
     }
 }

@@ -127,7 +127,6 @@ class ap_search extends ap_manage {
                 if($count && $this->check($single)) {
                     if(stripos($single['id'],$this->term)) $count += 5;
                     if(stripos($single['name'],$this->term)) $count += 3;
-                    if(stripos($single['id'],$this->term)) $count += 5;
                     $this->search_result[$count][$single['id']] = $single;
                 }
             }
