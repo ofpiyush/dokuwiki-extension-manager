@@ -134,7 +134,10 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         $this->setupLocale();
         $this->_get_plugin_list();
 
-        if (is_null($this->handler)) $this->setup_tab();
+        if (is_null($this->handler)) {
+            $this->handler = new pm_plugin_tab($this);
+            $this->handler->process();
+        }
 
         ptln('<div id="plugin__manager">');
         $this->handler->html();
