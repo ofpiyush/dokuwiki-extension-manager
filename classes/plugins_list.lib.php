@@ -15,13 +15,14 @@ class plugins_list {
     protected $id = null;
     protected $m = null;
     protected $columns = array();
+    protected $intable =false;
     
 
     /**
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct(ap_manage $manager,$id,$actions = array(),$type ="plugin") {
+    function __construct(plugins_base $manager,$id,$actions = array(),$type ="plugin") {
         $this->m = $manager;
         $this->type = $type;
         $this->id = $id;
@@ -29,7 +30,7 @@ class plugins_list {
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
     }
-    function start_form() {
+    function start_form($starttable = true) {
         $this->form .= '<form id="'.$this->id.'" accept-charset="utf-8" method="post" action="">';
         $hidden['page'] = 'plugin';
         //$hidden['fn']   ='multiselect';
@@ -38,7 +39,10 @@ class plugins_list {
         if($type == "template")
             $hidden['template'] = 'template';
         $this->add_hidden($hidden);
-        $this->form .= '<table class="inline">';
+        if($starttable) {
+            $this->intable = true;
+            $this->form .= '<table class="inline">';
+        }
     }
     /**
      * Build single row of plugin table
@@ -48,16 +52,18 @@ class plugins_list {
      * @param array  $checkbox the optional parameters to be passed in for the checkbox (use-case disabling downloads)
      */
     function add_row($class,$info,$actions,$checkbox = array()) {
-        $this->rowadded = true;
-        $this->start_row($class);
-        $this->populate_column('checkbox',$this->make_checkbox($info,$checkbox));
-        $this->populate_column('legend',$this->make_legend($info,$class));
-        $this->populate_column('inforight',$this->make_inforight($info,$class));
-        if(stripos($class,'template') !== false ) {
-            $this->populate_column('screenshot',$this->make_screenshot($info));
+        if($this->intable) {
+            $this->rowadded = true;
+            $this->start_row($class);
+            $this->populate_column('checkbox',$this->make_checkbox($info,$checkbox));
+            $this->populate_column('legend',$this->make_legend($info,$class));
+            $this->populate_column('inforight',$this->make_inforight($info,$class));
+            if(stripos($class,'template') !== false ) {
+                $this->populate_column('screenshot',$this->make_screenshot($info));
+            }
+            $this->populate_column('actions','<p>'.$actions.'</p>');
+            $this->end_row();
         }
-        $this->populate_column('actions','<p>'.$actions.'</p>');
-        $this->end_row();
     }
 
     function add_header($header,$level=2) {
@@ -76,7 +82,7 @@ class plugins_list {
      * Add closing tags
      */
     function end_form() {
-        $this->form .= '</table>';
+        if($this->intable) $this->form .= '</table>';
         if($this->rowadded) {
             $this->form .= '<div class="bottom">';
             //$this->form .= '<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
@@ -111,86 +117,80 @@ class plugins_list {
      * @return string url or title of the plugin
      */
     private function make_title($info) {
-        $name = hsc($info['name']);
-        if(!empty($info['dokulink'])) {
-            $info['url'] = "http://www.dokuwiki.org/".$info['dokulink'];
+        $name = hsc($info->name);
+        if(!empty($info->dokulink)) {
+            $info->url = "http://www.dokuwiki.org/".$info->dokulink;
             return $this->make_link($info,"interwiki iw_doku");
         }
 
-        if(!empty($info['url'])) {
-            if(preg_match('|^http(s)?://(www.)?dokuwiki.org/(.*)?$|i', $info['url']))
+        if(!empty($info->url)) {
+            if(preg_match('|^http(s)?://(www.)?dokuwiki.org/(.*)?$|i', $info->url))
                 return $this->make_link($info,"interwiki iw_doku");
             else
                 return $this->make_link($info,"urlextern");
         }
 
-        return  hsc($info['name']);
+        return  hsc($info->name);
     }
 
     private function make_author($info) {
-        if(!empty($info['author'])) {
-            if(!empty($info['email'])) {
-                return '<a href="mailto:'.hsc($info['email']).'">'.hsc($info['author']).'</a>';
+        if(!empty($info->author)) {
+            if(!empty($info->email)) {
+                return '<a href="mailto:'.hsc($info->email).'">'.hsc($info->author).'</a>';
             }
-            return hsc($info['author']);
+            return hsc($info->author);
         }
         return "<em>".$this->m->get_lang('unknown')."</em>";
     }
     private function make_link($info, $class) {
-        return '<a href="'.hsc($info['url']).'" title="'.hsc($info['url']).'" class ="'.$class.'">'.hsc($info['name']).'</a>';
+        return '<a href="'.hsc($info->url).'" title="'.hsc($info->url).'" class ="'.$class.'">'.hsc($info->name).'</a>';
     }
 
     private function make_inforight($info,$class) {
-        $return = '<p><label for="'.$this->id.hsc($info['id']).'">';
+        $return = '<p><label for="'.$this->id.hsc($info->id).'">';
         $return .= '<strong>'.$this->m->get_lang('version').'</strong> ';
-        if(in_array($this->id,array('plugins__list','templates__list','plugins__protected'))) {
-            $version = $info['pm_date_version'];
-        } elseif(in_array($this->id,array('browse__list','search__result'))) {
-            if(!empty($info['lastupdate']))
-                $version =  $info['lastupdate'];
-        }
-        if(empty($version)) $version = '<em>'.$this->m->get_lang('unknown').'</em>';
-        $return .= $version."</label></p>";
+        if(empty($info->version)) $info->version = '<em>'.$this->m->get_lang('unknown').'</em>';
+        $return .= $info->version."</label></p>";
         return $return;
     }
 
     private function make_screenshot($info) {
-        $return = '<label for="'.$this->id.hsc($info['id']).'">';
-        if(!empty($info['screenshoturl'])) {        
-            if($info['screenshoturl'][0] == ':')
-                $info['screenshoturl'] = 'http://www.dokuwiki.org/_media/'.$info['screenshoturl'];
-            $return .= '<a title="'.hsc($info['name']).'" href="'.$info['screenshoturl'].'">'.
-                    '<img alt="'.hsc($info['name']).'" width="80" src="'.hsc($info['screenshoturl']).'" />'.
+        $return = '<label for="'.$this->id.hsc($info->id).'">';
+        if(!empty($info->screenshoturl)) {
+            if($info->screenshoturl[0] == ':')
+                $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
+            $return .= '<a title="'.hsc($info->name).'" href="'.$info->screenshoturl.'">'.
+                    '<img alt="'.hsc($info->name).'" width="80" src="'.hsc($info->screenshoturl).'" />'.
                     '</a>';
         }
         $return .= '</label>';
         return $return;
     }
     private function make_legend($info,$class) {
-        $return = '<p class="head"> <a name="pminfoed__'.$info['id'].'" ></a>'.
-                    '<label for="'.$this->id.hsc($info['id']).'">'.
+        $return = '<p class="head"> <a name="pminfoed__'.$info->id.'" ></a>'.
+                    '<label for="'.$this->id.hsc($info->id).'">'.
                     $this->make_title($info).
                     '</label>'.
                   '</p>';
-        if(!empty($info['description'])) {
-            $return .=  '<p><label for="'.$this->id.hsc($info['id']).'">'.
-                        hsc($info['description']).'</label></p>';
+        if(!empty($info->description)) {
+            $return .=  '<p><label for="'.$this->id.hsc($info->id).'">'.
+                        hsc($info->description).'</label></p>';
         }
-        if(!empty($info['newversion'])) {
+        if(!empty($info->newversion)) {
             $return .=  '<div class="notify">'.
-                            sprintf($this->m->get_lang('update_available'),hsc($info['newversion'])).
+                            sprintf($this->m->get_lang('update_available'),hsc($info->newversion)).
                         '</div>';
         }
-        if(!empty($info['securityissue'])) {
+        if(!empty($info->securityissue)) {
             $return .= '<div class="error">'.
                             '<strong>'.$this->m->get_lang('security_issue').'</strong> '.
-                            hsc($info['securityissue']).
+                            hsc($info->securityissue).
                         '</div>';
         }
-        if(!empty($info['securitywarning'])) {
+        if(!empty($info->securitywarning)) {
             $return .= '<div class="notify">'.
                             '<strong>'.$this->m->get_lang('security_warning').'</strong> '.
-                            hsc($info['securitywarning']).
+                            hsc($info->securitywarning).
                         '</div>';
         }
         if(stripos($class,'infoed') !== false) {
@@ -203,15 +203,15 @@ class plugins_list {
         $default = "<em>".$this->m->get_lang('unknown')."</em>";
         $return .= '<strong>'.hsc($this->m->get_lang('author')).'</strong> '.$this->make_author($info).'<br/>';
         $return .= '<strong>'.hsc($this->m->get_lang('source')).'</strong> '.
-                (!empty($info['downloadurl']) ? hsc($info['downloadurl']) : $default).'<br/>';
+                (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default).'<br/>';
         $return .= '<strong>'.hsc($this->m->get_lang('components')).':</strong> '.
-                (!empty($info['type']) ? hsc($info['type']) : $default).'<br/>';
+                (!empty($info->type) ? hsc($info->type) : $default).'<br/>';
         $return .= '<strong>'.hsc($this->m->get_lang('installed')).'</strong> <em>'.
-                (!empty($info['installed']) ? hsc($info['installed']): $default).'</em><br/>';
+                (!empty($info->installed) ? hsc($info->installed): $default).'</em><br/>';
         $return .= '<strong>'.hsc($this->m->get_lang('lastupdate')).'</strong> <em>'.
-                (!empty($info['updated']) ? hsc($info['updated']) : $default).'</em><br/>';
+                (!empty($info->updated) ? hsc($info->updated) : $default).'</em><br/>';
         $return .= '<strong>'.$this->m->get_lang('tags').'</strong> '.
-                (!empty($info['tags']) ? hsc(implode(', ',(array)$info['tags']['tag'])) : $default).'<br/>';
+                (!empty($info->tags) ? hsc(implode(', ',(array)$info->tags['tag'])) : $default).'<br/>';
         $return .= '</p>';
         return $return;
     }
@@ -221,9 +221,9 @@ class plugins_list {
             foreach($checkbox as $key=>$value)
                 $checked .= $key.'="'.$value.'" ';
         }
-        return  '<label for="'.$this->id.hsc($info['id']).'" >'.
-                    '<input id="'.$this->id.hsc($info['id']).'" type="checkbox"'.
-                    ' name="checked[]" value="'.$info['id'].'" '.$checked.' />'.
+        return  '<label for="'.$this->id.hsc($info->id).'" >'.
+                    '<input id="'.$this->id.hsc($info->id).'" type="checkbox"'.
+                    ' name="checked[]" value="'.$info->id.'" '.$checked.' />'.
                 '</label>';
     }
     // not being used now

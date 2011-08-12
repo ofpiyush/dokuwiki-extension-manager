@@ -1,5 +1,5 @@
 <?php
-class ap_template extends ap_manage {
+class ap_template extends plugins_base {
 
     var $info_list_type = "template";
     var $info_list_path = NULL;
@@ -48,24 +48,24 @@ class ap_template extends ap_manage {
     function _info_list($template) {
         return parent::_info_list($template,'template');
     }
-    function get_actions(array $info, $type) {
+    function get_actions($info, $type) {
         $extra = array('template'=>'template');
-        $actions = $this->make_action('info',$info['id'],$this->get_lang('btn_info'),$extra);
-        if($info['id']!="default") {
-            $actions .= ' | '.$this->make_action('update',$info['id'],$this->get_lang('btn_update'),$extra);
+        $actions = $this->make_action('info',$info->id,$this->get_lang('btn_info'),$extra);
+        if($info->id!="default") {
+            $actions .= ' | '.$this->make_action('update',$info->id,$this->get_lang('btn_update'),$extra);
             if($type == "disabled") {
-                $actions .= ' | '.$this->make_action('delete',$info['id'],$this->get_lang('btn_delete'),$extra);
+                $actions .= ' | '.$this->make_action('delete',$info->id,$this->get_lang('btn_delete'),$extra);
             }
         }
         return $actions;
     }
     function get_checkbox($info) {
-        if($info['id'] == 'default') return array('disabled'=>'disabled');
+        if($info->id == 'default') return array('disabled'=>'disabled');
         return array();
     }
-    function get_class(array $info,$class) {
-        if(!empty($info['securityissue'])) $class .= ' secissue';
-        if($info['id'] == $this->showinfo) $class .= ' infoed';
+    function get_class($info,$class) {
+        if(!empty($info->securityissue)) $class .= ' secissue';
+        if($info->id == $this->showinfo) $class .= ' infoed';
         $class .= " template";
         return $class;
     }

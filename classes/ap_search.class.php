@@ -1,5 +1,5 @@
 <?php
-class ap_search extends ap_manage {
+class ap_search extends plugins_base {
 
     var $term = NULL;
     var $filters = array();
@@ -13,7 +13,7 @@ class ap_search extends ap_manage {
 
     function process() {
         if(empty($this->repo)) $this->refresh();
-        $doku=getVersionData();
+        $doku = getVersionData();
         $this->doku_version = $doku['date'];
         $this->clean_repo();
         $this->actions_list = array(
@@ -55,6 +55,7 @@ class ap_search extends ap_manage {
             $list->start_form();
             foreach($this->search_result as $result) {
                 foreach($result as $info) {
+                    $info = $this->_info_list($info['id'],'search');
                     $class = $this->get_class($info,'result');
                     $actions = $this->get_actions($info,'');//add some imp type info later
                     $checkbox = $this->get_checkbox($info);
@@ -74,6 +75,7 @@ class ap_search extends ap_manage {
             $full_list->add_header($this->get_lang('browse'));
             $full_list->start_form();
             foreach($this->filtered_repo as $info) {
+                $info = $this->_info_list($info['id'],'search');
                 $class = $this->get_class($info,'all');
                 $actions = $this->get_actions($info,'');//add some necessary type info later on
                 $checkbox = $this->get_checkbox($info);
@@ -84,20 +86,20 @@ class ap_search extends ap_manage {
         }
     }
 
-    function get_class(array $info,$class) {
-        if(!empty($info['securityissue'])) $class .= ' secissue';
+    function get_class($info,$class) {
+        if(!empty($info->securityissue)) $class .= ' secissue';
         if(!empty($this->extra['type']) && $this->extra['type'] == "Template" )
             $class .= " template";
         return $class;
     }
 
-    function get_actions(array $info,$type) {
-        if(array_key_exists('downloadurl',$info) && !empty($info['downloadurl'])) {
-            if(@stripos($info['type'],'Template')!==false) {
-                $actions = $this->make_action('download',$info['id'],$this->get_lang('btn_disdown'));
+    function get_actions($info,$type) {
+        if(!empty($info->downloadurl)) {
+            if(@stripos($info->type,'Template')!==false) {
+                $actions = $this->make_action('download',$info->id,$this->get_lang('btn_disdown'));
             } else {
-                $actions = $this->make_action('download',$info['id'],$this->get_lang('btn_download'));
-                $actions .= ' | '.$this->make_action('disdown',$info['id'],$this->get_lang('btn_disdown'));
+                $actions = $this->make_action('download',$info->id,$this->get_lang('btn_download'));
+                $actions .= ' | '.$this->make_action('disdown',$info->id,$this->get_lang('btn_disdown'));
             }
         } else {
             $actions = $this->get_lang('no_url');
@@ -106,7 +108,7 @@ class ap_search extends ap_manage {
     }
 
     function get_checkbox($info) {
-        if(!empty($info['downloadurl'])) return array();
+        if(!empty($info->downloadurl)) return array();
         return array('disabled'=>'disabled');
     }
 

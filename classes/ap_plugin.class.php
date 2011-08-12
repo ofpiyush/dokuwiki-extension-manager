@@ -1,6 +1,5 @@
 <?php
-
-class ap_plugin extends ap_manage {
+class ap_plugin extends plugins_base {
     var $plugins;
     var $protected_plugins;
     var $actions_list;
@@ -76,18 +75,18 @@ class ap_plugin extends ap_manage {
         }
     }
 
-    function get_actions(array $info,$type) {
-        $actions = $this->make_action('info',$info['id'],$this->get_lang('btn_info'));
-        if(!empty($info['newversion']) || stripos($info['version'],$this->get_lang('unknown'))!==false)
-            $actions .= ' | '.$this->make_action('update',$info['id'],$this->get_lang('btn_update'));
-        else
-            $actions .= ' | '.$this->make_action('update',$info['id'],$this->get_lang('btn_reinstall'));
+    function get_actions($info,$type) {
+        $actions = $this->make_action('info',$info->id,$this->get_lang('btn_info'));
+        if(!empty($info->newversion) || stripos($info->version,$this->get_lang('unknown'))!==false)
+            $actions .= ' | '.$this->make_action('update',$info->id,$this->get_lang('btn_update'));
+        elseif(!in_array($info->id,$this->_bundled))
+            $actions .= ' | '.$this->make_action('update',$info->id,$this->get_lang('btn_reinstall'));
         if($type =="enabled")
-            $actions .= ' | '.$this->make_action('disable',$info['id'],$this->get_lang('btn_disable'));
+            $actions .= ' | '.$this->make_action('disable',$info->id,$this->get_lang('btn_disable'));
         elseif($type == 'disabled')
-            $actions .= ' | '.$this->make_action('enable',$info['id'],$this->get_lang('enable'));
-        if(!in_array($info['id'],$this->_bundled))
-            $actions .= ' | '.$this->make_action('delete',$info['id'],$this->get_lang('btn_delete'));
+            $actions .= ' | '.$this->make_action('enable',$info->id,$this->get_lang('enable'));
+        if(!in_array($info->id,$this->_bundled))
+            $actions .= ' | '.$this->make_action('delete',$info->id,$this->get_lang('btn_delete'));
         return $actions;
     }
 
@@ -95,9 +94,9 @@ class ap_plugin extends ap_manage {
         if($type == 'protected') return array('disabled'=>'disabled');
         return array();
     }
-    function get_class(array $info,$class) {
-        if(!empty($info['securityissue'])) $class .= ' secissue';
-        if($info['id'] === $this->showinfo) $class .=" infoed";
+    function get_class( $info,$class) {
+        if(!empty($info->securityissue)) $class .= ' secissue';
+        if($info->id === $this->showinfo) $class .=" infoed";
         return $class;
     }
 }

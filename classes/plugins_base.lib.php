@@ -2,7 +2,8 @@
 /**
  * Manage class (Base class with most common functions for more than 1 tabs)
  */
-abstract class ap_manage {
+
+abstract class plugins_base {
 
     var $manager = NULL;
     var $lang = array();
@@ -11,11 +12,10 @@ abstract class ap_manage {
     var $repo_cache = NULL;
     var $tpl_dir = NULL;
     var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
-    protected $_bundled = array();
+    var $_bundled = array();
 
     function __construct(DokuWiki_Admin_Plugin $manager) {
         $this->_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
-        $this->tpl_dir = DOKU_INC.'lib/tpl/';
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
         $this->repo_cache = new cache('plugin_manager', '.sa');
@@ -27,9 +27,9 @@ abstract class ap_manage {
 
     abstract function html();
 
-    abstract function get_actions(array $info, $type);
+    abstract function get_actions( $info, $type);
 
-    abstract function get_class(array $info, $class);
+    abstract function get_class( $info, $class);
     abstract function get_checkbox($input);
     // build our standard menu
     function html_menu() {
@@ -87,7 +87,6 @@ abstract class ap_manage {
             $search_form->endFieldset();
             $search_form->printForm();
             ptln('</div>');
-            //ptln('<div class="del_confirm"></div>');FIXME for future use as dialog
         }
     }
 
@@ -209,112 +208,113 @@ abstract class ap_manage {
         return $plugins[$plugin];
     }
 
-    /**
-     * Read info and return an array compatible with plugins_list table
-     */
-    protected function _info_list($index,$type = "plugin",$fetch_full =false) {
-        $info_autogenerate = false;
-        if(!in_array($type,array('plugin','template'))) {
-            $type = "plugin";
+    
+//TODO
+    function _info_list($index,$type = "plugin") {
+        $info_autogen =false;
+        if(!in_array($type,array('plugin','template','search'))) {
+            $type = 'plugin';
         }
-        // determine path of the folder
-        $path = ($type == "plugin") ? DOKU_PLUGIN.plugin_directory($index).'/': DOKU_INC."lib/tpl/$index/";
-        $info_path = $path.$type.'.info.txt';//full path to *.info.txt
-        // initialize the necessary ones for overriding
-        $return = array('id'=>$index,'name' => $index,'base'=>$index);
-        // check load the file
-        if(@file_exists($info_path)) {
-            $return = array_merge($return,confToHash($info_path));
-        } elseif($type == 'plugin') {
-            //fetch and save the info.txt for faster future loads
-            $components = $this->get_plugin_components($index);
-            if(!empty($components)) {
-                $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
-                //echo $components[0]['type'];
-                //echo $components[0]['name'];
-                if(!empty($obj)) {
-                    $obj_info = $obj->getInfo();
-                    $return = array_merge($return,$obj_info);
-                    if(empty($obj_info['base'])) $obj_info['base'] = $index;
-                    $this->info_autogen($info_path,$obj_info);
-                }
-                unset($obj);
+        $classname = $type."_single";
+        include_once(DOKU_PLUGIN."plugin/classes/{$classname}.lib.php");
+        $return = new $classname($this,$index);
+        if($type =="search") {
+            $return->repo = $this->repo[$index];
+            if(stripos($index,'template:')===0) {
+                $return->is_writable = is_writable(DOKU_PLUGIN);
+            } else {
+                $return->is_writable = is_writable(DOKU_INC."lib/tpl/");
             }
-        } else {
-            //its a template. lets see if we can get it to autogen from the repo
-            $info_autogenerate = true;
+            return $return;
         }
 
-        $log = $this->fetch_log($path);
-        if(!empty($log['repoid']))
-            $repo_key = ($type == 'template') ? 'template:'.$log['repoid'] : $log['repoid'];
-        else
-            $repo_key = ($type == 'template') ? 'template:'.$return['base'] : $return['base'];
-        if(!empty($this->repo[$repo_key])) {
-            $return = array_merge($return,$this->repo[$repo_key]);
-        }
-        //rewrite the name after getting it from repo
-        $return['id'] = $index;
-        if(!empty($return['desc'])) {
-            $return['description'] = $return['desc'];
-        }
+        $path = ($type == "plugin") ? DOKU_PLUGIN.plugin_directory($index).'/': DOKU_INC."lib/tpl/$index/";
+        $return->is_writable = is_writable($path);
+        $info_path = $path.$type.'.info.txt';//full path to *.info.txt
 
-        if(!empty($log)) {
-            $return = array_merge($log,$return);
+        $return->info = $this->setup_info($info_path);
+        if(empty($return->info) && $return->is_writable) {
+            if($type = 'plugin') {
+                //fetch and save the info.txt for faster future loads
+                $new = $this->comptoinfo($index);
+                if(!empty($new)) {
+                    $this->info_autogen($info_path,(object) $new);
+                    $return->info = $new;
+                }
+            } else {
+                //its a template. lets see if we can get it to autogen from the repo
+                $info_autogen = true;
+            }
         }
-        if(empty($return['downloadurl']) && !empty($log['downloadurl'])) {
-            $return['downloadurl'] = $log['downloadurl'];
-        } elseif(!empty($return['downloadurl'])  && !empty($log['downloadurl']) &&
+        $return->manager = $this->fetch_log($path);
+        $return->repo = $this->repotoinfo($return,$index,$type);
+        $this->check_dlurlchange($return->repo,$return->log,$path);
+
+        if($info_autogenerate && !empty($return->description)) {
+            $this->info_autogen($info_path,$return);
+        }
+        return $return;
+    }
+
+    function check_dlurlchange($return,$log,$path) {
+        if(!empty($return['downloadurl'])  && !empty($log['downloadurl']) &&
                 $return['downloadurl'] != $log['downloadurl']) {
             if($this->plugin_writelog($path,'update',array('url'=>$return['downloadurl']),false)) {
                 msg(sprintf($this->get_lang('url_change'),hsc($return['id']),hsc($return['downloadurl']),hsc($log['downloadurl']),hsc($return['name']),$this->get_lang('btn_info'),
                     $this->get_lang('source'),hsc($path)),2);
             }
         }
-        // make sure it gets the correct id
-        $return['id'] = $index;
-        $return = $this->populate_version($return);
-        if($info_autogenerate && !empty($return['description'])) {
-            $this->info_autogen($info_path,$return);
-        }
-        //Walk the extra mile for a full fetch
-        if($fetch_full) {
-            if(empty($return['type']) && $type == 'plugin') {
-                $return['type'] = '';
-                $components = $this->get_plugin_components($index);
-                foreach($components as $component) {
-                    $return['type'] .= ", ".$component['type'];
-                }
-                $return['type'] = ltrim($return['type'],',');
+    }
+    function setup_info($info_path) {
+        if(@file_exists($info_path)) {
+            $file_info = confToHash($info_path);
+            if(!empty($file_info)) {
+                return $this->clean_info($file_info);
             }
         }
-        $return['id'] = $index;
-        return $return;
+        return false;
     }
-    function populate_version($info) {
-        $time = 0;
-        if(in_array($info['id'],$this->_bundled)) {
-            $version = getVersionData();
-            $info['pm_date_version'] = $this->get_lang('bundled').'<br /> <em>('.$version['date'].')</em>';
-        } elseif(!empty($info['pm_date_version'])) {
-            $time = $info['pm_date_version'];
-        } elseif(!empty($info['date'])) {
-            $time = $info['date'];
-            $info['pm_date_version'] = $info['date'];
-        }elseif(!empty($info['updated'])) {
-            $time = $info['updated'];
-        } elseif(!empty($info['installed'])) {
-            $time = $info['installed'];
-        }
-        if(!empty($info['lastupdate']) && !empty($time) && $info['lastupdate'] > $time) {
-            $info['newversion'] = $info['lastupdate'];
-        }
-        if(empty($info['pm_date_version'])) {
-            $info['pm_date_version'] = $this->get_lang('unknown');
-            if($time !== 0) $info['pm_date_version'] .= '<br /> <em>('.date('Y-m-d',strtotime($time)).')</em>';
-        }
 
-        return $info;
+    function repotoinfo($return,$index,$type) {
+        if(!empty($return->manager['repoid'])) {
+            $repo_key = $return->manager['repoid'];
+        } elseif(!empty($return->info['base'])) {
+            $repo_key = $return->info['base'];
+        } else {
+            $repo_key = $index;
+        }
+        if($type == "template")
+            $repo_key = "template:".$repo_key;
+        if(!empty($this->repo[$repo_key])) {
+            return $this->repo[$repo_key];
+        }
+        return false;
+    }
+
+    function comptoinfo($index) {
+        $components = $this->get_plugin_components($index);
+        if(!empty($components)) {
+            $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
+            if(!empty($obj)) {
+                $obj_info = $obj->getInfo();
+                return  $this->clean_info($obj_info);
+            }
+        }
+    }
+
+    function clean_info($raw_info) {
+        $info = array(
+            'base'  => false,
+            'author'=> false,
+            'email' => false,
+            'date'  => false,
+            'name'  => false,
+            'desc'  => false,
+            'url'   => false
+            );
+        if(is_array($raw_info))
+            return array_intersect_key($raw_info,$info);
+        return false;
     }
 
     /**
@@ -323,19 +323,19 @@ abstract class ap_manage {
     function info_autogen($file,$return) {
         $info = "";
         foreach(array('base','author','email','date','name','desc','url') as $index) {
-            if(!empty($return[$index])) $info.= $index." ".$return[$index]."\n";
+            if(!empty($return->$index)) $info.= $index." ".$return->$index."\n";
         }
-        if(empty($return['desc']) && !empty($return['description'])) {
-            $info.='desc '.$return['description']."\n";
+        if(empty($return->desc) && !empty($return->description)) {
+            $info.='desc '.$return->description."\n";
         }
-        if(empty($return['url']) && !empty($return['dokulink'])) {
-            $info.='url http://www.dokuwiki.org/'.$return['dokulink']."\n";
+        if(empty($return->url) && !empty($return->dokulink)) {
+            $info.='url http://www.dokuwiki.org/'.$return->dokulink."\n";
         }
         if($info == "") return false;
         if (!$fp = @fopen($file, 'w')) return false;
         fwrite($fp, $info);
         fclose($fp);
-        msg(sprintf($this->get_lang('autogen_info'),$return['base']),2);
+        msg(sprintf($this->get_lang('autogen_info'),$return->base),2);
         return true;
     }
 
@@ -473,6 +473,6 @@ abstract class ap_manage {
     }
     //sorting based on name
     protected function _sort($a,$b) {
-        return strnatcasecmp($a['name'],$b['name']);
+        return strnatcasecmp($a->name,$b->name);
     }
 }

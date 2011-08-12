@@ -12,10 +12,10 @@ if(!defined('DOKU_INC')) die();
 // - maintain a history of file modified
 // - allow a plugin to contain extras to be copied to the current template (extra/tpl/)
 // - to images (lib/images/) [ not needed, should go in lib/plugin/images/ ]
-
-require_once(DOKU_PLUGIN."plugin/classes/ap_manage.class.php");
+require_once(DOKU_PLUGIN."plugin/classes/plugins_base.lib.php");
+require_once(DOKU_PLUGIN."plugin/classes/base_single.lib.php");
 require_once(DOKU_PLUGIN."plugin/classes/ap_plugin.class.php");
-require_once(DOKU_PLUGIN."plugin/classes/plugins_list.class.php");
+require_once(DOKU_PLUGIN."plugin/classes/plugins_list.lib.php");
 
 //--------------------------[ GLOBALS ]------------------------------------------------
 // note: probably should be dokuwiki wide globals, where they can be accessed by pluginutils.php
@@ -91,8 +91,8 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         // create object to handle the command
         $class = "ap_".$this->cmd;
         $path = DOKU_PLUGIN."/plugin/classes/$class.class.php";
-        if(file_exists($path) && require_once(DOKU_PLUGIN."/plugin/classes/$class.class.php"))
-            if(class_exists($class) && is_subclass_of($class,'ap_manage'))
+        if(file_exists($path) && require_once($path))
+            if(class_exists($class) && is_subclass_of($class,'plugins_base'))
                 $this->handler = new $class($this);
 
         if(is_null($this->handler)) $this->handler = new ap_plugin($this);

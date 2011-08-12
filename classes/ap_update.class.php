@@ -13,8 +13,8 @@ class ap_update extends ap_download {
             $this->manager->error = null;
             $info = $this->_info_list($plugin,$this->type);
             
-            if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info['downloadurl'])) {
-                if(!empty($info['downloadurl'])) {
+            if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info->downloadurl)) {
+                if(!empty($info->downloadurl)) {
                     if($this->download($info, $this->overwrite,'',$this->type)) {
                         $base = $this->current['base'];
                         if($this->type == 'template') {
