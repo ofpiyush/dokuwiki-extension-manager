@@ -1,6 +1,5 @@
 <?php
-require_once(DOKU_PLUGIN."plugin/classes/ap_download.class.php");
-class ap_disdown extends ap_download {
+class pm_disdown_action extends pm_download_action {
 
     function down() {
         parent::down();

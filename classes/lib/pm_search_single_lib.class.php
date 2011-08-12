@@ -1,5 +1,5 @@
 <?php
-class search_single extends base_single {
+class pm_search_single_lib extends pm_base_single_lib {
     protected function setup() {
     }
     function can_download() {

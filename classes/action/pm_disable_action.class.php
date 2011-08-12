@@ -1,9 +1,9 @@
 <?php
-class ap_disable extends ap_plugin {
+class pm_disable_action extends pm_base_action {
 
     var $result = array();
 
-    function process() {
+    function act() {
         global $plugin_protected;
         $unprotected = array_diff($this->plugin,$plugin_protected);
         $enabled = array_filter($unprotected,array($this,'isenabled'));
@@ -13,7 +13,6 @@ class ap_disable extends ap_plugin {
         }
         $this->show_results();
         $this->refresh();
-        parent::process();
     }
 
     function isenabled($plugin) {
@@ -21,11 +20,11 @@ class ap_disable extends ap_plugin {
     }
 
     function say_disabled($plugin,$key) {
-        msg(sprintf($this->get_lang('disabled'),$plugin),1);
+        msg(sprintf($this->m->getLang('disabled'),$plugin),1);
     }
 
     function say_notdisabled($plugin,$key) {
-        msg(sprintf($this->get_lang('notdisabled'),$plugin),-1);
+        msg(sprintf($this->m->getLang('notdisabled'),$plugin),-1);
     }
 }
 

@@ -1,9 +1,6 @@
 <?php
-require_once(DOKU_PLUGIN."plugin/classes/ap_download.class.php");
-class ap_update extends ap_download {
-
+class pm_update_action extends pm_download_action {
     var $overwrite = true;
-
     function down() {
         $this->type = !empty($_REQUEST['template'])? 'template': 'plugin';
         $base_path = ($this->type == "template")? DOKU_INC.'lib/tpl/' : DOKU_PLUGIN;
@@ -11,30 +8,37 @@ class ap_update extends ap_download {
             if(in_array($plugin,$this->_bundled)) continue;
             $this->current = null;
             $this->manager->error = null;
-            $info = $this->_info_list($plugin,$this->type);
+            $info = $this->m->info->get($plugin,$this->type);
             
             if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info->downloadurl)) {
                 if(!empty($info->downloadurl)) {
                     if($this->download($info, $this->overwrite,'',$this->type)) {
                         $base = $this->current['base'];
                         if($this->type == 'template') {
-                            msg(sprintf($this->get_lang('tempupdated'),$base),1);
+                            $this->successtemp($base);
                         } else {
-                            msg(sprintf($this->get_lang('updated'),$base),1);
+                            $this->successplug($base);
                         }
                     } else {
-                    echo "1";
-                        msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->manager->error,-1);
+                        $this->fail($plugin,$this->m->error);
                     }
                  } else {
-                 echo "2";
-                    msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->manager->error,-1);
+                    $this->fail($plugin,$this->m->error);
                  }
             } else {
-                msg("<strong>".$plugin.":</strong> ".$this->get_lang('update_error')."<br />".$this->get_lang('no_manager'),-1);
+                $this->fail($plugin,$this->m->getLang('no_manager'));
             }
             
         }
+    }
+    function successtemp($base) {
+        msg(sprintf($this->m->getLang('tempupdated'),hsc($base)),1);
+    }
+    function successplug($base) {
+        msg(sprintf($this->m->getLang('updated'),hsc($base)),1);
+    }
+    function fail($plugin,$extra) {
+        msg("<strong>".hsc($plugin).":</strong> ".$this->m->getLang('update_error')."<br />".$extra,-1);
     }
 }
 

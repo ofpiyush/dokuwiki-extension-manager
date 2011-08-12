@@ -1,8 +1,6 @@
 <?php
-class ap_template extends plugins_base {
+class pm_template_tab extends pm_base_tab {
 
-    var $info_list_type = "template";
-    var $info_list_path = NULL;
     var $templates = array();
     var $enabled = array();
     var $tpl_default = array();
@@ -10,25 +8,22 @@ class ap_template extends plugins_base {
 
     function process() {
         global $conf;
-        $this->info_list_path = DOKU_INC.'lib/tpl/';
-        $list = $this->manager->template_list;
+        $list = $this->m->template_list;
         $this->templates['enabled'][0] = $this->_info_list($conf['template']);
-        if(!empty($_REQUEST['info']))
-            $this->showinfo = $_REQUEST['info'];
         $disabled = array_diff($list,array($conf['template']));
         $this->templates['disabled'] = array_map(array($this,'_info_list'),$disabled); 
         usort($this->templates['disabled'],array($this,'_sort'));
         $this->actions_list = array(
-            'delete'=>$this->get_lang('btn_delete'),
-            'update'=>$this->get_lang('btn_update')
+            'delete'=>$this->m->getLang('btn_delete'),
+            'update'=>$this->m->getLang('btn_update')
         );
     }
 
     function html() {
         $this->html_menu();
-        $this->render_search('tpl__search',$this->get_lang('tpl_search'),'','Template');
-        $list = new plugins_list($this,'templates__list',$this->actions_list,'template');
-        $list->add_header($this->get_lang('tpl_manage'));
+        $this->render_search('tpl__search',$this->m->getLang('tpl_search'),'','Template');
+        $list = new pm_plugins_list_lib($this,'templates__list',$this->actions_list,'template');
+        $list->add_header($this->m->getLang('tpl_manage'));
         $list->start_form();
         if(!empty($this->templates)) {
             
@@ -50,11 +45,11 @@ class ap_template extends plugins_base {
     }
     function get_actions($info, $type) {
         $extra = array('template'=>'template');
-        $actions = $this->make_action('info',$info->id,$this->get_lang('btn_info'),$extra);
+        $actions = $this->make_action('info',$info->id,$this->m->getLang('btn_info'),$extra);
         if($info->id!="default") {
-            $actions .= ' | '.$this->make_action('update',$info->id,$this->get_lang('btn_update'),$extra);
+            $actions .= ' | '.$this->make_action('update',$info->id,$this->m->getLang('btn_update'),$extra);
             if($type == "disabled") {
-                $actions .= ' | '.$this->make_action('delete',$info->id,$this->get_lang('btn_delete'),$extra);
+                $actions .= ' | '.$this->make_action('delete',$info->id,$this->m->getLang('btn_delete'),$extra);
             }
         }
         return $actions;

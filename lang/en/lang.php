@@ -27,9 +27,9 @@ $lang['enable']                 = 'enable';
 //$lang['btn_go']                 = "Go"; not necessary if using buttons
 $lang['btn_disable']            = 'disable';
 $lang['btn_settings']           = 'settings';
-$lang['btn_download']           = 'Download';
+$lang['btn_download']           = 'download';
 $lang['btn_reinstall']          = 're-install';
-$lang['btn_disdown']            = 'Download as disabled';
+$lang['btn_disdown']            = 'download as disabled';
 $lang['btn_enable']             = 'Save';
 $lang['browse']                 = 'Browse all plugins';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
@@ -50,9 +50,10 @@ $lang['version']                = 'Version:';
 $lang['updating']               = 'Updating ...';
 $lang['updated']                = 'Plugin %s updated successfully';
 $lang['tempupdated']            = 'Template %s successfully updated';
+$lang['reinstalled']            = 'Plugin %s re-installed successfully';
+$lang['tempreinstalled']        = 'Template %s re-installed successfully';
 $lang['updates']                = 'The following plugins have been updated successfully';
 $lang['update_none']            = 'No updates found.';
-$lang['update_error']           = 'There was an error while updating.';
 $lang['update_available']       = '<strong>Newer Version:</strong> <em>%s</em> is available.';
 
 $lang['deleting']               = 'Deleting ...';
@@ -92,6 +93,8 @@ $lang['author']                 = 'Author:';
 $lang['www']                    = 'Web:';
 $lang['tags']                   = 'Tags:';
 // error messages
+$lang['update_error']           = 'There was an error while updating.';
+$lang['reinstall_error']        = 'There was an error while re-installing.';
 $lang['repocache_error']        = "There was an error retrieving the plugin list from the dokuwiki.org server, ".
                                   "please force reload later";
 $lang['repoxmlformat_error']    = 'Repository XML unformatted';

@@ -1,5 +1,5 @@
 <?php
-class ap_download extends ap_plugin {
+class pm_download_action extends pm_base_action {
 
     var $overwrite = true;
     var $downerrors = array();
@@ -9,47 +9,44 @@ class ap_download extends ap_plugin {
     /**
      * Initiate the plugin download
      */
-    function process() {
+    function act() {
         if(isset($_REQUEST['template'])) {
             $this->type ='template';
         }
         $this->down();
         $this->refresh($this->type);
-        //failsafe for if refresh doesnt work
-        parent::process();
     }
 
     function down() {
-    //FIXME needs serious refactoring (probably after GSoC)
         if(array_key_exists('url',$_REQUEST)) {
             $obj = new stdClass();
             $obj->downloadurl = $_REQUEST['url'];
             if($this->download($obj, $this->overwrite)) {
                 $base = $this->current['base'];
                 if($this->current['type'] = "template")
-                    msg(sprintf($this->get_lang('tempdownloaded'),$base),1);
+                    msg(sprintf($this->m->getLang('tempdownloaded'),$base),1);
                 else
-                   msg(sprintf($this->get_lang('downloaded'),$base),1);
+                   msg(sprintf($this->m->getLang('downloaded'),$base),1);
             }
             else {
-                msg($this->manager->error,-1);
+                msg($this->m->error,-1);
             }
         }elseif(is_array($this->plugin) && count($this->plugin)) {
-            $plugins = array_intersect_key($this->repo,array_flip($this->plugin));
+            $plugins = array_intersect_key($this->m->repo,array_flip($this->plugin));
             foreach ($plugins as $plugin) {
                 $this->current = null;
-                $this->manager->error = null;
+                $this->m->error = null;
                 $type = (stripos($plugin['type'],'Template') !== false ) ? 'template' : 'plugin';
                 $default_base = ($type == 'template') ? str_replace('template:','',$plugin['id']) :'';
                 if($this->download((object)$plugin, $this->overwrite,$default_base,$type)) {
                     $base = $this->current['base'];
                     if($this->current['type'] == 'template') {
-                        msg(sprintf($this->get_lang('tempdownloaded'),$base),1);
+                        msg(sprintf($this->m->getLang('tempdownloaded'),$base),1);
                     } else {
-                        msg(sprintf($this->get_lang('downloaded'),$base),1);
+                        msg(sprintf($this->m->getLang('downloaded'),$base),1);
                     }
                 } else {
-                    msg(sprintf($this->get_lang('notdownloaded'),$plugin['id'])." <br />".$this->manager->error,-1);
+                    msg(sprintf($this->m->getLang('notdownloaded'),$plugin['id'])." <br />".$this->m->error,-1);
                 }
             }
         }
@@ -64,28 +61,28 @@ class ap_download extends ap_plugin {
         // check the url
         $matches = array();
         if (!preg_match("/[^\/]*$/", $url, $matches) || !$matches[0]) {
-            $this->manager->error = $this->get_lang('error_badurl')."\n";
+            $this->m->error = $this->m->getLang('error_badurl')."\n";
             return false;
         }
 
         $file = $matches[0];
 
         if (!($tmp = io_mktmpdir())) {
-            $this->manager->error = $this->get_lang('error_dircreate')."\n";
+            $this->m->error = $this->m->getLang('error_dircreate')."\n";
             return false;
         }
 
         if (!$file = io_download($url, "$tmp/", true, $file)) {
-            $this->manager->error = sprintf($this->get_lang('error_download'),$url)."\n";
+            $this->m->error = sprintf($this->m->getLang('error_download'),$url)."\n";
         }
 
-        if (!$this->manager->error && !$this->decompress("$tmp/$file", $tmp)) {
-            $this->manager->error = sprintf($this->get_lang('error_decompress'),$file)."\n";
+        if (!$this->m->error && !$this->decompress("$tmp/$file", $tmp)) {
+            $this->m->error = sprintf($this->m->getLang('error_decompress'),$file)."\n";
         }
 
         // search $tmp for the folder(s) that has been created
         // move the folder(s) to lib/plugins/
-        if (!$this->manager->error) {
+        if (!$this->m->error) {
             $result = array('old'=>array(), 'new'=>array());
             if($this->find_folders($result,$tmp,'', $default_type)){
                 // choose correct result array
@@ -122,21 +119,21 @@ class ap_download extends ap_plugin {
                             $version = $plugin->lastupdate;
                         if(!empty($default_base) && !file_exists($target.'/'.$item['type'].'.info.txt'))
                             $repoid = $default_base;
-                        $this->plugin_writelog($target, $instruction, array('url' =>$url,'repoid'=>$repoid,'pm_date_version'=>$version));
+                        $this->m->log->write($target, $instruction, array('url' =>$url,'repoid'=>$repoid,'pm_date_version'=>$version));
                     } else {
-                        $this->manager->error .= sprintf($this->get_lang('error_copy')."\n", $item['base']);
+                        $this->m->error .= sprintf($this->m->getLang('error_copy')."\n", $item['base']);
                     }
                 }
 
             } else {
-                $this->manager->error = $this->get_lang('error')."\n";
+                $this->m->error = $this->m->getLang('error')."\n";
             }
         }
 
         // cleanup
         if ($tmp) $this->dir_delete($tmp);
 
-        if (!$this->manager->error) {
+        if (!$this->m->error) {
             return true;
         }
 

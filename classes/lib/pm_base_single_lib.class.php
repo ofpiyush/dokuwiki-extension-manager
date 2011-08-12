@@ -21,7 +21,7 @@
  * @property string $base "base" from *.info.txt defaults to "id"
  */
 
-abstract class base_single {
+abstract class pm_base_single_lib {
     /**
      * Identifier (name of directory for installed plugins and "id" for repository plugins)
      * @property string $id
@@ -59,9 +59,9 @@ abstract class base_single {
 
     var $manager = array();
 
-    final function __construct($base,$dirname) {
+    final function __construct(admin_plugin_plugin $base,$dirname) {
         $this->id = $dirname;
-        $this->b = $base;
+        $this->m = $base;
         $this->setup();
     }
 
@@ -78,7 +78,7 @@ abstract class base_single {
         }elseif(isset($this->info[$key])){ $return = $this->info[$key];
         }elseif(isset($this->manager[$key])){ $return = $this->manager[$key];
         }elseif(method_exists($this,'default_'.$key)){ return $this->{'default_'.$key}();}
-        //$this->$key = $return;
+        $this->$key = $return;
         return $return;
     }
 
@@ -90,6 +90,7 @@ abstract class base_single {
      * @return bool if the plugin/template can be updated
      */
     function can_update() {
+        if(empty($this->newversion)) return false;
         if(empty($this->downloadurl)) return false;
         if(!$this->is_writable) return false;
         if($this->is_bundled) return false;
@@ -102,6 +103,13 @@ abstract class base_single {
         return true;
     }
 
+    function can_reinstall() {
+        if(empty($this->downloadurl)) return false;
+        if(!$this->is_writable) return false;
+        if($this->is_bundled) return false;
+        if(!empty($this->newversion)) return true;
+        return true;
+    }
     /**
      * Precedence Order
      * #1 DokuWiki version for bundled plugins and template
@@ -112,7 +120,7 @@ abstract class base_single {
         $time = 0;
         if($this->is_bundled) {
             $version = getVersionData();
-            return  $this->b->get_lang('bundled').'<br /> <em>('.$version['date'].')</em>';
+            return  $this->m->getLang('bundled').'<br /> <em>('.$version['date'].')</em>';
         } elseif(!empty($this->pm_date_version)) {
             $time = $this->pm_date_version;
             $this->version = $this->pm_date_version;
@@ -128,7 +136,7 @@ abstract class base_single {
             $this->newversion = $this->lastupdate;
         }
         if(empty($this->version)) {
-            $this->version = $this->b->get_lang('unknown');
+            $this->version = $this->m->getLang('unknown');
             if($time !== 0) $this->version .= '<br /> <em>('.date('Y-m-d',strtotime($time)).')</em>';
         }
 

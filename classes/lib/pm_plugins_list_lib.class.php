@@ -6,7 +6,7 @@
  * @author     Piyush Mishra <me@piyushmishra.com>
  */
 
-class plugins_list {
+class pm_plugins_list_lib {
 
     var $rowadded = false;
     protected $form = null;
@@ -22,11 +22,11 @@ class plugins_list {
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct(plugins_base $manager,$id,$actions = array(),$type ="plugin") {
-        $this->m = $manager;
+    function __construct(pm_base_tab $tab,$id,$actions = array(),$type ="plugin") {
+        $this->t = $tab;
         $this->type = $type;
         $this->id = $id;
-        //$this->actions[''] = $this->m->get_lang('please_choose');
+        //$this->actions[''] = $this->t->m->getLang('please_choose');
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
     }
@@ -91,7 +91,7 @@ class plugins_list {
                 $this->form .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }
             //$this->form .= '</select>';
-            //$this->form .= '<input class="button" type="submit" value="'.$this->m->get_lang('btn_go').'" />';
+            //$this->form .= '<input class="button" type="submit" value="'.$this->t->m->getLang('btn_go').'" />';
             $this->form .= '</div>';
         }
         $this->form .= '</form>';
@@ -140,7 +140,7 @@ class plugins_list {
             }
             return hsc($info->author);
         }
-        return "<em>".$this->m->get_lang('unknown')."</em>";
+        return "<em>".$this->t->m->getLang('unknown')."</em>";
     }
     private function make_link($info, $class) {
         return '<a href="'.hsc($info->url).'" title="'.hsc($info->url).'" class ="'.$class.'">'.hsc($info->name).'</a>';
@@ -148,8 +148,8 @@ class plugins_list {
 
     private function make_inforight($info,$class) {
         $return = '<p><label for="'.$this->id.hsc($info->id).'">';
-        $return .= '<strong>'.$this->m->get_lang('version').'</strong> ';
-        if(empty($info->version)) $info->version = '<em>'.$this->m->get_lang('unknown').'</em>';
+        $return .= '<strong>'.$this->t->m->getLang('version').'</strong> ';
+        if(empty($info->version)) $info->version = '<em>'.$this->t->m->getLang('unknown').'</em>';
         $return .= $info->version."</label></p>";
         return $return;
     }
@@ -178,39 +178,39 @@ class plugins_list {
         }
         if(!empty($info->newversion)) {
             $return .=  '<div class="notify">'.
-                            sprintf($this->m->get_lang('update_available'),hsc($info->newversion)).
+                            sprintf($this->t->m->getLang('update_available'),hsc($info->newversion)).
                         '</div>';
         }
         if(!empty($info->securityissue)) {
             $return .= '<div class="error">'.
-                            '<strong>'.$this->m->get_lang('security_issue').'</strong> '.
+                            '<strong>'.$this->t->m->getLang('security_issue').'</strong> '.
                             hsc($info->securityissue).
                         '</div>';
         }
         if(!empty($info->securitywarning)) {
             $return .= '<div class="notify">'.
-                            '<strong>'.$this->m->get_lang('security_warning').'</strong> '.
+                            '<strong>'.$this->t->m->getLang('security_warning').'</strong> '.
                             hsc($info->securitywarning).
                         '</div>';
         }
-        if(stripos($class,'infoed') !== false) {
+        if($this->t->showinfo == $info->id) {
             $return .= $this->make_infoed($info);
         }
         return $return;
     }
     private function make_infoed($info) {
         $return .= '<p>';
-        $default = "<em>".$this->m->get_lang('unknown')."</em>";
-        $return .= '<strong>'.hsc($this->m->get_lang('author')).'</strong> '.$this->make_author($info).'<br/>';
-        $return .= '<strong>'.hsc($this->m->get_lang('source')).'</strong> '.
+        $default = "<em>".$this->t->m->getLang('unknown')."</em>";
+        $return .= '<strong>'.hsc($this->t->m->getLang('author')).'</strong> '.$this->make_author($info).'<br/>';
+        $return .= '<strong>'.hsc($this->t->m->getLang('source')).'</strong> '.
                 (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default).'<br/>';
-        $return .= '<strong>'.hsc($this->m->get_lang('components')).':</strong> '.
+        $return .= '<strong>'.hsc($this->t->m->getLang('components')).':</strong> '.
                 (!empty($info->type) ? hsc($info->type) : $default).'<br/>';
-        $return .= '<strong>'.hsc($this->m->get_lang('installed')).'</strong> <em>'.
+        $return .= '<strong>'.hsc($this->t->m->getLang('installed')).'</strong> <em>'.
                 (!empty($info->installed) ? hsc($info->installed): $default).'</em><br/>';
-        $return .= '<strong>'.hsc($this->m->get_lang('lastupdate')).'</strong> <em>'.
+        $return .= '<strong>'.hsc($this->t->m->getLang('lastupdate')).'</strong> <em>'.
                 (!empty($info->updated) ? hsc($info->updated) : $default).'</em><br/>';
-        $return .= '<strong>'.$this->m->get_lang('tags').'</strong> '.
+        $return .= '<strong>'.$this->t->m->getLang('tags').'</strong> '.
                 (!empty($info->tags) ? hsc(implode(', ',(array)$info->tags['tag'])) : $default).'<br/>';
         $return .= '</p>';
         return $return;

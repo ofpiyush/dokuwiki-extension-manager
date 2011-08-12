@@ -113,17 +113,17 @@
     text-align:center;
 }
 #plugin__manager .enabled {
-    background: #cfc;
+    background: #fff;
     color:#000;
 }
 #plugin__manager .disabled {
-    background: __background_neu__;
-    color: __text_neu__;
+    background: #eee;
+    color: #555;
 }
 
 #plugin__manager .protected {
-    background: __background_alt__;
-    color: __text_alt__;
+    background: #fff;
+    color: #000;
 }
 
 #plugin__manager .infoed {

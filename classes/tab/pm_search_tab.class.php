@@ -1,10 +1,9 @@
 <?php
-class ap_search extends plugins_base {
+class pm_search_tab extends pm_base_tab {
 
     var $term = NULL;
     var $filters = array();
     var $search_result = array();
-    var $repo = NULL;
     var $filtered_repo = NULL;
     var $extra = NULL;
     var $versions = array();
@@ -12,22 +11,22 @@ class ap_search extends plugins_base {
     var $search_types = array();
 
     function process() {
-        if(empty($this->repo)) $this->refresh();
+        if(empty($this->m->repo)) $this->refresh();
         $doku = getVersionData();
         $this->doku_version = $doku['date'];
         $this->clean_repo();
         $this->actions_list = array(
-                'download'=>$this->get_lang('btn_download'),
-                'disdown'=>$this->get_lang('btn_disdown')
+                'download'=>$this->m->getLang('btn_download'),
+                'disdown'=>$this->m->getLang('btn_disdown')
                 );
         $this->search_types = array(
-            ''=>$this->get_lang('all'),
-            'Syntax'=>$this->get_lang('syntax'),
-            'Admin'=>$this->get_lang('admin'),
-            'Action'=>$this->get_lang('action'),
-            'Renderer'=>$this->get_lang('renderer'),
-            'Helper'=>$this->get_lang('helper'),
-            'Template'=>$this->get_lang('template')
+            ''=>$this->m->getLang('all'),
+            'Syntax'=>$this->m->getLang('syntax'),
+            'Admin'=>$this->m->getLang('admin'),
+            'Action'=>$this->m->getLang('action'),
+            'Renderer'=>$this->m->getLang('renderer'),
+            'Helper'=>$this->m->getLang('helper'),
+            'Template'=>$this->m->getLang('template')
             );
         $this->filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
 
@@ -40,18 +39,18 @@ class ap_search extends plugins_base {
         }
         if($this->term !== null || $this->extra !== null ) {
             if($this->term === null) $this->term = " ";
-            if($this->repo !== null)
+            if($this->m->repo !== null)
                 $this->lookup();
         }
     }
 
     function html() {
         $this->html_menu();
-        $this->render_search('install__search', $this->get_lang('search_plugin'),$this->term,$this->search_types);
+        $this->render_search('install__search', $this->m->getLang('search_plugin'),$this->term,$this->search_types);
 
         if(is_array($this->search_result) && count($this->search_result)) {
-            $list = new plugins_list($this,'search__result',$this->actions_list);
-            $list->add_header(sprintf($this->get_lang('search_results'),hsc($this->term)));
+            $list = new pm_plugins_list_lib($this,'search__result',$this->actions_list);
+            $list->add_header(sprintf($this->m->getLang('search_results'),hsc($this->term)));
             $list->start_form();
             foreach($this->search_result as $result) {
                 foreach($result as $info) {
@@ -65,14 +64,14 @@ class ap_search extends plugins_base {
             $list->end_form();
             $list->render();
         } elseif(!is_null($this->term)) {
-            $no_result = new plugins_list($this,'no__result');
-            $no_result->add_header(sprintf($this->get_lang('not_found'),hsc($this->term)));
+            $no_result = new pm_plugins_list_lib($this,'no__result');
+            $no_result->add_header(sprintf($this->m->getLang('not_found'),hsc($this->term)));
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
-            $no_result->add_p(sprintf($this->get_lang('no_result'),$url,$url));
+            $no_result->add_p(sprintf($this->m->getLang('no_result'),$url,$url));
             $no_result->render();
         } else {
-            $full_list = new plugins_list($this,'browse__list',$this->actions_list);
-            $full_list->add_header($this->get_lang('browse'));
+            $full_list = new pm_plugins_list_lib($this,'browse__list',$this->actions_list);
+            $full_list->add_header($this->m->getLang('browse'));
             $full_list->start_form();
             foreach($this->filtered_repo as $info) {
                 $info = $this->_info_list($info['id'],'search');
@@ -96,13 +95,13 @@ class ap_search extends plugins_base {
     function get_actions($info,$type) {
         if(!empty($info->downloadurl)) {
             if(@stripos($info->type,'Template')!==false) {
-                $actions = $this->make_action('download',$info->id,$this->get_lang('btn_disdown'));
+                $actions = $this->make_action('download',$info->id,$this->m->getLang('btn_disdown'));
             } else {
-                $actions = $this->make_action('download',$info->id,$this->get_lang('btn_download'));
-                $actions .= ' | '.$this->make_action('disdown',$info->id,$this->get_lang('btn_disdown'));
+                $actions = $this->make_action('download',$info->id,$this->m->getLang('btn_download'));
+                $actions .= ' | '.$this->make_action('disdown',$info->id,$this->m->getLang('btn_disdown'));
             }
         } else {
-            $actions = $this->get_lang('no_url');
+            $actions = $this->m->getLang('no_url');
         }
         return $actions;
     }
@@ -113,7 +112,7 @@ class ap_search extends plugins_base {
     }
 
     protected function clean_repo() {
-        $this->filtered_repo = array_diff_key($this->repo,array_flip($this->manager->plugin_list));
+        $this->filtered_repo = array_diff_key($this->m->repo,array_flip($this->m->plugin_list));
         $this->filtered_repo = array_filter($this->filtered_repo,array($this,'filter_clean'));
     }
     /**
