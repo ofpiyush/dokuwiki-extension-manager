@@ -15,7 +15,8 @@ class pm_plugins_list_lib {
     protected $id = null;
     protected $m = null;
     protected $columns = array();
-    protected $intable =false;
+    protected $intable = false;
+    protected $acted = array();
     
 
     /**
@@ -26,7 +27,7 @@ class pm_plugins_list_lib {
         $this->t = $tab;
         $this->type = $type;
         $this->id = $id;
-        //$this->actions[''] = $this->t->m->getLang('please_choose');
+        //$this->actions['info'] = $this->t->m->getLang('btn_info');
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
     }
@@ -51,7 +52,7 @@ class pm_plugins_list_lib {
      * @param string $actions  html for what goes into the action column
      * @param array  $checkbox the optional parameters to be passed in for the checkbox (use-case disabling downloads)
      */
-    function add_row($class,$info,$actions,$checkbox = array()) {
+    function add_row($class,$info) {
         if($this->intable) {
             $this->rowadded = true;
             $this->start_row($class);
@@ -61,7 +62,7 @@ class pm_plugins_list_lib {
             if(stripos($class,'template') !== false ) {
                 $this->populate_column('screenshot',$this->make_screenshot($info));
             }
-            $this->populate_column('actions','<p>'.$actions.'</p>');
+            $this->populate_column('actions','<p>'.$this->make_actions($info).'</p>');
             $this->end_row();
         }
     }
@@ -81,12 +82,13 @@ class pm_plugins_list_lib {
     /**
      * Add closing tags
      */
-    function end_form() {
+    function end_form($actions = array()) {
         if($this->intable) $this->form .= '</table>';
         if($this->rowadded) {
             $this->form .= '<div class="bottom">';
             //$this->form .= '<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
             foreach($this->actions as $value => $text) {
+                if(!in_array($value,$actions) || empty($this->acted[$value])) continue;
                 //$this->form .= '<option value="'.$value.'">'..'</option>';
                 $this->form .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }
@@ -206,6 +208,7 @@ class pm_plugins_list_lib {
                 (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default).'<br/>';
         $return .= '<strong>'.hsc($this->t->m->getLang('components')).':</strong> '.
                 (!empty($info->type) ? hsc($info->type) : $default).'<br/>';
+        if($this->t->m->tab == "")
         $return .= '<strong>'.hsc($this->t->m->getLang('installed')).'</strong> <em>'.
                 (!empty($info->installed) ? hsc($info->installed): $default).'</em><br/>';
         $return .= '<strong>'.hsc($this->t->m->getLang('lastupdate')).'</strong> <em>'.
@@ -215,16 +218,47 @@ class pm_plugins_list_lib {
         $return .= '</p>';
         return $return;
     }
-    private function make_checkbox($info,$checkbox) {
+    private function make_checkbox($info) {
         $checked =" ";
-        if(!empty($checkbox)) {
-            foreach($checkbox as $key=>$value)
-                $checked .= $key.'="'.$value.'" ';
+        if(!$info->can_select()) {
+            $checked .= 'disabled="disabled"';
         }
         return  '<label for="'.$this->id.hsc($info->id).'" >'.
                     '<input id="'.$this->id.hsc($info->id).'" type="checkbox"'.
                     ' name="checked[]" value="'.$info->id.'" '.$checked.' />'.
                 '</label>';
+    }
+    private function make_actions($info) {
+        $extra =  null;
+        if($this->t->m->tab == "search" ) {
+            if(!empty($this->t->term))
+                $extra['term'] = $this->t->term;
+            if(!empty($this->t->extra)) {
+                $extra = array_merge($extra,$this->t->extra);
+            }
+        }
+        $return = $this->make_action('info',$info->id,$this->t->m->getLang('btn_info'),$extra);
+        foreach($this->actions as $act => $text) {
+            if($info->{"can_".$act}()) {
+                $this->acted[$act] = true;
+                $return .= " | ".$this->make_action($act,$info->id,$text);
+            }
+        }
+        return $return;
+    }
+    function make_action($action,$id,$text,$extra =null) {
+        global $ID;
+        $params = array(
+            'do'=>'admin',
+            'page'=>'plugin',
+            'tab' => $this->t->m->tab,
+            'fn'=>$action,
+            'checked[]'=>$id,
+            'sectok'=>getSecurityToken()
+        );
+        if(!empty($extra)) $params = array_merge($params,$extra);
+        $url = wl($ID,$params);
+        return '<a href="'.$url.'" class="'.$action.'" title="'.$url.'">'.$text.'</a>';
     }
     // not being used now
     function enabled_tpl_row($enabled,$actions) {

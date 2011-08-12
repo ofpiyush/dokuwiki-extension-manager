@@ -1,17 +1,33 @@
 <?php
 
 class pm_plugin_single_lib extends pm_base_single_lib {
-    private $cascade = array('default'=>array(),'local'=>array(),'protected'=>array());
-    protected function setup() {
-        $this->cascade = plugin_getcascade();
-        $this->is_bundled = in_array($this->id,$this->m->_bundled);
+
+    /**
+     * If plugin is bundled
+     * @var bool
+     */
+    var $is_bundled = false;
+    /**
+     * If plugin is protected
+     * @var bool
+     */
+    var $is_protected = false;
+    /**
+     * If plugin is enabled
+     * @var bool
+     */
+    var $is_enabled = false;
+
+
+    function can_select() {
+        return (!$this->is_protected);
     }
     function can_enable() {
-        return (!array_key_exists($this->id,$this->cascade['protected']));
+        return (!$this->is_protected && !$this->is_enabled);
     }
 
     function can_disable() {
-        return (!array_key_exists($this->id,$this->cascade['protected']));
+        return (!$this->is_protected && $this->is_enabled);
     }
 
     function default_type() {

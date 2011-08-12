@@ -17,7 +17,7 @@ class pm_search_tab extends pm_base_tab {
         $this->clean_repo();
         $this->actions_list = array(
                 'download'=>$this->m->getLang('btn_download'),
-                'disdown'=>$this->m->getLang('btn_disdown')
+                'disdown'=>$this->m->getLang('btn_disdown'),
                 );
         $this->search_types = array(
             ''=>$this->m->getLang('all'),
@@ -56,12 +56,12 @@ class pm_search_tab extends pm_base_tab {
                 foreach($result as $info) {
                     $info = $this->_info_list($info['id'],'search');
                     $class = $this->get_class($info,'result');
-                    $actions = $this->get_actions($info,'');//add some imp type info later
-                    $checkbox = $this->get_checkbox($info);
-                    $list->add_row($class,$info,$actions,$checkbox);
+                    //$actions = $this->get_actions($info,'');//add some imp type info later
+                    //$checkbox = $this->get_checkbox($info);
+                    $list->add_row($class,$info);//,$actions,$checkbox);
                 }
             }
-            $list->end_form();
+            $list->end_form(array_keys($this->actions_list));
             $list->render();
         } elseif(!is_null($this->term)) {
             $no_result = new pm_plugins_list_lib($this,'no__result');
@@ -76,11 +76,11 @@ class pm_search_tab extends pm_base_tab {
             foreach($this->filtered_repo as $info) {
                 $info = $this->_info_list($info['id'],'search');
                 $class = $this->get_class($info,'all');
-                $actions = $this->get_actions($info,'');//add some necessary type info later on
-                $checkbox = $this->get_checkbox($info);
-                $full_list->add_row($class,$info,$actions,$checkbox);
+                //$actions = $this->get_actions($info,'');//add some necessary type info later on
+                //$checkbox = $this->get_checkbox($info);
+                $full_list->add_row($class,$info);//,$actions,$checkbox);
             }
-            $full_list->end_form();
+            $full_list->end_form(array_keys($this->actions_list));
             $full_list->render();
         }
     }

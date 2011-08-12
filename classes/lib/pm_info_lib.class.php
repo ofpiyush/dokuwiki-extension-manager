@@ -4,8 +4,9 @@ class pm_info_lib {
     function __construct(admin_plugin_plugin $manager) {
         $this->m = $manager;
     }
-
+//TODO split into the three child classes (too many if in here :()
     function get($index,$type = "plugin") {
+        global $conf, $plugin_protected;
         $info_autogen =false;
         if(!in_array($type,array('plugin','template','search'))) {
             $type = 'plugin';
@@ -15,9 +16,11 @@ class pm_info_lib {
         if($type =="search") {
             $return->repo = $this->m->repo[$index];
             if(stripos($index,'template:')===0) {
-                $return->is_writable = is_writable(DOKU_PLUGIN);
-            } else {
                 $return->is_writable = is_writable(DOKU_INC."lib/tpl/");
+                $return->is_template = true;
+            } else {
+                $return->is_writable = is_writable(DOKU_PLUGIN);
+                $return->is_template = false;
             }
             return $return;
         }
@@ -43,7 +46,24 @@ class pm_info_lib {
         $return->manager = $this->m->log->read($path);
         $return->repo = $this->repotoinfo($return,$index,$type);
         $this->check_dlurlchange($return->repo,$return->log,$path);
-
+        if($type =="plugin") {
+            $cascade = plugin_getcascade();
+            if(!empty($cascade['protected'])) {
+                $protected = array_merge(array_keys($cascade['protected']),$plugin_protected);
+            } else {
+                $protected = $plugin_protected;
+            }
+            $return->is_protected = in_array($return->id,$protected);
+            $return->is_bundled = in_array($return->id,$this->m->_bundled);
+            $return->is_enabled = !plugin_isdisabled($return->id);
+            $return->is_template = false;
+        } else {
+            $return->is_bundled = ($return->id == 'default');
+            $return->is_protected = in_array($return->id, array('default',$conf['template']));
+            $return->is_enabled = ($return->id == $conf['template']);
+            $return->is_template = true;
+        }
+        
         if($info_autogenerate && !empty($return->description)) {
             $this->info_autogen($info_path,$return);
         }

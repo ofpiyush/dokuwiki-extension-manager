@@ -15,7 +15,8 @@ class pm_template_tab extends pm_base_tab {
         usort($this->templates['disabled'],array($this,'_sort'));
         $this->actions_list = array(
             'delete'=>$this->m->getLang('btn_delete'),
-            'update'=>$this->m->getLang('btn_update')
+            'update'=>$this->m->getLang('btn_update'),
+            'reinstall' =>$this->m->getLang('btn_reinstall'),
         );
     }
 
@@ -30,14 +31,14 @@ class pm_template_tab extends pm_base_tab {
             foreach($this->templates as $type => $templates) {
                 foreach ($templates as $template) {
                     $class = $this->get_class($template,$type);
-                    $actions = $this->get_actions($template,$type);
-                    $checkbox = $this->get_checkbox($template);
-                    $list->add_row($class,$template,$actions,$checkbox);
+                    //$actions = $this->get_actions($template,$type);
+                    //$checkbox = $this->get_checkbox($template);
+                    $list->add_row($class,$template);//,$actions,$checkbox);
                     if($type == "enabled") $list->rowadded = false;
                 }
             }
         }
-        $list->end_form();
+        $list->end_form(array('update','delete','reinstall'));
         $list->render();
     }
     function _info_list($template) {

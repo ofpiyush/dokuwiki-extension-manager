@@ -84,19 +84,7 @@ abstract class pm_base_tab {
         }
     }
 
-    function make_action($action,$plugin,$value,$extra = false) {
-        global $ID;
-        $params = array(
-            'do'=>'admin',
-            'page'=>'plugin',
-            'fn'=>$action,
-            'checked[]'=>$plugin,
-            'sectok'=>getSecurityToken()
-        );
-        if(!empty($extra)) $params = array_merge($params,$extra);
-        $url = wl($ID,$params);
-        return '<a href="'.$url.'" class="'.$action.'" title="'.$url.'">'.hsc($value).'</a>';
-    }
+
 
     function _info_list($index,$type ="plugin") {
         return $this->m->info->get($index,$type);

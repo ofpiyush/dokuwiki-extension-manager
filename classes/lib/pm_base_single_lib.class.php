@@ -34,11 +34,6 @@ abstract class pm_base_single_lib {
      */ 
     var $is_writable = true;
 
-    /**
-     * If plugin/template bundled or not
-     * @var bool
-     */
-    var $is_bundled = false;
 
     /**
      * if it is compatible with the current DokuWiki version (should have a "no" state)
@@ -46,12 +41,12 @@ abstract class pm_base_single_lib {
      * @var bool (should be string later)
      */
     var $is_compatible = false;
-
     /**
-     * If it is a template or a plugin
+     * if it is a plugin or a template
      * @var bool
      */
     var $is_template = false;
+
 
     var $repo = array();
 
@@ -62,10 +57,9 @@ abstract class pm_base_single_lib {
     final function __construct(admin_plugin_plugin $base,$dirname) {
         $this->id = $dirname;
         $this->m = $base;
-        $this->setup();
     }
 
-    abstract protected function setup();
+    abstract function can_select();
 
     function __get($key) {
         $return = false;
@@ -100,6 +94,7 @@ abstract class pm_base_single_lib {
     function can_delete() {
         if(!$this->is_writable) return false;
         if($this->is_bundled) return false;
+        if($this->is_protected) return false;
         return true;
     }
 
@@ -143,6 +138,9 @@ abstract class pm_base_single_lib {
         return $this->version;
     }
 
+    function get_is_disabled() {
+        return !$this->is_enabled;
+    }
     protected function default_description() {
         $this->description ="";
         if(!empty($this->desc)) $this->description = $this->desc;
@@ -155,5 +153,5 @@ abstract class pm_base_single_lib {
     protected function default_base() {
         return $this->id;
     }
-
+    final function can_info() { return true;}
 }

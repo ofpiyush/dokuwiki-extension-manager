@@ -91,7 +91,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         if (is_array($fn)) {
             $this->cmd = key($fn);
         } else {
-            $this->cmd = $_REQUEST['fn'];
+            $this->cmd = $fn;
         }
         //still here to allow reverting to multiselect
         if($this->cmd == 'multiselect') {
@@ -102,7 +102,6 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         }
         // verify $_REQUEST vars and check for security token
         if ($this->valid_request()) {
-            $class = "pm_".$this->cmd."_action";
             $this->action = $this->instantiate($this->cmd,'action');
         }
     }
@@ -116,12 +115,12 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
     function valid_request() {
         //if command is empty, we need to make it
-        if(empty($this->cmd)) return false;
-        
+        if(empty($this->cmd)) return false;         
         if(in_array($this->cmd, $this->commands)) return true;
         if(in_array($this->cmd, $this->functions) && checkSecurityToken()) {
             if(count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)) return true;
             if(count(array_intersect($this->plugin, $this->template_list)) == count($this->plugin)) return true;
+            if($this->cmd == 'info' && $this->tab == "search") return true;
         }
         return false;
     }
@@ -146,8 +145,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
     function autoload($class) {
         if(stripos($class,'pm_')===0) {
-            $array = explode('_',$class);
-            $folder = end($array);
+            $folder = @end(explode('_',$class));
             $path = DOKU_PLUGIN.'plugin/classes/'.$folder.'/'.$class.".class.php";
             if(@file_exists($path)) {
                 require_once($path);

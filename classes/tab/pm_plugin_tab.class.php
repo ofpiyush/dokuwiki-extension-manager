@@ -8,12 +8,11 @@ class pm_plugin_tab extends pm_base_tab {
     function process() {
         global $plugin_protected;
         $this->actions_list = array(
-            'info'=>$this->m->getLang('btn_info'),
-            'reinstall' =>$this->m->getLang('btn_reinstall'),
             'enable'=>$this->m->getLang('enable'),
             'disable'=>$this->m->getLang('btn_disable'),
             'delete'=>$this->m->getLang('btn_delete'),
             'update'=>$this->m->getLang('btn_update'),
+            'reinstall' =>$this->m->getLang('btn_reinstall'),
         );
         $list = $this->m->plugin_list;
         if(!empty($_REQUEST['info']) && in_array($_REQUEST['info'],$list))
@@ -46,11 +45,11 @@ class pm_plugin_tab extends pm_base_tab {
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
                     $class = $this->get_class($info,$type);
-                    $actions = $this->get_actions($info,$type);
+                    //$actions = $this->get_actions($info,$type);
                     $list->add_row($class,$info,$actions);
                 }
             }
-            $list->end_form();
+            $list->end_form(array('enable','disable','reinstall','delete','update'));
             $list->render();
         }
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
@@ -61,12 +60,10 @@ class pm_plugin_tab extends pm_base_tab {
             $checkbox = array('disabled'=>'disabled');
             foreach($this->protected_plugins as $info) {
                 $class = $this->get_class($info,"protected");
-                $actions = $this->get_actions($info,'protected');
-                $info->is_protected = true;
+                //$actions = $this->get_actions($info,'protected');
                 $protected_list->add_row($class,$info,'protected',$checkbox);
             }
-            $protected_list->rowadded =false;
-            $protected_list->end_form();
+            $protected_list->end_form(array());
             $protected_list->render();
         }
         //end list plugins
@@ -82,7 +79,7 @@ class pm_plugin_tab extends pm_base_tab {
             $actions .= ' | '.$this->make_action('disable',$info->id,$this->m->getLang('btn_disable'));
         elseif($type == 'disabled')
             $actions .= ' | '.$this->make_action('enable',$info->id,$this->m->getLang('enable'));
-        if(!in_array($info->id,$this->_bundled))
+        if(!in_array($info->id,$this->m->_bundled))
             $actions .= ' | '.$this->make_action('delete',$info->id,$this->m->getLang('btn_delete'));
         return $actions;
     }
