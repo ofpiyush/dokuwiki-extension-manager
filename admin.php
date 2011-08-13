@@ -105,7 +105,6 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->action = $this->instantiate($this->cmd,'action');
         }
     }
-
     function instantiate($name,$type) {
         $class = 'pm_'.$name."_".$type;
         if(class_exists($class))

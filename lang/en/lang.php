@@ -33,6 +33,7 @@ $lang['btn_enable']             = 'Save';
 $lang['browse']                 = 'Browse all plugins';
 $lang['select_all']             = 'select all';
 $lang['select_none']            = 'select none';
+$lang['confirm_del']            = 'Are you sure?';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
 
