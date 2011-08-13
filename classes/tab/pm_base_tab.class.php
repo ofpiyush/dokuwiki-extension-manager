@@ -74,7 +74,7 @@ abstract class pm_base_tab {
             if(!empty($this->extra['type'])) $type_default = $this->extra['type'];
             if($type !== null)
                 if(is_array($type) && count($type))
-                    $search_form->addElement(form_makeMenuField('type',$type,$type_default,''));
+                    $search_form->addElement(form_makeMenuField('type',$type,$type_default,$this->m->getLang('type')));
                 else
                     $search_form->addHidden('type',$type);
             $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));

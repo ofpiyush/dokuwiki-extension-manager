@@ -94,6 +94,7 @@ class pm_search_tab extends pm_base_tab {
         if(!empty($info->securityissue)) $class .= ' secissue';
         if(!empty($this->extra['type']) && $this->extra['type'] == "Template" )
             $class .= " template";
+        if(!$info->can_select()) $class .= " disabled";
         return $class;
     }
 

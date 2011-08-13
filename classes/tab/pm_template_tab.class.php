@@ -56,7 +56,7 @@ class pm_template_tab extends pm_base_tab {
     }
     function get_class($info,$class) {
         if(!empty($info->securityissue)) $class .= ' secissue';
-        if($info->id == $this->showinfo) $class .= ' infoed';
+        if($info->id == $this->m->showinfo) $class .= ' infoed';
         $class .= " template";
         return $class;
     }

@@ -20,22 +20,22 @@ class pm_plugin_tab extends pm_base_tab {
             'bundled' => $this->m->getLang('bundled'),
             'missing_dlurl' => $this->m->getLang('no_url'),
         );
-        $list = $this->m->plugin_list;
-        if(!empty($_REQUEST['info']) && in_array($_REQUEST['info'],$list))
-            $this->showinfo = $_REQUEST['info'];
-        $unprotected = array_diff($list,$plugin_protected);
-        $enabled = array_intersect($unprotected,plugin_list());
-        $disabled = array_filter($unprotected,'plugin_isdisabled');
-
-        //TODO bad fix: get better sorting.
-        $this->plugins['enabled'] = array_map(array($this,'_info_list'),$enabled);
-        usort($this->plugins['enabled'],array($this,'_sort'));
-        $this->plugins['disabled'] = array_map(array($this,'_info_list'),$disabled);
-        usort($this->plugins['disabled'],array($this,'_sort'));
-        $this->protected_plugins = array_map(array($this,'_info_list'),$plugin_protected);
-        usort($this->protected_plugins,array($this,'_sort'));
+        $list = array_map(array($this,'_info_list'),$this->m->plugin_list);
+        usort($list,array($this,'_sort'));
+        $protected = array_filter($list,array($this,'_is_protected'));
+        $notprotected = array_diff_key($list,$protected);
+        $this->plugins['enabled'] = array_filter($notprotected,array($this,'_is_enabled'));
+        $this->plugins['disabled'] = array_diff_key($notprotected,$this->plugins['enabled']);
+        $this->protected_plugins['enabled'] = array_filter($protected,array($this,'_is_enabled'));
+        $this->protected_plugins['disabled'] = array_diff_key($protected,$this->protected_plugins['enabled']);
     }
 
+    function _is_protected($info) {
+        return $info->is_protected;
+    }
+    function _is_enabled($info) {
+        return $info->is_enabled;
+    }
     function html() {
         global $lang;
         $this->html_menu();
@@ -62,12 +62,11 @@ class pm_plugin_tab extends pm_base_tab {
             $protected_list = new pm_plugins_list_lib($this,'plugins__protected',array(),$this->possible_errors);
             $protected_list->add_header($this->m->getLang('protected_head'));
             $protected_list->add_p($this->m->getLang('protected_desc'));  
-            $protected_list->start_form();          
-            $checkbox = array('disabled'=>'disabled');
-            foreach($this->protected_plugins as $info) {
-                $class = $this->get_class($info,"protected");
-                //$actions = $this->get_actions($info,'protected');
-                $protected_list->add_row($class,$info,'protected',$checkbox);
+            $protected_list->start_form();
+            foreach($this->protected_plugins as $type => $plugins)
+                foreach( $plugins as  $info) {
+                    $class = $this->get_class($info,"protected ".$type);
+                    $protected_list->add_row($class,$info);
             }
             $protected_list->end_form(array());
             $protected_list->render();
@@ -82,7 +81,7 @@ class pm_plugin_tab extends pm_base_tab {
     }
     function get_class( $info,$class) {
         if(!empty($info->securityissue)) $class .= ' secissue';
-        if($info->id === $this->showinfo) $class .= " infoed";
+        if($info->id === $this->m->showinfo) $class .= " infoed";
         return $class;
     }
 }
