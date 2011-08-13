@@ -31,6 +31,8 @@ $lang['btn_reinstall']          = 're-install';
 $lang['btn_disdown']            = 'download as disabled';
 $lang['btn_enable']             = 'Save';
 $lang['browse']                 = 'Browse all plugins';
+$lang['select_all']             = 'select all';
+$lang['select_none']            = 'select none';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
 

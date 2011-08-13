@@ -88,10 +88,16 @@ class pm_plugins_list_lib {
     function end_form($actions = array()) {
         if($this->intable) $this->form .= '</table>';
         if($this->rowadded) {
+            $acted = array_filter($this->acted);
+            if(!empty($acted)) {
+            $this->form .= '<div class="checks"><span class="checkall">['.$this->t->m->getLang('select_all').']</span>'.
+                            '  <span class="checknone">['.$this->t->m->getLang('select_none').']</span></div>';
+            }
             $this->form .= '<div class="bottom">';
+
             //$this->form .= '<select id="'.$this->id.'submit" class="quickselect" size="1" name="action">';
             foreach($this->actions as $value => $text) {
-                if(!in_array($value,$actions) || empty($this->acted[$value])) continue;
+                if(!in_array($value,$actions) || empty($acted[$value])) continue;
                 //$this->form .= '<option value="'.$value.'">'..'</option>';
                 $this->form .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }

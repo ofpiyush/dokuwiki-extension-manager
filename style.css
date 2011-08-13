@@ -96,11 +96,16 @@
     width: 10em;
 }
 
-
 #plugin__manager .bottom {
     padding: 0.5em;
 }
-
+#plugin__manager .checkall,#plugin__manager .checknone {
+    display:none;
+    padding:0 0.2em;
+}
+#plugin__manager .checkall:hover,#plugin__manager .checknone:hover {
+    text-decoration:underline;
+}
 #plugin__manager table {
     width:100%;
 }
