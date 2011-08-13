@@ -11,7 +11,7 @@ class pm_update_action extends pm_download_action {
             
             if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info->downloadurl)) {
                 if(!empty($info->downloadurl)) {
-                    if($info->can_update()) {
+                    if($info->{"can_".$this->m->cmd}()) {
                         if($this->download($info, $this->overwrite,'',$this->m->tab)) {
                             $base = $this->current['base'];
                             if($this->m->tab == 'template') {

@@ -15,10 +15,12 @@ class pm_download_action extends pm_base_action {
             $this->type ='template';
         }
         $this->down();
-        if($this->templated && !$this->plugined)
-            $this->m->tab = 'template';
-        else
-            $this->m->tab = 'plugin';
+        if($this->m->tab == "search") {
+            if($this->templated && !$this->plugined)
+                $this->m->tab = 'template';
+            else
+                $this->m->tab = 'plugin';
+        }
         $this->refresh($this->m->tab);
     }
 
