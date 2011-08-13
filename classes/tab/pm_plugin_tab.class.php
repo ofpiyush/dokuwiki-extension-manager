@@ -75,24 +75,10 @@ class pm_plugin_tab extends pm_base_tab {
         //end list plugins
     }
 
-    function get_actions($info,$type) {
-        $actions = $this->make_action('info',$info->id,$this->m->getLang('btn_info'));
-        if($info->can_update())
-            $actions .= ' | '.$this->make_action('update',$info->id,$this->m->getLang('btn_update'));
-        elseif(!$info->is_bundled)
-            $actions .= ' | '.$this->make_action('update',$info->id,$this->m->getLang('btn_reinstall'));
-        if($type =="enabled")
-            $actions .= ' | '.$this->make_action('disable',$info->id,$this->m->getLang('btn_disable'));
-        elseif($type == 'disabled')
-            $actions .= ' | '.$this->make_action('enable',$info->id,$this->m->getLang('enable'));
-        if(!in_array($info->id,$this->m->_bundled))
-            $actions .= ' | '.$this->make_action('delete',$info->id,$this->m->getLang('btn_delete'));
-        return $actions;
-    }
-
-    function get_checkbox($type) {
-        if($type == 'protected') return array('disabled'=>'disabled');
-        return array();
+    function check_writable() {
+        if(!is_writable(DOKU_PLUGIN)) {
+            msg($this->m->getLang('not_writable')." ".DOKU_PLUGIN,-1);
+        }
     }
     function get_class( $info,$class) {
         if(!empty($info->securityissue)) $class .= ' secissue';

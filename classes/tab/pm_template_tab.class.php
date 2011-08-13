@@ -46,23 +46,13 @@ class pm_template_tab extends pm_base_tab {
         $list->end_form(array('update','delete','reinstall'));
         $list->render();
     }
+    function check_writable() {
+        if(!is_writable(DOKU_INC.'lib/tpl/')) {
+            msg($this->m->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
+        }
+    }
     function _info_list($template) {
         return parent::_info_list($template,'template');
-    }
-    function get_actions($info, $type) {
-        $extra = array('template'=>'template');
-        $actions = $this->make_action('info',$info->id,$this->m->getLang('btn_info'),$extra);
-        if($info->id!="default") {
-            $actions .= ' | '.$this->make_action('update',$info->id,$this->m->getLang('btn_update'),$extra);
-            if($type == "disabled") {
-                $actions .= ' | '.$this->make_action('delete',$info->id,$this->m->getLang('btn_delete'),$extra);
-            }
-        }
-        return $actions;
-    }
-    function get_checkbox($info) {
-        if($info->id == 'default') return array('disabled'=>'disabled');
-        return array();
     }
     function get_class($info,$class) {
         if(!empty($info->securityissue)) $class .= ' secissue';

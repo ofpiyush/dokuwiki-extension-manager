@@ -15,16 +15,16 @@ abstract class pm_base_tab {
         $this->plugin = $manager->plugin;
         if(!empty($_REQUEST['info']))
             $this->showinfo = $_REQUEST['info'];
+        $this->check_writable();
     }
 
     abstract function process();
 
     abstract function html();
 
-    abstract function get_actions( $info, $type);
 
     abstract function get_class( $info, $class);
-    abstract function get_checkbox($input);
+    abstract function check_writable();
     // build our standard menu
     function html_menu() {
         global $ID;

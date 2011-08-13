@@ -97,23 +97,13 @@ class pm_search_tab extends pm_base_tab {
         return $class;
     }
 
-    function get_actions($info,$type) {
-        if(!empty($info->downloadurl)) {
-            if(@stripos($info->type,'Template')!==false) {
-                $actions = $this->make_action('download',$info->id,$this->m->getLang('btn_disdown'));
-            } else {
-                $actions = $this->make_action('download',$info->id,$this->m->getLang('btn_download'));
-                $actions .= ' | '.$this->make_action('disdown',$info->id,$this->m->getLang('btn_disdown'));
-            }
-        } else {
-            $actions = $this->m->getLang('no_url');
+    function check_writable() {
+        if(!is_writable(DOKU_INC.'lib/tpl/')) {
+            msg($this->m->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
         }
-        return $actions;
-    }
-
-    function get_checkbox($info) {
-        if(!empty($info->downloadurl)) return array();
-        return array('disabled'=>'disabled');
+        if(!is_writable(DOKU_PLUGIN)) {
+            msg($this->m->getLang('not_writable')." ".DOKU_PLUGIN,-1);
+        }
     }
 
     protected function clean_repo() {
