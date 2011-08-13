@@ -18,16 +18,21 @@ class pm_template_tab extends pm_base_tab {
             'update'=>$this->m->getLang('btn_update'),
             'reinstall' =>$this->m->getLang('btn_reinstall'),
         );
+        $this->possible_errors = array(
+            'missing_dependency' => $this->m->getLang('depends'),
+            'not_writable' => $this->m->getLang('not_writable'),
+            'bundled' => $this->m->getLang('bundled'),
+            'missing_dlurl' => $this->m->getLang('no_url'),
+        );
     }
 
     function html() {
         $this->html_menu();
         $this->render_search('tpl__search',$this->m->getLang('tpl_search'),'','Template');
-        $list = new pm_plugins_list_lib($this,'templates__list',$this->actions_list,'template');
+        $list = new pm_plugins_list_lib($this,'templates__list',$this->actions_list,$this->possible_errors,'template');
         $list->add_header($this->m->getLang('tpl_manage'));
         $list->start_form();
         if(!empty($this->templates)) {
-            
             foreach($this->templates as $type => $templates) {
                 foreach ($templates as $template) {
                     $class = $this->get_class($template,$type);

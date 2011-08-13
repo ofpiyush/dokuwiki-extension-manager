@@ -6,23 +6,23 @@ class pm_delete_action extends pm_base_action {
 
     function act() {
         global $conf;
-        $plugins = array_diff($this->plugin,array_merge($this->m->_bundled,array($conf['template'])));
-        $this->type = !empty($_REQUEST['template']) ? 'template' : 'plugin';
-        if(is_array($plugins) && count($plugins)) {
-            $this->result[$this->type.'deleted']      = array_filter($plugins,array($this,'delete'));
-            $this->result[$this->type.'notdeleted']   = array_diff_key($plugins,$this->result[$this->type.'deleted']);
-            $list = $this->type.'_list';
+        if(in_array($this->m->tab,array('plugin','template'))) {
+            $this->result[$this->m->tab.'deleted']      = array_filter($this->plugin,array($this,'delete'));
+            $this->result[$this->m->tab.'notdeleted']   = array_diff($this->plugin,$this->result[$this->type.'deleted']);
+            $this->show_results();
+            $this->refresh($this->m->tab);
+            $list = $this->m->tab.'_list';
             $this->m->$list = array_diff($this->m->$list,$this->result[$this->type.'deleted']);
         }
-        $this->show_results();
-        $this->refresh($this->type);
     }
 
     function delete($plugin) {
-        if($this->type == "plugin")
-            $path = DOKU_PLUGIN.plugin_directory($plugin);
-        else
+        $info = $this->m->info->get($plugin,$this->m->tab);
+        if($info->is_template)
             $path = DOKU_INC.'lib/tpl/'.$plugin;
+        else
+            $path = DOKU_PLUGIN.plugin_directory($plugin);
+        if(!$info->can_delete()) return false;
         return $this->dir_delete($path);
     }
 

@@ -88,12 +88,15 @@ abstract class pm_base_single_lib {
         if(empty($this->downloadurl)) return false;
         if(!$this->is_writable) return false;
         if($this->is_bundled) return false;
+        // no action should be allowed on protected plugins
+        if($this->is_protected) return false;
         return true;
     }
 
     function can_delete() {
         if(!$this->is_writable) return false;
         if($this->is_bundled) return false;
+        // no action should be allowed on protected plugins
         if($this->is_protected) return false;
         return true;
     }
@@ -102,8 +105,49 @@ abstract class pm_base_single_lib {
         if(empty($this->downloadurl)) return false;
         if(!$this->is_writable) return false;
         if($this->is_bundled) return false;
+        // no action should be allowed on protected plugins
+        if($this->is_protected) return false;
         if(!empty($this->newversion)) return true;
         return true;
+    }
+
+    function missing_dlurl () {
+        if(!empty($this->downloadurl)) return false;
+        //bundled plugins should not have download urls
+        //no point saying the same thing twice
+        if($this->is_bundled) return false;
+        // no action should be allowed on protected plugins
+        if($this->is_protected) return false;
+        return true;
+    }
+    function missing_dependency() {
+        if(!empty($this->relations['depends']['id'])) {
+            $key = ($this->is_template) ? 'template' : 'plugin';
+            $missing = array_diff((array)$this->relations['depends']['id'],$this->m->{$key.'_list'});
+            if(!empty($missing)) {
+                $this->missing_dependency = $missing;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function not_writable() {
+        return (!$this->is_writable && !$this->is_bundled && !$this->is_protected);
+    }
+    function bundled() {
+        return $this->is_bundled;
+    }
+    function has_conflicts() {
+        if(!empty($this->relations['conflicts']['id'])) {
+            $key = ($this->is_template) ? 'template' : 'plugin';
+            $installed_conflicts = array_intersect($this->m->{$key.'_list'},(array)$this->relations['conflicts']['id']);
+            if(!empty($installed_conflicts)) {
+                $this->has_conflicts = $installed_conflicts;    
+                return true;
+            }
+        }
+        return false;
     }
     /**
      * Precedence Order

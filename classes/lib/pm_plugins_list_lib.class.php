@@ -11,6 +11,7 @@ class pm_plugins_list_lib {
     var $rowadded = false;
     protected $form = null;
     protected $actions = array();
+    protected $possible_errors = array();
     protected $type = "plugin";
     protected $id = null;
     protected $m = null;
@@ -23,10 +24,12 @@ class pm_plugins_list_lib {
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct(pm_base_tab $tab,$id,$actions = array(),$type ="plugin") {
+    function __construct(pm_base_tab $tab,$id,$actions = array(),$possible_errors=array(),$type ="plugin") {
         $this->t = $tab;
         $this->type = $type;
+        $this->possible_errors = $possible_errors;
         $this->id = $id;
+        
         //$this->actions['info'] = $this->t->m->getLang('btn_info');
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
@@ -208,11 +211,24 @@ class pm_plugins_list_lib {
                 (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default).'<br/>';
         $return .= '<strong>'.hsc($this->t->m->getLang('components')).':</strong> '.
                 (!empty($info->type) ? hsc($info->type) : $default).'<br/>';
-        if($this->t->m->tab == "")
-        $return .= '<strong>'.hsc($this->t->m->getLang('installed')).'</strong> <em>'.
-                (!empty($info->installed) ? hsc($info->installed): $default).'</em><br/>';
-        $return .= '<strong>'.hsc($this->t->m->getLang('lastupdate')).'</strong> <em>'.
-                (!empty($info->updated) ? hsc($info->updated) : $default).'</em><br/>';
+        if($this->t->m->tab != "search") {
+            $return .= '<strong>'.hsc($this->t->m->getLang('installed')).'</strong> <em>'.
+                    (!empty($info->installed) ? hsc($info->installed): $default).'</em><br/>';
+            $return .= '<strong>'.hsc($this->t->m->getLang('lastupdate')).'</strong> <em>'.
+                    (!empty($info->updated) ? hsc($info->updated) : $default).'</em><br/>';
+        }
+        if(!empty($info->relations['depends']['id'])) {
+            $return .= '<strong>'.$this->t->m->getLang('depends').':</strong> '.
+                hsc(implode(', ',(array)$info->relations['depends']['id'])).'<br/>';
+        }
+        if(!empty($info->relations['similar']['id'])) {
+            $return .= '<strong>'.$this->t->m->getLang('similar').':</strong> '.
+                hsc(implode(', ',(array)$info->relations['similar']['id'])).'<br/>';
+        }
+        if(!empty($info->relations['conflicts']['id'])) {
+            $return .= '<strong>'.$this->t->m->getLang('conflicts').':</strong> '.
+                hsc(implode(', ',(array)$info->relations['conflicts']['id'])).'<br/>';
+        }
         $return .= '<strong>'.$this->t->m->getLang('tags').'</strong> '.
                 (!empty($info->tags) ? hsc(implode(', ',(array)$info->tags['tag'])) : $default).'<br/>';
         $return .= '</p>';
@@ -242,6 +258,17 @@ class pm_plugins_list_lib {
             if($info->{"can_".$act}()) {
                 $this->acted[$act] = true;
                 $return .= " | ".$this->make_action($act,$info->id,$text);
+            }
+        }
+        if(!empty($this->possible_errors)) {
+            foreach($this->possible_errors as $error => $text) {
+                if($info->$error()) {
+                    if(!empty($info->$error)) {
+                        $return .= "<br />(<em>".$text." ".hsc(implode(', ',$info->$error))."</em>)";
+                    } else {
+                        $return .= "<br />(<em>".$text."</em>)";
+                    }
+                }
             }
         }
         return $return;

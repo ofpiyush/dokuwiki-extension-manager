@@ -4,21 +4,19 @@ class pm_disable_action extends pm_base_action {
     var $result = array();
 
     function act() {
-        global $plugin_protected;
-        $unprotected = array_diff($this->plugin,$plugin_protected);
-        $enabled = array_filter($unprotected,array($this,'isenabled'));
-        if(is_array($enabled) && count($enabled)) {
-            $this->result['disabled']      = array_filter($enabled,'plugin_disable');
-            $this->result['notdisabled']   = array_diff_key($enabled,$this->result['disabled']);
+        if($this->m->tab == 'plugin') {
+            $this->result['disabled']      = array_filter($this->plugin,array($this,'disable'));
+            $this->result['notdisabled']   = array_diff_key($this->plugin,$this->result['disabled']);
+            $this->show_results();
+            $this->refresh($this->m->tab);
         }
-        $this->show_results();
-        $this->refresh();
     }
 
-    function isenabled($plugin) {
-        return !plugin_isdisabled($plugin);
+    function disable($plugin) {
+        $info = $this->m->info->get($plugin,$this->m->tab);
+        if(!$info->can_disable()) return false;
+        return plugin_disable($plugin);
     }
-
     function say_disabled($plugin,$key) {
         msg(sprintf($this->m->getLang('disabled'),$plugin),1);
     }

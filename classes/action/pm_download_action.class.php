@@ -4,7 +4,8 @@ class pm_download_action extends pm_base_action {
     var $overwrite = true;
     var $downerrors = array();
     var $current = null;
-    var $type = "plugin";
+    var $templated =false;
+    var $plugined = false;
 
     /**
      * Initiate the plugin download
@@ -14,7 +15,11 @@ class pm_download_action extends pm_base_action {
             $this->type ='template';
         }
         $this->down();
-        $this->refresh($this->type);
+        if($this->templated && !$this->plugined)
+            $this->m->tab = 'template';
+        else
+            $this->m->tab = 'plugin';
+        $this->refresh($this->m->tab);
     }
 
     function down() {
@@ -32,21 +37,27 @@ class pm_download_action extends pm_base_action {
                 msg($this->m->error,-1);
             }
         }elseif(is_array($this->plugin) && count($this->plugin)) {
-            $plugins = array_intersect_key($this->m->repo,array_flip($this->plugin));
-            foreach ($plugins as $plugin) {
-                $this->current = null;
-                $this->m->error = null;
-                $type = (stripos($plugin['type'],'Template') !== false ) ? 'template' : 'plugin';
-                $default_base = ($type == 'template') ? str_replace('template:','',$plugin['id']) :'';
-                if($this->download((object)$plugin, $this->overwrite,$default_base,$type)) {
-                    $base = $this->current['base'];
-                    if($this->current['type'] == 'template') {
-                        msg(sprintf($this->m->getLang('tempdownloaded'),$base),1);
-                    } else {
-                        msg(sprintf($this->m->getLang('downloaded'),$base),1);
+            foreach ($this->plugin as $plugin) {
+                if(array_key_exists($plugin,$this->m->repo)) {
+                    $info = $this->m->info->get($plugin,'search');
+                    if($info->can_download()) {
+                        $this->current = null;
+                        $this->m->error = null;
+                        $type = ($info->is_template) ? 'template' : 'plugin';
+                        $default_base = ($info->is_template) ? str_replace('template:','',$info->id) :'';
+                        if($this->download($info, $this->overwrite,$default_base,$type)) {
+                            $base = $this->current['base'];
+                            if($this->current['type'] == 'template') {
+                                $this->templated = true;
+                                msg(sprintf($this->m->getLang('tempdownloaded'),$base),1);
+                            } else {
+                                $this->plugined = true;
+                                msg(sprintf($this->m->getLang('downloaded'),$base),1);
+                            }
+                        } else {
+                            msg(sprintf($this->m->getLang('notdownloaded'),$plugin['id'])." <br />".$this->m->error,-1);
+                        }
                     }
-                } else {
-                    msg(sprintf($this->m->getLang('notdownloaded'),$plugin['id'])." <br />".$this->m->error,-1);
                 }
             }
         }
