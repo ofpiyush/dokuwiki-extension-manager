@@ -8,8 +8,8 @@ class pm_disable_action extends pm_base_action {
             $this->result['disabled']      = array_filter($this->plugin,array($this,'disable'));
             $this->result['notdisabled']   = array_diff_key($this->plugin,$this->result['disabled']);
             $this->show_results();
-            $this->refresh($this->m->tab);
         }
+        $this->refresh($this->m->tab);
     }
 
     function disable($plugin) {

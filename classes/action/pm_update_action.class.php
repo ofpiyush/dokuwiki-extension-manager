@@ -11,18 +11,23 @@ class pm_update_action extends pm_download_action {
             
             if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info->downloadurl)) {
                 if(!empty($info->downloadurl)) {
-                    if($this->download($info, $this->overwrite,'',$this->type)) {
-                        $base = $this->current['base'];
-                        if($this->m->tab == 'template') {
-                            $this->successtemp($base);
+                    if($info->can_update()) {
+                        if($this->download($info, $this->overwrite,'',$this->m->tab)) {
+                            $base = $this->current['base'];
+                            if($this->m->tab == 'template') {
+                                $this->successtemp($base);
+                            } else {
+                                $this->successplug($base);
+                            }
                         } else {
-                            $this->successplug($base);
+                            $this->fail($plugin,$this->m->error);
                         }
                     } else {
-                        $this->fail($plugin,$this->m->error);
+                        $this->fail($plugin,'');
                     }
+                    
                  } else {
-                    $this->fail($plugin,$this->m->error);
+                    $this->fail($plugin,$this->m->getLang('no_url'));
                  }
             } else {
                 $this->fail($plugin,$this->m->getLang('no_manager'));
