@@ -120,10 +120,6 @@
     width:5%;
     text-align:center;
 }
-#plugin__manager .enabled {
-    background: #fff;
-    color:#000;
-}
 #plugin__manager .disabled {
     background: #eee;
     color: #555;

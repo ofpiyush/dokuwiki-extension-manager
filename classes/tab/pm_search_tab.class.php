@@ -29,7 +29,7 @@ class pm_search_tab extends pm_base_tab {
             'Syntax'=>$this->manager->getLang('syntax')." (Syntax)",
             'Admin'=>$this->manager->getLang('admin')." (Admin)",
             'Action'=>$this->manager->getLang('action')." (Action)",
-            'Renderer'=>$this->manager->getLang('renderer')." (Renderer)",
+            'Render'=>$this->manager->getLang('render')." (Render)",
             'Helper'=>$this->manager->getLang('helper')." (Helper)",
             'Template'=>$this->manager->getLang('template')." (Template)"
             );

@@ -8,7 +8,7 @@ var plugin_manager = {
     setCheckState : function (clickSelector,bool) {
         jQuery(clickSelector).show();
         jQuery(clickSelector).click(function () {
-		        jQuery(this).parents('form').find('input[type="checkbox"]:not([disabled])').prop('checked',bool);
+		        jQuery(this).parents('form').find('input[type="checkbox"]').not('[disabled]').prop('checked',bool);
 	        });
     },
     confirmDelete : function (delSelector) {

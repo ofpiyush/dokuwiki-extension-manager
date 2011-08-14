@@ -78,7 +78,7 @@ $lang['all']                    = 'All';
 $lang['syntax']                 = 'Syntax';
 $lang['admin']                  = 'Admin';
 $lang['action']                 = 'Action';
-$lang['renderer']               = 'Renderer';
+$lang['render']                 = 'Render';
 $lang['helper']                 = 'Helper';
 
 // info titles
