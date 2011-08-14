@@ -52,11 +52,11 @@ abstract class pm_base_single_lib {
 
     var $info = array();
 
-    var $manager = array();
+    var $log = array();
 
     final function __construct(admin_plugin_plugin $base,$dirname) {
         $this->id = $dirname;
-        $this->m = $base;
+        $this->manager = $base;
     }
 
     abstract function can_select();
@@ -70,7 +70,7 @@ abstract class pm_base_single_lib {
         } elseif(isset($this->repo[$key])){
              $return = $this->repo[$key];
         }elseif(isset($this->info[$key])){ $return = $this->info[$key];
-        }elseif(isset($this->manager[$key])){ $return = $this->manager[$key];
+        }elseif(isset($this->log[$key])){ $return = $this->log[$key];
         }elseif(method_exists($this,'default_'.$key)){ return $this->{'default_'.$key}();}
         $this->$key = $return;
         return $return;
@@ -123,7 +123,7 @@ abstract class pm_base_single_lib {
     function missing_dependency() {
         if(!empty($this->relations['depends']['id'])) {
             $key = ($this->is_template) ? 'template' : 'plugin';
-            $missing = array_diff((array)$this->relations['depends']['id'],$this->m->{$key.'_list'});
+            $missing = array_diff((array)$this->relations['depends']['id'],$this->manager->{$key.'_list'});
             if(!empty($missing)) {
                 $this->missing_dependency = $missing;
                 return true;
@@ -141,7 +141,7 @@ abstract class pm_base_single_lib {
     function has_conflicts() {
         if(!empty($this->relations['conflicts']['id'])) {
             $key = ($this->is_template) ? 'template' : 'plugin';
-            $installed_conflicts = array_intersect($this->m->{$key.'_list'},(array)$this->relations['conflicts']['id']);
+            $installed_conflicts = array_intersect($this->manager->{$key.'_list'},(array)$this->relations['conflicts']['id']);
             if(!empty($installed_conflicts)) {
                 $this->has_conflicts = $installed_conflicts;    
                 return true;
@@ -159,7 +159,7 @@ abstract class pm_base_single_lib {
         $time = 0;
         if($this->is_bundled) {
             $version = getVersionData();
-            return  $this->m->getLang('bundled').'<br /> <em>('.$version['date'].')</em>';
+            return  $this->manager->getLang('bundled').'<br /> <em>('.$version['date'].')</em>';
         } elseif(!empty($this->pm_date_version)) {
             $time = $this->pm_date_version;
             $this->version = $this->pm_date_version;
@@ -175,7 +175,7 @@ abstract class pm_base_single_lib {
             $this->newversion = $this->lastupdate;
         }
         if(empty($this->version)) {
-            $this->version = $this->m->getLang('unknown');
+            $this->version = $this->manager->getLang('unknown');
             if($time !== 0) $this->version .= '<br /> <em>('.date('Y-m-d',strtotime($time)).')</em>';
         }
 

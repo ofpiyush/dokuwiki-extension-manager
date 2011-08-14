@@ -8,29 +8,29 @@ class pm_template_tab extends pm_base_tab {
 
     function process() {
         global $conf;
-        $list = $this->m->template_list;
+        $list = $this->manager->template_list;
         $this->templates['enabled'][0] = $this->_info_list($conf['template']);
         $disabled = array_diff($list,array($conf['template']));
         $this->templates['disabled'] = array_map(array($this,'_info_list'),$disabled); 
         usort($this->templates['disabled'],array($this,'_sort'));
         $this->actions_list = array(
-            'delete'=>$this->m->getLang('btn_delete'),
-            'update'=>$this->m->getLang('btn_update'),
-            'reinstall' =>$this->m->getLang('btn_reinstall'),
+            'delete'=>$this->manager->getLang('btn_delete'),
+            'update'=>$this->manager->getLang('btn_update'),
+            'reinstall' =>$this->manager->getLang('btn_reinstall'),
         );
         $this->possible_errors = array(
-            'missing_dependency' => $this->m->getLang('depends'),
-            'not_writable' => $this->m->getLang('not_writable'),
-            'bundled' => $this->m->getLang('bundled'),
-            'missing_dlurl' => $this->m->getLang('no_url'),
+            'missing_dependency' => $this->manager->getLang('depends'),
+            'not_writable' => $this->manager->getLang('not_writable'),
+            'bundled' => $this->manager->getLang('bundled'),
+            'missing_dlurl' => $this->manager->getLang('no_url'),
         );
     }
 
     function html() {
         $this->html_menu();
-        $this->render_search('tpl__search',$this->m->getLang('tpl_search'),'','Template');
+        $this->render_search('tpl__search',$this->manager->getLang('tpl_search'),'','Template');
         $list = new pm_plugins_list_lib($this,'templates__list',$this->actions_list,$this->possible_errors,'template');
-        $list->add_header($this->m->getLang('tpl_manage'));
+        $list->add_header($this->manager->getLang('tpl_manage'));
         $list->start_form();
         if(!empty($this->templates)) {
             foreach($this->templates as $type => $templates) {
@@ -48,7 +48,7 @@ class pm_template_tab extends pm_base_tab {
     }
     function check_writable() {
         if(!is_writable(DOKU_INC.'lib/tpl/')) {
-            msg($this->m->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
+            msg($this->manager->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
         }
     }
     function _info_list($template) {
@@ -56,7 +56,7 @@ class pm_template_tab extends pm_base_tab {
     }
     function get_class($info,$class) {
         if(!empty($info->securityissue)) $class .= ' secissue';
-        if($info->id == $this->m->showinfo) $class .= ' infoed';
+        if($info->id == $this->manager->showinfo) $class .= ' infoed';
         $class .= " template";
         return $class;
     }

@@ -14,7 +14,7 @@ class pm_plugins_list_lib {
     protected $possible_errors = array();
     protected $type = "plugin";
     protected $id = null;
-    protected $m = null;
+    protected $manager = null;
     protected $columns = array();
     protected $intable = false;
     protected $acted = array();
@@ -25,12 +25,12 @@ class pm_plugins_list_lib {
      * Starts the form, table and sets up actions available to the user
      */
     function __construct(pm_base_tab $tab,$id,$actions = array(),$possible_errors=array(),$type ="plugin") {
-        $this->t = $tab;
+        $this->tab = $tab;
         $this->type = $type;
         $this->possible_errors = $possible_errors;
         $this->id = $id;
         
-        //$this->actions['info'] = $this->t->m->getLang('btn_info');
+        //$this->actions['info'] = $this->tab->manager->getLang('btn_info');
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
     }
@@ -90,8 +90,8 @@ class pm_plugins_list_lib {
         if($this->rowadded) {
             $acted = array_filter($this->acted);
             if(!empty($acted)) {
-            $this->form .= '<div class="checks"><span class="checkall">['.$this->t->m->getLang('select_all').']</span>'.
-                            '  <span class="checknone">['.$this->t->m->getLang('select_none').']</span></div>';
+            $this->form .= '<div class="checks"><span class="checkall">['.$this->tab->manager->getLang('select_all').']</span>'.
+                            '  <span class="checknone">['.$this->tab->manager->getLang('select_none').']</span></div>';
             }
             $this->form .= '<div class="bottom">';
 
@@ -102,7 +102,7 @@ class pm_plugins_list_lib {
                 $this->form .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }
             //$this->form .= '</select>';
-            //$this->form .= '<input class="button" type="submit" value="'.$this->t->m->getLang('btn_go').'" />';
+            //$this->form .= '<input class="button" type="submit" value="'.$this->tab->manager->getLang('btn_go').'" />';
             $this->form .= '</div>';
         }
         $this->form .= '</form>';
@@ -151,7 +151,7 @@ class pm_plugins_list_lib {
             }
             return hsc($info->author);
         }
-        return "<em>".$this->t->m->getLang('unknown')."</em>";
+        return "<em>".$this->tab->manager->getLang('unknown')."</em>";
     }
     private function make_link($info, $class) {
         return '<a href="'.hsc($info->url).'" title="'.hsc($info->url).'" class ="'.$class.'">'.hsc($info->name).'</a>';
@@ -159,8 +159,8 @@ class pm_plugins_list_lib {
 
     private function make_inforight($info,$class) {
         $return = '<p><label for="'.$this->id.hsc($info->id).'">';
-        $return .= '<strong>'.$this->t->m->getLang('version').'</strong> ';
-        if(empty($info->version)) $info->version = '<em>'.$this->t->m->getLang('unknown').'</em>';
+        $return .= '<strong>'.$this->tab->manager->getLang('version').'</strong> ';
+        if(empty($info->version)) $info->version = '<em>'.$this->tab->manager->getLang('unknown').'</em>';
         $return .= $info->version."</label></p>";
         return $return;
     }
@@ -189,53 +189,53 @@ class pm_plugins_list_lib {
         }
         if(!empty($info->newversion)) {
             $return .=  '<div class="notify">'.
-                            sprintf($this->t->m->getLang('update_available'),hsc($info->newversion)).
+                            sprintf($this->tab->manager->getLang('update_available'),hsc($info->newversion)).
                         '</div>';
         }
         if(!empty($info->securityissue)) {
             $return .= '<div class="error">'.
-                            '<strong>'.$this->t->m->getLang('security_issue').'</strong> '.
+                            '<strong>'.$this->tab->manager->getLang('security_issue').'</strong> '.
                             hsc($info->securityissue).
                         '</div>';
         }
         if(!empty($info->securitywarning)) {
             $return .= '<div class="notify">'.
-                            '<strong>'.$this->t->m->getLang('security_warning').'</strong> '.
+                            '<strong>'.$this->tab->manager->getLang('security_warning').'</strong> '.
                             hsc($info->securitywarning).
                         '</div>';
         }
-        if($this->t->showinfo == $info->id) {
+        if($this->tab->manager->showinfo == $info->id) {
             $return .= $this->make_infoed($info);
         }
         return $return;
     }
     private function make_infoed($info) {
         $return .= '<p>';
-        $default = "<em>".$this->t->m->getLang('unknown')."</em>";
-        $return .= '<strong>'.hsc($this->t->m->getLang('author')).'</strong> '.$this->make_author($info).'<br/>';
-        $return .= '<strong>'.hsc($this->t->m->getLang('source')).'</strong> '.
+        $default = "<em>".$this->tab->manager->getLang('unknown')."</em>";
+        $return .= '<strong>'.hsc($this->tab->manager->getLang('author')).'</strong> '.$this->make_author($info).'<br/>';
+        $return .= '<strong>'.hsc($this->tab->manager->getLang('source')).'</strong> '.
                 (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default).'<br/>';
-        $return .= '<strong>'.hsc($this->t->m->getLang('components')).':</strong> '.
+        $return .= '<strong>'.hsc($this->tab->manager->getLang('components')).':</strong> '.
                 (!empty($info->type) ? hsc($info->type) : $default).'<br/>';
-        if($this->t->m->tab != "search") {
-            $return .= '<strong>'.hsc($this->t->m->getLang('installed')).'</strong> <em>'.
+        if($this->tab->manager->tab != "search") {
+            $return .= '<strong>'.hsc($this->tab->manager->getLang('installed')).'</strong> <em>'.
                     (!empty($info->installed) ? hsc($info->installed): $default).'</em><br/>';
-            $return .= '<strong>'.hsc($this->t->m->getLang('lastupdate')).'</strong> <em>'.
+            $return .= '<strong>'.hsc($this->tab->manager->getLang('lastupdate')).'</strong> <em>'.
                     (!empty($info->updated) ? hsc($info->updated) : $default).'</em><br/>';
         }
         if(!empty($info->relations['depends']['id'])) {
-            $return .= '<strong>'.$this->t->m->getLang('depends').':</strong> '.
+            $return .= '<strong>'.$this->tab->manager->getLang('depends').':</strong> '.
                 hsc(implode(', ',(array)$info->relations['depends']['id'])).'<br/>';
         }
         if(!empty($info->relations['similar']['id'])) {
-            $return .= '<strong>'.$this->t->m->getLang('similar').':</strong> '.
+            $return .= '<strong>'.$this->tab->manager->getLang('similar').':</strong> '.
                 hsc(implode(', ',(array)$info->relations['similar']['id'])).'<br/>';
         }
         if(!empty($info->relations['conflicts']['id'])) {
-            $return .= '<strong>'.$this->t->m->getLang('conflicts').':</strong> '.
+            $return .= '<strong>'.$this->tab->manager->getLang('conflicts').':</strong> '.
                 hsc(implode(', ',(array)$info->relations['conflicts']['id'])).'<br/>';
         }
-        $return .= '<strong>'.$this->t->m->getLang('tags').'</strong> '.
+        $return .= '<strong>'.$this->tab->manager->getLang('tags').'</strong> '.
                 (!empty($info->tags) ? hsc(implode(', ',(array)$info->tags['tag'])) : $default).'<br/>';
         $return .= '</p>';
         return $return;
@@ -252,14 +252,14 @@ class pm_plugins_list_lib {
     }
     private function make_actions($info) {
         $extra =  null;
-        if($this->t->m->tab == "search" ) {
+        if($this->tab->manager->tab == "search" ) {
             if(!empty($this->t->term))
                 $extra['term'] = $this->t->term;
             if(!empty($this->t->extra)) {
                 $extra = array_merge($extra,$this->t->extra);
             }
         }
-        $return = $this->make_action('info',$info->id,$this->t->m->getLang('btn_info'),$extra);
+        $return = $this->make_action('info',$info->id,$this->tab->manager->getLang('btn_info'),$extra);
         foreach($this->actions as $act => $text) {
             if($info->{"can_".$act}()) {
                 $this->acted[$act] = true;
@@ -284,7 +284,7 @@ class pm_plugins_list_lib {
         $params = array(
             'do'=>'admin',
             'page'=>'plugin',
-            'tab' => $this->t->m->tab,
+            'tab' => $this->tab->manager->tab,
             'fn'=>$action,
             'checked[]'=>$id,
             'sectok'=>getSecurityToken()

@@ -15,23 +15,23 @@ class pm_search_tab extends pm_base_tab {
         $this->doku_version = $doku['date'];
         $this->clean_repo();
         $this->actions_list = array(
-                'download'=>$this->m->getLang('btn_download'),
-                'disdown'=>$this->m->getLang('btn_disdown'),
+                'download'=>$this->manager->getLang('btn_download'),
+                'disdown'=>$this->manager->getLang('btn_disdown'),
                 );
         $this->possible_errors = array(
-                'has_conflicts' => $this->m->getLang('conflicts'),
-                'missing_dependency' => $this->m->getLang('depends'),
-                'missing_dlurl' => $this->m->getLang('no_url'),
+                'has_conflicts' => $this->manager->getLang('conflicts'),
+                'missing_dependency' => $this->manager->getLang('depends'),
+                'missing_dlurl' => $this->manager->getLang('no_url'),
                 );
         //https://github.com/piyushmishra/dokuwiki/commit/7c4ad50ccd13707eab764363e275286bab428435#commitcomment-529776
         $this->search_types = array(
-            ''=>$this->m->getLang('all'),
-            'Syntax'=>$this->m->getLang('syntax')." (Syntax)",
-            'Admin'=>$this->m->getLang('admin')." (Admin)",
-            'Action'=>$this->m->getLang('action')." (Action)",
-            'Renderer'=>$this->m->getLang('renderer')." (Renderer)",
-            'Helper'=>$this->m->getLang('helper')." (Helper)",
-            'Template'=>$this->m->getLang('template')." (Template)"
+            ''=>$this->manager->getLang('all'),
+            'Syntax'=>$this->manager->getLang('syntax')." (Syntax)",
+            'Admin'=>$this->manager->getLang('admin')." (Admin)",
+            'Action'=>$this->manager->getLang('action')." (Action)",
+            'Renderer'=>$this->manager->getLang('renderer')." (Renderer)",
+            'Helper'=>$this->manager->getLang('helper')." (Helper)",
+            'Template'=>$this->manager->getLang('template')." (Template)"
             );
         $this->filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
 
@@ -44,18 +44,18 @@ class pm_search_tab extends pm_base_tab {
         }
         if($this->term !== null || $this->extra !== null ) {
             if($this->term === null) $this->term = " ";
-            if($this->m->repo !== null)
+            if($this->manager->repo !== null)
                 $this->lookup();
         }
     }
 
     function html() {
         $this->html_menu();
-        $this->render_search('install__search', $this->m->getLang('search_plugin'),$this->term,$this->search_types);
+        $this->render_search('install__search', $this->manager->getLang('search_plugin'),$this->term,$this->search_types);
 
         if(is_array($this->search_result) && count($this->search_result)) {
             $list = new pm_plugins_list_lib($this,'search__result',$this->actions_list,$this->possible_errors);
-            $list->add_header(sprintf($this->m->getLang('search_results'),hsc($this->term)));
+            $list->add_header(sprintf($this->manager->getLang('search_results'),hsc($this->term)));
             $list->start_form();
             foreach($this->search_result as $result) {
                 foreach($result as $info) {
@@ -70,13 +70,13 @@ class pm_search_tab extends pm_base_tab {
             $list->render();
         } elseif(!is_null($this->term)) {
             $no_result = new pm_plugins_list_lib($this,'no__result');
-            $no_result->add_header(sprintf($this->m->getLang('not_found'),hsc($this->term)));
+            $no_result->add_header(sprintf($this->manager->getLang('not_found'),hsc($this->term)));
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
-            $no_result->add_p(sprintf($this->m->getLang('no_result'),$url,$url));
+            $no_result->add_p(sprintf($this->manager->getLang('no_result'),$url,$url));
             $no_result->render();
         } else {
             $full_list = new pm_plugins_list_lib($this,'browse__list',$this->actions_list,$this->possible_errors);
-            $full_list->add_header($this->m->getLang('browse'));
+            $full_list->add_header($this->manager->getLang('browse'));
             $full_list->start_form();
             foreach($this->filtered_repo as $info) {
                 $info = $this->_info_list($info['id'],'search');
@@ -100,15 +100,15 @@ class pm_search_tab extends pm_base_tab {
 
     function check_writable() {
         if(!is_writable(DOKU_INC.'lib/tpl/')) {
-            msg($this->m->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
+            msg($this->manager->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
         }
         if(!is_writable(DOKU_PLUGIN)) {
-            msg($this->m->getLang('not_writable')." ".DOKU_PLUGIN,-1);
+            msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
     }
 
     protected function clean_repo() {
-        $this->filtered_repo = array_diff_key($this->m->repo,array_flip($this->m->plugin_list));
+        $this->filtered_repo = array_diff_key($this->manager->repo,array_flip($this->manager->plugin_list));
         $this->filtered_repo = array_filter($this->filtered_repo,array($this,'filter_clean'));
     }
     /**

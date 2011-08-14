@@ -2,7 +2,7 @@
 class pm_info_lib {
 
     function __construct(admin_plugin_plugin $manager) {
-        $this->m = $manager;
+        $this->manager = $manager;
     }
 //TODO split into the three child classes (too many if in here :()
     function get($index,$type = "plugin") {
@@ -12,9 +12,9 @@ class pm_info_lib {
             $type = 'plugin';
         }
         $classname = "pm_".$type."_single_lib";
-        $return = new $classname($this->m,$index);
+        $return = new $classname($this->manager,$index);
         if($type =="search") {
-            $return->repo = $this->m->repo[$index];
+            $return->repo = $this->manager->repo[$index];
             if(stripos($index,'template:')===0) {
                 $return->is_writable = is_writable(DOKU_INC."lib/tpl/");
                 $return->is_template = true;
@@ -43,7 +43,7 @@ class pm_info_lib {
                 $info_autogen = true;
             }
         }
-        $return->manager = $this->m->log->read($path);
+        $return->log = $this->manager->log->read($path);
         $return->repo = $this->repotoinfo($return,$index,$type);
         $this->check_dlurlchange($return->repo,$return->log,$path);
         if($type =="plugin") {
@@ -54,7 +54,7 @@ class pm_info_lib {
                 $protected = $plugin_protected;
             }
             $return->is_protected = in_array($return->id,$protected);
-            $return->is_bundled = in_array($return->id,$this->m->_bundled);
+            $return->is_bundled = in_array($return->id,$this->manager->_bundled);
             $return->is_enabled = !plugin_isdisabled($return->id);
             $return->is_template = false;
         } else {
@@ -73,9 +73,9 @@ class pm_info_lib {
     function check_dlurlchange($return,$log,$path) {
         if(!empty($return['downloadurl'])  && !empty($log['downloadurl']) &&
                 $return['downloadurl'] != $log['downloadurl']) {
-            if($this->plugin_writelog($path,'update',array('url'=>$return['downloadurl']),false)) {
-                msg(sprintf($this->m->getLang('url_change'),hsc($return['id']),hsc($return['downloadurl']),hsc($log['downloadurl']),hsc($return['name']),$this->m->getLang('btn_info'),
-                    $this->m->getLang('source'),hsc($path)),2);
+            if($this->manager->log->write($path,'update',array('url'=>$return['downloadurl']),false)) {
+                msg(sprintf($this->manager->getLang('url_change'),hsc($return['id']),hsc($return['downloadurl']),hsc($log['downloadurl']),hsc($return['name']),$this->manager->getLang('btn_info'),
+                    $this->manager->getLang('source'),hsc($path)),2);
             }
         }
     }
@@ -90,8 +90,8 @@ class pm_info_lib {
     }
 
     function repotoinfo($return,$index,$type) {
-        if(!empty($return->manager['repoid'])) {
-            $repo_key = $return->manager['repoid'];
+        if(!empty($return->log['repoid'])) {
+            $repo_key = $return->log['repoid'];
         } elseif(!empty($return->info['base'])) {
             $repo_key = $return->info['base'];
         } else {
@@ -99,8 +99,8 @@ class pm_info_lib {
         }
         if($type == "template")
             $repo_key = "template:".$repo_key;
-        if(!empty($this->m->repo[$repo_key])) {
-            return $this->m->repo[$repo_key];
+        if(!empty($this->manager->repo[$repo_key])) {
+            return $this->manager->repo[$repo_key];
         }
         return false;
     }
@@ -149,7 +149,7 @@ class pm_info_lib {
         if (!$fp = @fopen($file, 'w')) return false;
         fwrite($fp, $info);
         fclose($fp);
-        msg(sprintf($this->m->getLang('autogen_info'),$return->base),2);
+        msg(sprintf($this->manager->getLang('autogen_info'),$return->base),2);
         return true;
     }
 

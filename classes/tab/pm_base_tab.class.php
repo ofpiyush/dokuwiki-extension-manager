@@ -11,7 +11,7 @@ abstract class pm_base_tab {
     var $downloaded = array();
 
     function __construct(admin_plugin_plugin $manager) {
-        $this->m = $manager;
+        $this->manager = $manager;
         $this->plugin = $manager->plugin;
         if(!empty($_REQUEST['info']))
             $this->showinfo = $_REQUEST['info'];
@@ -29,16 +29,16 @@ abstract class pm_base_tab {
     function html_menu() {
         global $ID;
             $tabs_array = array(
-                'plugin' => rtrim($this->m->getLang('plugin'),":"),
-                'template' =>$this->m->getLang('template'),
-                'search' =>$this->m->getLang('install')
+                'plugin' => rtrim($this->manager->getLang('plugin'),":"),
+                'template' =>$this->manager->getLang('template'),
+                'search' =>$this->manager->getLang('install')
                 );
-            $selected = array_key_exists($this->m->tab,$tabs_array)? $this->m->tab : 'plugin' ;
+            $selected = array_key_exists($this->manager->tab,$tabs_array)? $this->manager->tab : 'plugin' ;
             ptln('<div class="pm_menu">');
 		    ptln('    <ul>');
 		    foreach($tabs_array as $tab =>$text) {
 		        // not showing search tab when no repo is present
-		        if(empty($this->m->repo) && $tab == 'search') continue;
+		        if(empty($this->manager->repo) && $tab == 'search') continue;
 		        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
 		    }
 		    ptln('    </ul>');
@@ -46,21 +46,21 @@ abstract class pm_base_tab {
     }
 
     protected function render_search($id,$head,$value = '',$type = null) {
-        if($this->m->tab == 'search' || (empty($this->m->repo) && $this->m->tab == 'plugin')) {
+        if($this->manager->tab == 'search' || (empty($this->manager->repo) && $this->manager->tab == 'plugin')) {
             ptln('<div class="common">');
-            ptln('  <h2>'.$this->m->getLang('download').'</h2>');
+            ptln('  <h2>'.$this->manager->getLang('download').'</h2>');
             $url_form = new Doku_Form('install__url');
-            $url_form->startFieldset($this->m->getLang('download'));
-            $url_form->addElement(form_makeTextField('url','',$this->m->getLang('url'),'dw__url'));
+            $url_form->startFieldset($this->manager->getLang('download'));
+            $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('url'),'dw__url'));
             $url_form->addHidden('page','plugin');
             $url_form->addHidden('fn','download');
-            $url_form->addElement(form_makeButton('submit', 'admin', $this->m->getLang('btn_download') ));
+            $url_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_download') ));
             $url_form->endFieldset();
             $url_form->printForm();
             ptln('</div>');
         }
         // No point producing search when there is no repo
-        if(!empty($this->m->repo)) {
+        if(!empty($this->manager->repo)) {
             global $lang;
             ptln('<div class="common">');
             ptln('  <h2>'.hsc($head).'</h2>');
@@ -74,7 +74,7 @@ abstract class pm_base_tab {
             if(!empty($this->extra['type'])) $type_default = $this->extra['type'];
             if($type !== null)
                 if(is_array($type) && count($type))
-                    $search_form->addElement(form_makeMenuField('type',$type,$type_default,$this->m->getLang('type')));
+                    $search_form->addElement(form_makeMenuField('type',$type,$type_default,$this->manager->getLang('type')));
                 else
                     $search_form->addHidden('type',$type);
             $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
@@ -87,7 +87,7 @@ abstract class pm_base_tab {
 
 
     function _info_list($index,$type ="plugin") {
-        return $this->m->info->get($index,$type);
+        return $this->manager->info->get($index,$type);
     }
 
     //sorting based on name

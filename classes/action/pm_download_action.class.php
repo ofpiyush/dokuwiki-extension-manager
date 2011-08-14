@@ -15,13 +15,13 @@ class pm_download_action extends pm_base_action {
             $this->type ='template';
         }
         $this->down();
-        if($this->m->tab == "search") {
+        if($this->manager->tab == "search") {
             if($this->templated && !$this->plugined)
-                $this->m->tab = 'template';
+                $this->manager->tab = 'template';
             else
-                $this->m->tab = 'plugin';
+                $this->manager->tab = 'plugin';
         }
-        $this->refresh($this->m->tab);
+        $this->refresh($this->manager->tab);
     }
 
     function down() {
@@ -31,33 +31,33 @@ class pm_download_action extends pm_base_action {
             if($this->download($obj, $this->overwrite)) {
                 $base = $this->current['base'];
                 if($this->current['type'] = "template")
-                    msg(sprintf($this->m->getLang('tempdownloaded'),$base),1);
+                    msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
                 else
-                   msg(sprintf($this->m->getLang('downloaded'),$base),1);
+                   msg(sprintf($this->manager->getLang('downloaded'),$base),1);
             }
             else {
-                msg($this->m->error,-1);
+                msg($this->manager->error,-1);
             }
         }elseif(is_array($this->plugin) && count($this->plugin)) {
             foreach ($this->plugin as $plugin) {
-                if(array_key_exists($plugin,$this->m->repo)) {
-                    $info = $this->m->info->get($plugin,'search');
+                if(array_key_exists($plugin,$this->manager->repo)) {
+                    $info = $this->manager->info->get($plugin,'search');
                     if($info->can_download()) {
                         $this->current = null;
-                        $this->m->error = null;
+                        $this->manager->error = null;
                         $type = ($info->is_template) ? 'template' : 'plugin';
                         $default_base = ($info->is_template) ? str_replace('template:','',$info->id) :'';
                         if($this->download($info, $this->overwrite,$default_base,$type)) {
                             $base = $this->current['base'];
                             if($this->current['type'] == 'template') {
                                 $this->templated = true;
-                                msg(sprintf($this->m->getLang('tempdownloaded'),$base),1);
+                                msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
                             } else {
                                 $this->plugined = true;
-                                msg(sprintf($this->m->getLang('downloaded'),$base),1);
+                                msg(sprintf($this->manager->getLang('downloaded'),$base),1);
                             }
                         } else {
-                            msg(sprintf($this->m->getLang('notdownloaded'),$plugin['id'])." <br />".$this->m->error,-1);
+                            msg(sprintf($this->manager->getLang('notdownloaded'),$plugin['id'])." <br />".$this->manager->error,-1);
                         }
                     }
                 }
@@ -74,28 +74,28 @@ class pm_download_action extends pm_base_action {
         // check the url
         $matches = array();
         if (!preg_match("/[^\/]*$/", $url, $matches) || !$matches[0]) {
-            $this->m->error = $this->m->getLang('error_badurl')."\n";
+            $this->manager->error = $this->manager->getLang('error_badurl')."\n";
             return false;
         }
 
         $file = $matches[0];
 
         if (!($tmp = io_mktmpdir())) {
-            $this->m->error = $this->m->getLang('error_dircreate')."\n";
+            $this->manager->error = $this->manager->getLang('error_dircreate')."\n";
             return false;
         }
 
         if (!$file = io_download($url, "$tmp/", true, $file)) {
-            $this->m->error = sprintf($this->m->getLang('error_download'),$url)."\n";
+            $this->manager->error = sprintf($this->manager->getLang('error_download'),$url)."\n";
         }
 
-        if (!$this->m->error && !$this->decompress("$tmp/$file", $tmp)) {
-            $this->m->error = sprintf($this->m->getLang('error_decompress'),$file)."\n";
+        if (!$this->manager->error && !$this->decompress("$tmp/$file", $tmp)) {
+            $this->manager->error = sprintf($this->manager->getLang('error_decompress'),$file)."\n";
         }
 
         // search $tmp for the folder(s) that has been created
         // move the folder(s) to lib/plugins/
-        if (!$this->m->error) {
+        if (!$this->manager->error) {
             $result = array('old'=>array(), 'new'=>array());
             if($this->find_folders($result,$tmp,'', $default_type)){
                 // choose correct result array
@@ -132,21 +132,21 @@ class pm_download_action extends pm_base_action {
                             $version = $plugin->lastupdate;
                         if(!empty($default_base) && !file_exists($target.'/'.$item['type'].'.info.txt'))
                             $repoid = $default_base;
-                        $this->m->log->write($target, $instruction, array('url' =>$url,'repoid'=>$repoid,'pm_date_version'=>$version));
+                        $this->manager->log->write($target, $instruction, array('url' =>$url,'repoid'=>$repoid,'pm_date_version'=>$version));
                     } else {
-                        $this->m->error .= sprintf($this->m->getLang('error_copy')."\n", $item['base']);
+                        $this->manager->error .= sprintf($this->manager->getLang('error_copy')."\n", $item['base']);
                     }
                 }
 
             } else {
-                $this->m->error = $this->m->getLang('error')."\n";
+                $this->manager->error = $this->manager->getLang('error')."\n";
             }
         }
 
         // cleanup
         if ($tmp) $this->dir_delete($tmp);
 
-        if (!$this->m->error) {
+        if (!$this->manager->error) {
             return true;
         }
 

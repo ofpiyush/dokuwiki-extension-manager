@@ -2,47 +2,47 @@
 class pm_update_action extends pm_download_action {
     var $overwrite = true;
     function down() {
-        $base_path = ($this->m->tab == "template")? DOKU_INC.'lib/tpl/' : DOKU_PLUGIN;
+        $base_path = ($this->manager->tab == "template")? DOKU_INC.'lib/tpl/' : DOKU_PLUGIN;
         foreach($this->plugin as $plugin) {
             if(in_array($plugin,$this->_bundled)) continue;
             $this->current = null;
             $this->manager->error = null;
-            $info = $this->m->info->get($plugin,$this->m->tab);
+            $info = $this->manager->info->get($plugin,$this->manager->tab);
             
             if(@file_exists($base_path.$plugin.'/manager.dat') || !empty($info->downloadurl)) {
                 if(!empty($info->downloadurl)) {
-                    if($info->{"can_".$this->m->cmd}()) {
-                        if($this->download($info, $this->overwrite,'',$this->m->tab)) {
+                    if($info->{"can_".$this->manager->cmd}()) {
+                        if($this->download($info, $this->overwrite,'',$this->manager->tab)) {
                             $base = $this->current['base'];
-                            if($this->m->tab == 'template') {
+                            if($this->manager->tab == 'template') {
                                 $this->successtemp($base);
                             } else {
                                 $this->successplug($base);
                             }
                         } else {
-                            $this->fail($plugin,$this->m->error);
+                            $this->fail($plugin,$this->manager->error);
                         }
                     } else {
                         $this->fail($plugin,'');
                     }
                     
                  } else {
-                    $this->fail($plugin,$this->m->getLang('no_url'));
+                    $this->fail($plugin,$this->manager->getLang('no_url'));
                  }
             } else {
-                $this->fail($plugin,$this->m->getLang('no_manager'));
+                $this->fail($plugin,$this->manager->getLang('no_manager'));
             }
             
         }
     }
     function successtemp($base) {
-        msg(sprintf($this->m->getLang('tempupdated'),hsc($base)),1);
+        msg(sprintf($this->manager->getLang('tempupdated'),hsc($base)),1);
     }
     function successplug($base) {
-        msg(sprintf($this->m->getLang('updated'),hsc($base)),1);
+        msg(sprintf($this->manager->getLang('updated'),hsc($base)),1);
     }
     function fail($plugin,$extra) {
-        msg("<strong>".hsc($plugin).":</strong> ".$this->m->getLang('update_error')."<br />".$extra,-1);
+        msg("<strong>".hsc($plugin).":</strong> ".$this->manager->getLang('update_error')."<br />".$extra,-1);
     }
 }
 

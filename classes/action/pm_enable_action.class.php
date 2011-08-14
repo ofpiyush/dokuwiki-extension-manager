@@ -13,10 +13,10 @@ class pm_enable_action extends pm_base_action {
     }
 
     function say_enabled($plugin,$key) {
-        msg(sprintf($this->m->getLang('enabled'),$plugin),1);
+        msg(sprintf($this->manager->getLang('enabled'),$plugin),1);
     }
 
     function say_notenabled($plugin,$key) {
-        msg(sprintf($this->m->getLang('notenabled'),$plugin),-1);
+        msg(sprintf($this->manager->getLang('notenabled'),$plugin),-1);
     }
 }

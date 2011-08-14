@@ -2,8 +2,7 @@
 abstract class pm_base_action {
     final function __construct(admin_plugin_plugin $manager) {
         $this->tab = $manager->tab;
-        $this->m = $manager;
-        $this->plugin = $this->m->plugin;
+        $this->manager = $manager;
         $this->act();
     }
     abstract function act();

@@ -9,7 +9,7 @@ class pm_repository_lib {
         $this->repo_cache = new cache('plugin_manager', '.sa');
         $this->check_load();
         $this->repo = $this->fetch();
-        $this->m = $manager;
+        $this->manager = $manager;
     }
     /**
      * checks to see if a valid cache exists, if it doesnot, makes one...
@@ -58,7 +58,7 @@ class pm_repository_lib {
         }
         if($error) {
             $this->repo_cache->storeCache(serialize(array()));
-            msg($this->m->getLang('repocache_error'), -1);
+            msg($this->manager->getLang('repocache_error'), -1);
         }
     }
     
@@ -90,7 +90,7 @@ class pm_repository_lib {
         xml_parse_into_struct($parser,$string, $struct);
         xml_parser_free($parser);
         if(!is_array($struct))
-            throw new Exception($this->m->getLang('repoxml_error'));
+            throw new Exception($this->manager->getLang('repoxml_error'));
         $xml = array();
         $levels = array();
         $current = &$xml;

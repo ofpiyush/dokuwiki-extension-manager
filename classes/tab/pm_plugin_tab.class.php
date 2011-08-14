@@ -8,19 +8,19 @@ class pm_plugin_tab extends pm_base_tab {
     function process() {
         global $plugin_protected;
         $this->actions_list = array(
-            'enable'=>$this->m->getLang('enable'),
-            'disable'=>$this->m->getLang('btn_disable'),
-            'delete'=>$this->m->getLang('btn_delete'),
-            'update'=>$this->m->getLang('btn_update'),
-            'reinstall' =>$this->m->getLang('btn_reinstall'),
+            'enable'=>$this->manager->getLang('enable'),
+            'disable'=>$this->manager->getLang('btn_disable'),
+            'delete'=>$this->manager->getLang('btn_delete'),
+            'update'=>$this->manager->getLang('btn_update'),
+            'reinstall' =>$this->manager->getLang('btn_reinstall'),
         );
         $this->possible_errors = array(
-            'missing_dependency' => $this->m->getLang('depends'),
-            'not_writable' => $this->m->getLang('not_writable'),
-            'bundled' => $this->m->getLang('bundled'),
-            'missing_dlurl' => $this->m->getLang('no_url'),
+            'missing_dependency' => $this->manager->getLang('depends'),
+            'not_writable' => $this->manager->getLang('not_writable'),
+            'bundled' => $this->manager->getLang('bundled'),
+            'missing_dlurl' => $this->manager->getLang('no_url'),
         );
-        $list = array_map(array($this,'_info_list'),$this->m->plugin_list);
+        $list = array_map(array($this,'_info_list'),$this->manager->plugin_list);
         usort($list,array($this,'_sort'));
         $protected = array_filter($list,array($this,'_is_protected'));
         $notprotected = array_diff_key($list,$protected);
@@ -39,14 +39,14 @@ class pm_plugin_tab extends pm_base_tab {
     function html() {
         global $lang;
         $this->html_menu();
-        print $this->m->locale_xhtml('admin_plugin');
-        $this->render_search('pm__search',$this->m->getLang('search_plugin'));
+        print $this->manager->locale_xhtml('admin_plugin');
+        $this->render_search('pm__search',$this->manager->getLang('search_plugin'));
         /**
          * List plugins
          */
         if(is_array($this->plugins) && count($this->plugins)) {
             $list = new pm_plugins_list_lib($this,'plugins__list',$this->actions_list,$this->possible_errors);
-            $list->add_header($this->m->getLang('manage'));
+            $list->add_header($this->manager->getLang('manage'));
             $list->start_form();
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
@@ -60,8 +60,8 @@ class pm_plugin_tab extends pm_base_tab {
         }
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
             $protected_list = new pm_plugins_list_lib($this,'plugins__protected',array(),$this->possible_errors);
-            $protected_list->add_header($this->m->getLang('protected_head'));
-            $protected_list->add_p($this->m->getLang('protected_desc'));  
+            $protected_list->add_header($this->manager->getLang('protected_head'));
+            $protected_list->add_p($this->manager->getLang('protected_desc'));  
             $protected_list->start_form();
             foreach($this->protected_plugins as $type => $plugins)
                 foreach( $plugins as  $info) {
@@ -76,12 +76,12 @@ class pm_plugin_tab extends pm_base_tab {
 
     function check_writable() {
         if(!is_writable(DOKU_PLUGIN)) {
-            msg($this->m->getLang('not_writable')." ".DOKU_PLUGIN,-1);
+            msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
     }
     function get_class( $info,$class) {
         if(!empty($info->securityissue)) $class .= ' secissue';
-        if($info->id === $this->m->showinfo) $class .= " infoed";
+        if($info->id === $this->manager->showinfo) $class .= " infoed";
         return $class;
     }
 }
