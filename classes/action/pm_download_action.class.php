@@ -11,9 +11,6 @@ class pm_download_action extends pm_base_action {
      * Initiate the plugin download
      */
     function act() {
-        if(isset($_REQUEST['template'])) {
-            $this->type ='template';
-        }
         $this->down();
         if($this->manager->tab == "search") {
             if($this->templated && !$this->plugined)
@@ -54,7 +51,7 @@ class pm_download_action extends pm_base_action {
                 msg(sprintf($this->manager->getLang('downloaded'),$base),1);
             }
         } else {
-            msg(sprintf($this->manager->getLang('notdownloaded'),$plugin->id)." <br />".$this->manager->error,-1);
+            msg(sprintf($this->manager->getLang('notdownloaded'),$info->id)." <br />".$this->manager->error,-1);
         }
     }
     function url_download() {

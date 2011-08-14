@@ -32,7 +32,7 @@ class pm_info_lib {
 
         $return->info = $this->setup_info($info_path);
         if(empty($return->info) && $return->is_writable) {
-            if($type = 'plugin') {
+            if($type == 'plugin') {
                 //fetch and save the info.txt for faster future loads
                 $new = $this->comptoinfo($index);
                 if(!empty($new)) {

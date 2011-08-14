@@ -43,7 +43,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     
 
     var $functions = array('delete','enable','update','disable','reinstall',/*'settings',*/'info');  // require a plugin name
-    var $commands = array('search','download','disdown'); // don't require a plugin name
+    var $commands = array('search','download','download_disabled'); // don't require a plugin name
     var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
     var $template_list = array();

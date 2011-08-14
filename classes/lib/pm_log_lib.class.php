@@ -44,8 +44,10 @@ class pm_log_lib {
             foreach($file as $line) {
                 $line = explode('=',trim($line,PHP_EOL));
                 $line = array_map('trim', $line);
-                if($line[0] == 'url') $line[0] = 'downloadurl';
-                $this->log[$hash][$line[0]] = $line[1];
+                $key = array_pop($line);
+                $value = implode('=',$line);
+                if($key == 'url') $key = 'downloadurl';
+                $this->log[$hash][$key] = $value;
             }
         }
 
