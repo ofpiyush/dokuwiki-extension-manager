@@ -53,7 +53,7 @@ class pm_plugin_tab extends pm_base_tab {
                     $list->add_row($info);
                 }
             }
-            $list->end_form(array('enable','disable','reinstall','delete','update'));
+            $list->end_form(array('enable','disable','delete','update'));
             $list->render();
         }
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {

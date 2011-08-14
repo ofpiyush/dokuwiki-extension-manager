@@ -23,6 +23,7 @@ class pm_search_tab extends pm_base_tab {
                 'has_conflicts' => $this->manager->getLang('conflicts'),
                 'missing_dependency' => $this->manager->getLang('depends'),
                 'missing_dlurl' => $this->manager->getLang('no_url'),
+                'installed' =>$this->manager->getLang('already_installed')
                 );
         //https://github.com/piyushmishra/dokuwiki/commit/7c4ad50ccd13707eab764363e275286bab428435#commitcomment-529776
         $this->search_types = array(
