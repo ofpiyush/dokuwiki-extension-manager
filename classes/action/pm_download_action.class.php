@@ -26,45 +26,51 @@ class pm_download_action extends pm_base_action {
 
     function down() {
         if(array_key_exists('url',$_REQUEST)) {
-            $obj = new stdClass();
-            $obj->downloadurl = $_REQUEST['url'];
-            if($this->download($obj, $this->overwrite)) {
-                $base = $this->current['base'];
-                if($this->current['type'] = "template")
-                    msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
-                else
-                   msg(sprintf($this->manager->getLang('downloaded'),$base),1);
-            }
-            else {
-                msg($this->manager->error,-1);
-            }
+            $this->url_download();
         }elseif(is_array($this->plugin) && count($this->plugin)) {
             foreach ($this->plugin as $plugin) {
                 if(array_key_exists($plugin,$this->manager->repo)) {
                     $info = $this->manager->info->get($plugin,'search');
                     if($info->can_download()) {
-                        $this->current = null;
-                        $this->manager->error = null;
-                        $type = ($info->is_template) ? 'template' : 'plugin';
-                        $default_base = ($info->is_template) ? str_replace('template:','',$info->id) :'';
-                        if($this->download($info, $this->overwrite,$default_base,$type)) {
-                            $base = $this->current['base'];
-                            if($this->current['type'] == 'template') {
-                                $this->templated = true;
-                                msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
-                            } else {
-                                $this->plugined = true;
-                                msg(sprintf($this->manager->getLang('downloaded'),$base),1);
-                            }
-                        } else {
-                            msg(sprintf($this->manager->getLang('notdownloaded'),$plugin['id'])." <br />".$this->manager->error,-1);
-                        }
+                        $this->download_single($info);
                     }
                 }
             }
         }
     }
 
+    function download_single($info) {
+        $this->current = null;
+        $this->manager->error = null;
+        $type = ($info->is_template) ? 'template' : 'plugin';
+        $default_base = ($info->is_template) ? str_replace('template:','',$info->id) :'';
+        if($this->download($info, $this->overwrite,$default_base,$type)) {
+            $base = $this->current['base'];
+            if($this->current['type'] == 'template') {
+                $this->templated = true;
+                msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
+            } else {
+                $this->plugined = true;
+                msg(sprintf($this->manager->getLang('downloaded'),$base),1);
+            }
+        } else {
+            msg(sprintf($this->manager->getLang('notdownloaded'),$plugin->id)." <br />".$this->manager->error,-1);
+        }
+    }
+    function url_download() {
+        $obj = new stdClass();
+        $obj->downloadurl = $_REQUEST['url'];
+        if($this->download($obj, $this->overwrite)) {
+            $base = $this->current['base'];
+            if($this->current['type'] = "template")
+                msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
+            else
+                msg(sprintf($this->manager->getLang('downloaded'),$base),1);
+        }
+        else {
+            msg($this->manager->error,-1);
+        }
+    }
     /**
      * Process the downloaded file
      */

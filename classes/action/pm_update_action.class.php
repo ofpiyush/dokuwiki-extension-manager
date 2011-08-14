@@ -4,7 +4,7 @@ class pm_update_action extends pm_download_action {
     function down() {
         $base_path = ($this->manager->tab == "template")? DOKU_INC.'lib/tpl/' : DOKU_PLUGIN;
         foreach($this->plugin as $plugin) {
-            if(in_array($plugin,$this->_bundled)) continue;
+            if(in_array($plugin,$this->manager->_bundled)) continue;
             $this->current = null;
             $this->manager->error = null;
             $info = $this->manager->info->get($plugin,$this->manager->tab);

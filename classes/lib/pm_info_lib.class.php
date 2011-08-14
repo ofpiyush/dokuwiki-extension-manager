@@ -6,7 +6,6 @@ class pm_info_lib {
     }
 //TODO split into the three child classes (too many if in here :()
     function get($index,$type = "plugin") {
-        global $conf, $plugin_protected;
         $info_autogen =false;
         if(!in_array($type,array('plugin','template','search'))) {
             $type = 'plugin';
@@ -17,11 +16,14 @@ class pm_info_lib {
             $return->repo = $this->manager->repo[$index];
             if(stripos($index,'template:')===0) {
                 $return->is_writable = is_writable(DOKU_INC."lib/tpl/");
+                $return->is_installed = in_array($return->id,$this->manager->template_list);
                 $return->is_template = true;
             } else {
                 $return->is_writable = is_writable(DOKU_PLUGIN);
+                $return->is_installed = in_array(str_replace('template:','',$return->id),$this->manager->plugin_list);
                 $return->is_template = false;
             }
+            $this->setup_definers($return);
             return $return;
         }
         $path = ($type == "plugin") ? DOKU_PLUGIN.plugin_directory($index).'/': DOKU_INC."lib/tpl/$index/";
@@ -46,7 +48,24 @@ class pm_info_lib {
         $return->log = $this->manager->log->read($path);
         $return->repo = $this->repotoinfo($return,$index,$type);
         $this->check_dlurlchange($return->repo,$return->log,$path);
-        if($type =="plugin") {
+        $return->is_template = ($type == "template");
+        $this->setup_definers($return);
+        if($info_autogenerate && !empty($return->description)) {
+            $this->info_autogen($info_path,$return);
+        }
+        return $return;
+    }
+    /**
+     * sets up some  is_* definers
+     */
+    function setup_definers($return) {
+        global $plugin_protected,$conf;
+        if($return->is_template) {
+            $id = str_replace('template:','',$return->id);
+            $return->is_bundled = ($id == 'default');
+            $return->is_protected = in_array($id, array('default',$conf['template']));
+            $return->is_enabled = ($id == $conf['template']);
+        } else {
             $cascade = plugin_getcascade();
             if(!empty($cascade['protected'])) {
                 $protected = array_merge(array_keys($cascade['protected']),$plugin_protected);
@@ -56,20 +75,8 @@ class pm_info_lib {
             $return->is_protected = in_array($return->id,$protected);
             $return->is_bundled = in_array($return->id,$this->manager->_bundled);
             $return->is_enabled = !plugin_isdisabled($return->id);
-            $return->is_template = false;
-        } else {
-            $return->is_bundled = ($return->id == 'default');
-            $return->is_protected = in_array($return->id, array('default',$conf['template']));
-            $return->is_enabled = ($return->id == $conf['template']);
-            $return->is_template = true;
         }
-        
-        if($info_autogenerate && !empty($return->description)) {
-            $this->info_autogen($info_path,$return);
-        }
-        return $return;
     }
-
     function check_dlurlchange($return,$log,$path) {
         if(!empty($return['downloadurl'])  && !empty($log['downloadurl']) &&
                 $return['downloadurl'] != $log['downloadurl']) {

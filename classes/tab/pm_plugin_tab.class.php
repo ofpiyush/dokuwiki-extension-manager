@@ -45,28 +45,25 @@ class pm_plugin_tab extends pm_base_tab {
          * List plugins
          */
         if(is_array($this->plugins) && count($this->plugins)) {
-            $list = new pm_plugins_list_lib($this,'plugins__list',$this->actions_list,$this->possible_errors);
+            $list = new pm_plugins_list_lib($this->manager,'plugins__list',$this->actions_list,$this->possible_errors);
             $list->add_header($this->manager->getLang('manage'));
             $list->start_form();
             foreach($this->plugins as $type => $plugins) {
                 foreach($plugins as $info) {
-                    $class = $this->get_class($info,$type);
-                    //$actions = $this->get_actions($info,$type);
-                    $list->add_row($class,$info,$actions);
+                    $list->add_row($info);
                 }
             }
             $list->end_form(array('enable','disable','reinstall','delete','update'));
             $list->render();
         }
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
-            $protected_list = new pm_plugins_list_lib($this,'plugins__protected',array(),$this->possible_errors);
+            $protected_list = new pm_plugins_list_lib($this->manager,'plugins__protected',array(),$this->possible_errors);
             $protected_list->add_header($this->manager->getLang('protected_head'));
             $protected_list->add_p($this->manager->getLang('protected_desc'));  
             $protected_list->start_form();
             foreach($this->protected_plugins as $type => $plugins)
                 foreach( $plugins as  $info) {
-                    $class = $this->get_class($info,"protected ".$type);
-                    $protected_list->add_row($class,$info);
+                    $protected_list->add_row($info);
             }
             $protected_list->end_form(array());
             $protected_list->render();
@@ -78,10 +75,5 @@ class pm_plugin_tab extends pm_base_tab {
         if(!is_writable(DOKU_PLUGIN)) {
             msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
-    }
-    function get_class( $info,$class) {
-        if(!empty($info->securityissue)) $class .= ' secissue';
-        if($info->id === $this->manager->showinfo) $class .= " infoed";
-        return $class;
     }
 }

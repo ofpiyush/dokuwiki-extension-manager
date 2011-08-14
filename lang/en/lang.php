@@ -12,7 +12,7 @@ $lang['menu'] = 'Plugin and Template Manager';
 $lang['download']               = "Download and install a new plugin";
 $lang['manage']                 = "Installed Plugins";
 $lang['protected_head']         = 'Protected Plugins';
-$lang['protected_desc']         = 'These plugins are protected and should not be disabled and/or deleted. They are intrinsic to DokuWiki.';
+$lang['protected_desc']         = 'These plugins are protected and can not be disabled and/or deleted from the plugin and template manager.';
 $lang['tpl_search']             = 'Search for a new Template';
 $lang['search_plugin']          = 'Search for a new Plugin or Template';
 $lang['search_results']         = 'Search results for "%s"';
@@ -33,7 +33,7 @@ $lang['btn_enable']             = 'Save';
 $lang['browse']                 = 'Browse all plugins';
 $lang['select_all']             = 'select all';
 $lang['select_none']            = 'select none';
-$lang['confirm_del']            = 'Are you sure?';
+$lang['confirm_del']            = 'Are you sure you want to delete this?';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
 

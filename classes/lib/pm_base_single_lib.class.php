@@ -107,7 +107,7 @@ abstract class pm_base_single_lib {
         if($this->is_bundled) return false;
         // no action should be allowed on protected plugins
         if($this->is_protected) return false;
-        if(!empty($this->newversion)) return true;
+        if(!empty($this->newversion)) return false;
         return true;
     }
 

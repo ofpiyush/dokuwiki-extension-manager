@@ -22,8 +22,6 @@ abstract class pm_base_tab {
 
     abstract function html();
 
-
-    abstract function get_class( $info, $class);
     abstract function check_writable();
     // build our standard menu
     function html_menu() {

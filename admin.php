@@ -39,6 +39,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $info = null;
     var $_bundled = array();
     var $handler = NULL;
+    var $showinfo = null;
     
 
     var $functions = array('delete','enable','update','disable','reinstall',/*'settings',*/'info');  // require a plugin name
@@ -67,8 +68,12 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
      * handle user request
      */
     function handle() {
+        global $JSINFO;
+        $JSINFO['pm_delconfirm_text'] = $this->getLang('confirm_del');
         $this->_get_plugin_list();
         $this->_get_template_list();
+        if(isset($_REQUEST['info']))
+            $this->showinfo = $_REQUEST['info'];
         // enable direct access to language strings if used anywhere
         $this->setupLocale();
         if(!empty($_REQUEST['tab']) && in_array($_REQUEST['tab'],$this->nav_tabs)) {

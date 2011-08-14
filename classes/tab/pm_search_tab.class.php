@@ -16,9 +16,10 @@ class pm_search_tab extends pm_base_tab {
         $this->clean_repo();
         $this->actions_list = array(
                 'download'=>$this->manager->getLang('btn_download'),
-                'disdown'=>$this->manager->getLang('btn_disdown'),
+                'download_disabled'=>$this->manager->getLang('btn_disdown'),
                 );
         $this->possible_errors = array(
+                'bundled' => $this->manager->getLang('bundled'),
                 'has_conflicts' => $this->manager->getLang('conflicts'),
                 'missing_dependency' => $this->manager->getLang('depends'),
                 'missing_dlurl' => $this->manager->getLang('no_url'),
@@ -54,48 +55,35 @@ class pm_search_tab extends pm_base_tab {
         $this->render_search('install__search', $this->manager->getLang('search_plugin'),$this->term,$this->search_types);
 
         if(is_array($this->search_result) && count($this->search_result)) {
-            $list = new pm_plugins_list_lib($this,'search__result',$this->actions_list,$this->possible_errors);
+            $type = (!empty($this->extra['type']) && $this->extra['type'] == "Template" )? 'template': 'plugin' ;
+            $list = new pm_plugins_list_lib($this->manager,'search__result',$this->actions_list,$this->possible_errors,$type);
             $list->add_header(sprintf($this->manager->getLang('search_results'),hsc($this->term)));
             $list->start_form();
             foreach($this->search_result as $result) {
                 foreach($result as $info) {
-                    $info = $this->_info_list($info['id'],'search');
-                    $class = $this->get_class($info,'result');
-                    //$actions = $this->get_actions($info,'');//add some imp type info later
-                    //$checkbox = $this->get_checkbox($info);
-                    $list->add_row($class,$info);//,$actions,$checkbox);
+                    $info = $this->_info_list($info['id']);
+                    $list->add_row($info);
                 }
             }
             $list->end_form(array_keys($this->actions_list));
             $list->render();
         } elseif(!is_null($this->term)) {
-            $no_result = new pm_plugins_list_lib($this,'no__result');
+            $no_result = new pm_plugins_list_lib($this->manager,'no__result');
             $no_result->add_header(sprintf($this->manager->getLang('not_found'),hsc($this->term)));
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
             $no_result->add_p(sprintf($this->manager->getLang('no_result'),$url,$url));
             $no_result->render();
         } else {
-            $full_list = new pm_plugins_list_lib($this,'browse__list',$this->actions_list,$this->possible_errors);
+            $full_list = new pm_plugins_list_lib($this->manager,'browse__list',$this->actions_list,$this->possible_errors);
             $full_list->add_header($this->manager->getLang('browse'));
             $full_list->start_form();
             foreach($this->filtered_repo as $info) {
                 $info = $this->_info_list($info['id'],'search');
-                $class = $this->get_class($info,'all');
-                //$actions = $this->get_actions($info,'');//add some necessary type info later on
-                //$checkbox = $this->get_checkbox($info);
-                $full_list->add_row($class,$info);//,$actions,$checkbox);
+                $full_list->add_row($info);
             }
             $full_list->end_form(array_keys($this->actions_list));
             $full_list->render();
         }
-    }
-
-    function get_class($info,$class) {
-        if(!empty($info->securityissue)) $class .= ' secissue';
-        if(!empty($this->extra['type']) && $this->extra['type'] == "Template" )
-            $class .= " template";
-        if(!$info->can_select()) $class .= " disabled";
-        return $class;
     }
 
     function check_writable() {
@@ -107,9 +95,13 @@ class pm_search_tab extends pm_base_tab {
         }
     }
 
+    function _info_list($single) {
+        return parent::_info_list($single,'search');
+    }
+
     protected function clean_repo() {
-        $this->filtered_repo = array_diff_key($this->manager->repo,array_flip($this->manager->plugin_list));
-        $this->filtered_repo = array_filter($this->filtered_repo,array($this,'filter_clean'));
+        $this->filtered_repo = array_filter($this->manager->repo,array($this,'filter_clean'));
+        
     }
     /**
      * Looks up the term in the repository cache according to filters set. Basic searching.
@@ -122,8 +114,10 @@ class pm_search_tab extends pm_base_tab {
             if(count($matches)) {
                 $count = count(array_intersect_key($this->filters,$matches));
                 if($count && $this->check($single)) {
-                    if(stripos($single['id'],$this->term)) $count += 5;
-                    if(stripos($single['name'],$this->term)) $count += 3;
+                    // increase weight for id match
+                    if(stripos($single['id'],$this->term)!==false) $count += 5;
+                    //increase weight for name match
+                    if(stripos($single['name'],$this->term)!==false) $count += 3;
                     $this->search_result[$count][$single['id']] = $single;
                 }
             }
@@ -171,6 +165,7 @@ class pm_search_tab extends pm_base_tab {
         //Check for security issue
         if(!empty($plugin['securityissue'])) return false;
         if(@in_array('!obsolete',(array)$plugin['tags']['tag'])) return false;
+        if(@in_array('!bundled',(array)$plugin['tags']['tag'])) return false;
         //all tests passed
         return true;
     } 

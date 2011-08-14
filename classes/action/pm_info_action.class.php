@@ -8,7 +8,7 @@ class pm_info_action extends pm_base_action {
                 $info['type'] = $_REQUEST['type'];
             if(!empty($_REQUEST['term']))
                 $info['term'] = $_REQUEST['term'];
-            $this->refresh($this->manager->tab,$info,'pminfoed__'.$this->manager->showinfo);
+            $this->refresh($this->manager->tab,$info,$this->manager->tab.'__'.$this->manager->showinfo);
         }
     }
 }
