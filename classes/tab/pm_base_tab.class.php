@@ -13,8 +13,6 @@ abstract class pm_base_tab {
     function __construct(admin_plugin_plugin $manager) {
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
-        if(!empty($_REQUEST['info']))
-            $this->showinfo = $_REQUEST['info'];
         $this->check_writable();
     }
 

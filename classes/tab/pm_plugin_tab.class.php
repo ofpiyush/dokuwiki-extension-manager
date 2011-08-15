@@ -3,7 +3,6 @@ class pm_plugin_tab extends pm_base_tab {
     var $plugins;
     var $protected_plugins;
     var $actions_list;
-    var $showinfo;
 
     function process() {
         global $plugin_protected;
