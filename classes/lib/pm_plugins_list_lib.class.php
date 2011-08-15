@@ -298,6 +298,6 @@ class pm_plugins_list_lib {
         );
         if(!empty($extra)) $params = array_merge($params,$extra);
         $url = wl($ID,$params);
-        return '<a href="'.$url.'" class="'.$action.'" title="'.$url.'">'.$text.'</a>';
+        return '<a href="'.$url.'" class="'.$action.'" title="'.$text.' : '.$id.'">'.$text.'</a>';
     }
 }
