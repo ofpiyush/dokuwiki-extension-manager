@@ -80,9 +80,21 @@ abstract class pm_base_tab {
             $search_form->printForm();
             ptln('</div>');
         }
+        $this->reload_repo_link();
     }
 
-
+    function reload_repo_link() {
+        global $ID;
+        $url = wl($ID,array(
+            'do'=>'admin',
+            'page'=>'plugin',
+            'tab'=>$this->manager->tab,
+            'fn'=>'repo_reload',
+            'sectok'=>getSecurityToken()
+            )
+        );
+        ptln('<div class="repo_reload">'.sprintf($this->manager->getLang('repo_reload'),2,$url).'</div>');
+    }
 
     function _info_list($index,$type ="plugin") {
         return $this->manager->info->get($index,$type);

@@ -144,7 +144,7 @@ class pm_plugins_list_lib {
         if($this->manager->tab != 'search') {
             $class.= ($info->is_enabled) ? ' enabled':' disabled';
         } else {
-            if(!$info->can_select()) $class.= ' disabled';
+            if(!$info->can_select()) $class.= ' notselect';
             if($info->is_installed) $class.=' installed';
         }
         if($info->is_protected)
@@ -260,10 +260,10 @@ class pm_plugins_list_lib {
     function make_actions($info) {
         $extra =  null;
         if($this->manager->tab == "search" ) {
-            if(!empty($this->t->term))
-                $extra['term'] = $this->t->term;
-            if(!empty($this->t->extra)) {
-                $extra = array_merge($extra,$this->t->extra);
+            if(!empty($this->manager->handler->term))
+                $extra['term'] = $this->manager->handler->term;
+            if(!empty($this->manager->handler->extra)) {
+                $extra = array_merge($extra,$this->manager->handler->extra);
             }
         }
         $return = $this->make_action('info',$info->id,$this->manager->getLang('btn_info'),$extra);

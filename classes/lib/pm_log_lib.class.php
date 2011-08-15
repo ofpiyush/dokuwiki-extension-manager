@@ -42,10 +42,9 @@ class pm_log_lib {
             $file = @file($path.'manager.dat');
             if(empty($file)) return false;
             foreach($file as $line) {
-                $line = explode('=',trim($line,PHP_EOL));
-                $line = array_map('trim', $line);
-                $key = array_pop($line);
-                $value = implode('=',$line);
+                list($key,$value) = explode('=',trim($line,PHP_EOL),2);
+                $key = trim($key);
+                $value =trim($value);
                 if($key == 'url') $key = 'downloadurl';
                 $this->log[$hash][$key] = $value;
             }

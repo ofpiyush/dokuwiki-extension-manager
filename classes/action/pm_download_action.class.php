@@ -40,7 +40,7 @@ class pm_download_action extends pm_base_action {
         $this->current = null;
         $this->manager->error = null;
         $type = ($info->is_template) ? 'template' : 'plugin';
-        $default_base = ($info->is_template) ? str_replace('template:','',$info->id) :'';
+        $default_base = ($info->is_template) ? str_replace('template:','',$info->id) :$info->id;
         if($this->download($info, $this->overwrite,$default_base,$type)) {
             $base = $this->current['base'];
             if($this->current['type'] == 'template') {
@@ -116,6 +116,7 @@ class pm_download_action extends pm_base_action {
                         if(!empty($default_base) && !file_exists($item['tmp'].'/template.info.txt'))
                             $item['base'] = $default_base;
                     }else{
+                        // do not rename for plugins as it might not be the name of the class
                         $target_base_dir = DOKU_INC.'lib/plugins/';
                     }
                     $target = $target_base_dir.$item['base'];

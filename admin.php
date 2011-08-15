@@ -30,7 +30,6 @@ $plugin_protected = array('acl','plugin','config','usermanager','revert');
  */
 class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
-    var $disabled = 0;
     var $plugin = NULL;
     var $cmd = 'display';
     var $tab = 'plugin';
@@ -43,7 +42,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     
 
     var $functions = array('delete','enable','update','disable','reinstall',/*'settings',*/'info');  // require a plugin name
-    var $commands = array('search','download','download_disabled'); // don't require a plugin name
+    var $commands = array('search','download','download_disabled','repo_reload'); // don't require a plugin name
     var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
     var $plugin_list = array();
     var $template_list = array();
@@ -52,7 +51,6 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     var $error = '';
 
     function __construct() {
-        $this->disabled = plugin_isdisabled('plugin');
         spl_autoload_register(array($this,'autoload'));
         $this->_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
     }
@@ -119,8 +117,8 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
     function valid_request() {
         //if command is empty, we need to make it
-        if(empty($this->cmd)) return false;         
-        if(in_array($this->cmd, $this->commands)) return true;
+        if(empty($this->cmd)) return false;
+        if(in_array($this->cmd, $this->commands) && checkSecurityToken()) return true;
         if(in_array($this->cmd, $this->functions) && checkSecurityToken()) {
             if(count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)) return true;
             if(count(array_intersect($this->plugin, $this->template_list)) == count($this->plugin)) return true;

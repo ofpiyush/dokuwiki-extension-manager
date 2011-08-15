@@ -120,11 +120,15 @@
     width:5%;
     text-align:center;
 }
-#plugin__manager .disabled {
+#plugin__manager .disabled, #plugin__manager .notselect {
     background: #eee;
     color: #555;
 }
-
+#plugin__manager .repo_reload {
+    width:100%;
+    text-align:right;
+    color: #555;
+}
 #plugin__manager .infoed {
     background: __background__;
     color: __text__;
