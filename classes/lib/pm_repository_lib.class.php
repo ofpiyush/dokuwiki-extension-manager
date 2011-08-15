@@ -1,7 +1,7 @@
 <?php
 class pm_repository_lib {
     private $repo = null;
-    var $m = null;
+    var $manager = null;
     var $repo_cache = NULL;
     var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
 

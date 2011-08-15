@@ -50,7 +50,7 @@ class pm_info_lib {
         $this->check_dlurlchange($return->repo,$return->log,$path);
         $return->is_template = ($type == "template");
         $this->setup_definers($return);
-        if($info_autogenerate && !empty($return->description)) {
+        if($info_autogen && !empty($return->description)) {
             $this->info_autogen($info_path,$return);
         }
         return $return;
