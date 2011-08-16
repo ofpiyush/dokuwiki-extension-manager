@@ -201,11 +201,8 @@ abstract class pm_base_single_lib {
         return $this->description;
     }
     protected function default_name() {
-        return $this->base;
-    }
-
-    protected function default_base() {
         return $this->id;
     }
+
     final function can_info() { return true;}
 }
