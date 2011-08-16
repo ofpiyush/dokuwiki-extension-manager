@@ -16,11 +16,9 @@ class pm_info_lib {
             $return->repo = $this->manager->repo[$index];
             if(stripos($index,'template:')===0) {
                 $return->is_writable = is_writable(DOKU_INC."lib/tpl/");
-                $return->is_installed = in_array(str_replace('template:','',$return->id),$this->manager->template_list);
                 $return->is_template = true;
             } else {
                 $return->is_writable = is_writable(DOKU_PLUGIN);
-                $return->is_installed = in_array($return->id,$this->manager->plugin_list);
                 $return->is_template = false;
             }
             $this->setup_definers($return);
@@ -37,8 +35,7 @@ class pm_info_lib {
                 $new = $this->comptoinfo($index);
                 if(!empty($new)) {
                     $return->info = $new;
-                    if(empty($new['base'])) $new['base'] = $index;
-                    $this->info_autogen($info_path,(object) $new);
+                    $this->info_autogen($info_path,(object) $new,$index);
                 }
             } else {
                 //its a template. lets see if we can get it to autogen from the repo
@@ -51,7 +48,7 @@ class pm_info_lib {
         $return->is_template = ($type == "template");
         $this->setup_definers($return);
         if($info_autogen && !empty($return->description)) {
-            $this->info_autogen($info_path,$return);
+            $this->info_autogen($info_path,$return,$index);
         }
         return $return;
     }
@@ -64,7 +61,7 @@ class pm_info_lib {
             $id = str_replace('template:','',$return->id);
             $return->is_bundled = ($id == 'default');
             $return->is_protected = in_array($id, array('default',$conf['template']));
-            $return->is_installed = in_array($return->id,$this->manager->template_list);
+            $return->is_installed = in_array($id,$this->manager->template_list);
             $return->is_enabled = ($id == $conf['template']);
         } else {
             $cascade = plugin_getcascade();
@@ -143,7 +140,7 @@ class pm_info_lib {
     /**
      * Auto generate plugin and template info.txt
      */
-    function info_autogen($file,$return) {
+    function info_autogen($file,$return,$folder) {
         $info = "";
         foreach(array('base','author','email','date','name','desc','url') as $index) {
             if(!empty($return->$index)) $info.= $index." ".$return->$index."\n";
@@ -158,7 +155,7 @@ class pm_info_lib {
         if (!$fp = @fopen($file, 'w')) return false;
         fwrite($fp, $info);
         fclose($fp);
-        msg(sprintf($this->manager->getLang('autogen_info'),$return->base),2);
+        msg(sprintf($this->manager->getLang('autogen_info'),$folder),2);
         return true;
     }
 

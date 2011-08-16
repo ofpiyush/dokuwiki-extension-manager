@@ -197,6 +197,12 @@ class pm_plugins_list_lib {
                             sprintf($this->manager->getLang('update_available'),hsc($info->newversion)).
                         '</div>';
         }
+        if($info->wrong_folder()) {
+            global $lang;
+            $return .= '<div class="error">'.
+                            sprintf($lang['plugin_insterr'],hsc($info->id),hsc($info->base)).
+                        '</div>';
+        }
         if(!empty($info->securityissue)) {
             $return .= '<div class="error">'.
                             '<strong>'.$this->manager->getLang('security_issue').'</strong> '.

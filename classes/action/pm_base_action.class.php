@@ -1,11 +1,20 @@
 <?php
+/**
+ * Base action class, common functions for all child actions
+ * @author Piyush Mishra <me@piyushmishra.com>
+ */
 abstract class pm_base_action {
+    
     final function __construct(admin_plugin_plugin $manager) {
         $this->tab = $manager->tab;
         $this->plugin = $manager->plugin;
         $this->manager = $manager;
         $this->act();
     }
+
+    /**
+     * 
+     */
     abstract function act();
     /**
      *  Refresh plugin list
@@ -46,6 +55,10 @@ abstract class pm_base_action {
 
         return false;
     }
+
+    /**
+     * if $results are available, call relevant say_* functions to show the results of an action
+     */
     protected function show_results() {
         if(is_array($this->result) && count($this->result)) {
             foreach($this->result as $outcome => $changed_plugins)

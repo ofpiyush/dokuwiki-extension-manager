@@ -135,6 +135,9 @@ abstract class pm_base_single_lib {
         return false;
     }
 
+    function wrong_folder() {
+        return false;
+    }
     function highlight() {
         if($this->manager->showinfo == $this->id) return true;
         return false;

@@ -138,8 +138,9 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->showinfo = $_REQUEST['info'];
         // enable direct access to language strings if used anywhere
         $this->setupLocale();
+        //Setup the selected tab
         if(!empty($_REQUEST['tab']) && in_array($_REQUEST['tab'],$this->nav_tabs)) {
-                $this->tab = $_REQUEST['tab'];
+            $this->tab = $_REQUEST['tab'];
         } else {
             $this->tab = 'plugin';
         }
@@ -147,12 +148,18 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         $repo = new pm_repository_lib($this);
         $this->repo = $repo->get();
         $this->info = new pm_info_lib($this);
+        //setup and carry out the action requested
         $this->setup_action();
         $this->handler = $this->instantiate($this->tab,'tab');
         if(is_null($this->handler)) $this->handler = new pm_plugin_tab($this);
         $this->msg = $this->handler->process();
     }
 
+    /**
+     * Determines which action has been requested and requests the action
+     * stores name of action in admin_plugin_plugin::$cmd and the 
+     * instance of action in admin_plugin_plugin::$action 
+     */
     function setup_action() {
         $fn = $_REQUEST['fn'];
         if (is_array($fn)) {
@@ -160,7 +167,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         } else {
             $this->cmd = $fn;
         }
-        //still here to allow reverting to multiselect
+        //non-functional still here to allow reverting to multiselect
         if($this->cmd == 'multiselect') {
             $this->cmd = $_REQUEST['action'];
         }
@@ -172,6 +179,12 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
             $this->action = $this->instantiate($this->cmd,'action');
         }
     }
+
+    /**
+     * @param string name of the class to be instantiated
+     * @param string type (classes/<foldername>) of the class
+     * @return mixed object/null
+     */
     function instantiate($name,$type) {
         $class = 'pm_'.$name."_".$type;
         if(class_exists($class))
@@ -179,6 +192,10 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         return null;
     }
 
+    /**
+     * validate the request
+     * @return bool if the requested action should be carried out or not
+     */
     function valid_request() {
         //if command is empty, we need to make it
         if(empty($this->cmd)) return false;
@@ -209,6 +226,10 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         ptln('</div><!-- #plugin_manager -->');
     }
 
+    /**
+     * Autoloader for the plugin manager
+     * @param string classname to load
+     */
     function autoload($class) {
         if(stripos($class,'pm_')===0) {
             $folder = @end(explode('_',$class));
@@ -220,8 +241,10 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
         }
         return;
     }
+
     /**
-     * Returns a list of all plugins, including the disabled ones
+     * Get plugin list
+     * @return array list of plugins, including disabled ones
      */
     private function _get_plugin_list() {
         if (empty($this->plugin_list)) {
@@ -233,7 +256,8 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     }
 
     /**
-     * Returns a list of all templates, including the disabled ones
+     * Get template list
+     * @return array list of templates, including disabled ones
      */
     private function _get_template_list() {
         if(empty($this->template_list)) {
