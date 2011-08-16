@@ -156,8 +156,7 @@
     margin:0;
 }
 #plugin__manager .legend label {
-    display:inline-block;
-    width:100%;
+    font-weight: normal;
 }
 #plugin__manager .legend p {
     margin:0 0 0 1.5em;

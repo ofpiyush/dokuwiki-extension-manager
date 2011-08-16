@@ -165,15 +165,15 @@ class pm_plugins_list_lib {
     }
 
     function make_version($info,$class) {
-        $return = '<p><label for="'.$this->id.hsc($info->id).'">';
+        $return = '<p>';
         $return .= '<strong>'.$this->manager->getLang('version').'</strong> ';
         if(empty($info->version)) $info->version = '<em>'.$this->manager->getLang('unknown').'</em>';
-        $return .= $info->version."</label></p>";
+        $return .= $info->version."</p>";
         return $return;
     }
 
     function make_screenshot($info) {
-        $return = '<label for="'.$this->id.hsc($info->id).'">';
+        $return = '';
         if(!empty($info->screenshoturl)) {
             if($info->screenshoturl[0] == ':')
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
@@ -181,18 +181,16 @@ class pm_plugins_list_lib {
                     '<img alt="'.hsc($info->name).'" width="80" src="'.hsc($info->screenshoturl).'" />'.
                     '</a>';
         }
-        $return .= '</label>';
         return $return;
     }
     function make_legend($info,$class) {
         $return = '<p class="head">'.
-                    '<label for="'.$this->id.hsc($info->id).'">'.
+                    '<label for="'.$this->id.'_'.hsc($info->id).'">'.hsc($info->id).':</label>'.
                     $this->make_title($info).
-                    '</label>'.
                   '</p>';
         if(!empty($info->description)) {
-            $return .=  '<p><label for="'.$this->id.hsc($info->id).'">'.
-                        hsc($info->description).'</label></p>';
+            $return .=  '<p>'.
+                        hsc($info->description).'</p>';
         }
         if(!empty($info->newversion)) {
             $return .=  '<div class="notify">'.
@@ -252,10 +250,8 @@ class pm_plugins_list_lib {
         if(!$info->can_select()) {
             $checked .= 'disabled="disabled"';
         }
-        return  '<label for="'.$this->id.hsc($info->id).'" >'.
-                    '<input id="'.$this->id.hsc($info->id).'" type="checkbox"'.
-                    ' name="checked[]" value="'.$info->id.'" '.$checked.' />'.
-                '</label>';
+        return '<input id="'.$this->id.'_'.hsc($info->id).'" type="checkbox"'.
+               ' name="checked[]" value="'.$info->id.'" '.$checked.' />';
     }
     function make_actions($info) {
         $extra =  null;
