@@ -24,21 +24,21 @@ abstract class pm_base_tab {
     // build our standard menu
     function html_menu() {
         global $ID;
-            $tabs_array = array(
-                'plugin' => rtrim($this->manager->getLang('plugin'),":"),
-                'template' =>$this->manager->getLang('template'),
-                'search' =>$this->manager->getLang('install')
-                );
-            $selected = array_key_exists($this->manager->tab,$tabs_array)? $this->manager->tab : 'plugin' ;
-            ptln('<div class="pm_menu">');
-		    ptln('    <ul>');
-		    foreach($tabs_array as $tab =>$text) {
-		        // not showing search tab when no repo is present
-		        if(empty($this->manager->repo) && $tab == 'search') continue;
-		        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
-		    }
-		    ptln('    </ul>');
-            ptln('</div>');
+        $tabs_array = array(
+            'plugin' => rtrim($this->manager->getLang('plugin'),":"),
+            'template' =>$this->manager->getLang('template'),
+            'search' =>$this->manager->getLang('install')
+        );
+        $selected = array_key_exists($this->manager->tab,$tabs_array)? $this->manager->tab : 'plugin' ;
+        ptln('<div class="pm_menu">');
+	    ptln('    <ul>');
+	    foreach($tabs_array as $tab =>$text) {
+	        // not showing search tab when no repo is present
+	        if(empty($this->manager->repo) && $tab == 'search') continue;
+	        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
+	    }
+	    ptln('    </ul>');
+        ptln('</div>');
     }
 
     protected function render_search($id,$head,$value = '',$type = null) {

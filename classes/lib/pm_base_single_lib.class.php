@@ -122,8 +122,11 @@ abstract class pm_base_single_lib {
     }
     function missing_dependency() {
         if(!empty($this->relations['depends']['id'])) {
-            $key = ($this->is_template) ? 'template' : 'plugin';
-            $missing = array_diff((array)$this->relations['depends']['id'],$this->manager->{$key.'_list'});
+            foreach((array) $this->relations['depends']['id'] as $depends) {
+                $key = (stripos($depends,'template:')===0) ? 'template' : 'plugin';
+                if(!in_array(str_replace('template:','',$depends),$this->manager->{$key.'_list'}))
+                    $missing[] = $depends;
+            }
             if(!empty($missing)) {
                 $this->missing_dependency = $missing;
                 return true;
@@ -132,6 +135,10 @@ abstract class pm_base_single_lib {
         return false;
     }
 
+    function highlight() {
+        if($this->manager->showinfo == $this->id) return true;
+        return false;
+    }
     function not_writable() {
         return (!$this->is_writable && !$this->is_bundled && !$this->is_protected);
     }

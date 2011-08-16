@@ -13,7 +13,8 @@ var plugin_manager = {
     },
     confirmDelete : function (delSelector) {
         jQuery(delSelector).click(function(e) {
-            if(!confirm(JSINFO['pm_delconfirm_text'])) { e.preventDefault(); }});
+            if(!confirm(LANG.plugins['plugin']['confirm_del'])) { e.preventDefault(); }});
     }
 };
 jQuery(plugin_manager.constructor);
+

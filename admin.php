@@ -30,24 +30,90 @@ $plugin_protected = array('acl','plugin','config','usermanager','revert');
  */
 class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
 
+    /**
+     * Array of plugins sent by POST method
+     */
     var $plugin = NULL;
+
+    /**
+     * The action to be carried out
+     * one from either admin_plugin_plugin::$functions or admin_plugin_plugin::$commands
+     */
     var $cmd = 'display';
+
+    /**
+     * The current tab which is being shown
+     * one from admin_plugin_plugin::$nav_tabs
+     */
     var $tab = 'plugin';
+
+    /**
+     * Instance of pm_log_lib library (contains read-write functions for manager.dat)
+     */
     var $log = null;
+
+    /**
+     * Copy of the repository array
+     */
     var $repo = array();
+
+    /**
+     * Instance of the pm_info_lib library (creates single info objects)
+     */
     var $info = null;
+
+    /**
+     * array list of bundled plugins
+     */
     var $_bundled = array();
+
+    /**
+     * Instance of the tab from admin_plugin_plugin::$tab
+     */
     var $handler = NULL;
+
+    /**
+     * If a plugin has info clicked, its "id"
+     * @see pm_base_single_lib::$id
+     */
     var $showinfo = null;
     
+    /**
+     * list of actions(classes/action/*.class.php) that require a plugin name
+     */
+    var $functions = array('delete','enable','update','disable','reinstall','info');
 
-    var $functions = array('delete','enable','update','disable','reinstall',/*'settings',*/'info');  // require a plugin name
-    var $commands = array('search','download','download_disabled','repo_reload'); // don't require a plugin name
-    var $nav_tabs = array('plugin', 'template', 'search'); // navigation tabs
+    /**
+     * list of actions that do not require a plugin name
+     */
+    var $commands = array('search','download','download_disabled','repo_reload');
+
+    /**
+     * array of navigation tab ids
+     */
+    var $nav_tabs = array('plugin', 'template', 'search');
+
+    /**
+     * array list of installed plugin foldernames
+     * saved after the trigger 'PLUGIN_PLUGINMANAGER_PLUGINLIST'
+     */
     var $plugin_list = array();
+
+    /**
+     * array list of installed template foldernames
+     * saved after the trigger 'PLUGIN_PLUGINMANAGER_TEMPLATELIST'
+     */
     var $template_list = array();
 
+    /**
+     * Saves return value pm_*_tab::process() (not used by the plugin manager currently)
+     */
     var $msg = '';
+
+    /**
+     * Saves error sent from pm_*_action
+     * used to display error messages
+     */
     var $error = '';
 
     function __construct() {
@@ -66,8 +132,6 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
      * handle user request
      */
     function handle() {
-        global $JSINFO;
-        $JSINFO['pm_delconfirm_text'] = $this->getLang('confirm_del');
         $this->_get_plugin_list();
         $this->_get_template_list();
         if(isset($_REQUEST['info']))

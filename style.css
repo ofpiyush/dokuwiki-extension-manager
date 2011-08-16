@@ -120,14 +120,18 @@
     width:5%;
     text-align:center;
 }
-#plugin__manager .disabled, #plugin__manager .notselect {
+#plugin__manager #plugins__list .disabled, #plugin__manager #templates__list .disabled {
+    background: #eee;
+    color: #555;
+}
+#plugin__manager #search__result .notselect, #plugin__manager #browse__list .notselect {
     background: #eee;
     color: #555;
 }
 #plugin__manager .repo_reload {
     width:100%;
     text-align:right;
-    color: #555;
+    opacity: 0.7;
 }
 #plugin__manager .infoed {
     background: __background__;

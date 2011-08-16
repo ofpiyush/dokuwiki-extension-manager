@@ -16,11 +16,11 @@ class pm_info_lib {
             $return->repo = $this->manager->repo[$index];
             if(stripos($index,'template:')===0) {
                 $return->is_writable = is_writable(DOKU_INC."lib/tpl/");
-                $return->is_installed = in_array($return->id,$this->manager->template_list);
+                $return->is_installed = in_array(str_replace('template:','',$return->id),$this->manager->template_list);
                 $return->is_template = true;
             } else {
                 $return->is_writable = is_writable(DOKU_PLUGIN);
-                $return->is_installed = in_array(str_replace('template:','',$return->id),$this->manager->plugin_list);
+                $return->is_installed = in_array($return->id,$this->manager->plugin_list);
                 $return->is_template = false;
             }
             $this->setup_definers($return);
@@ -64,6 +64,7 @@ class pm_info_lib {
             $id = str_replace('template:','',$return->id);
             $return->is_bundled = ($id == 'default');
             $return->is_protected = in_array($id, array('default',$conf['template']));
+            $return->is_installed = in_array($return->id,$this->manager->template_list);
             $return->is_enabled = ($id == $conf['template']);
         } else {
             $cascade = plugin_getcascade();
@@ -72,6 +73,7 @@ class pm_info_lib {
             } else {
                 $protected = $plugin_protected;
             }
+            $return->is_installed = in_array($return->id,$this->manager->plugin_list);
             $return->is_protected = in_array($return->id,$protected);
             $return->is_bundled = in_array($return->id,$this->manager->_bundled);
             $return->is_enabled = !plugin_isdisabled($return->id);

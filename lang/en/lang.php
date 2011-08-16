@@ -9,6 +9,7 @@
 $lang['menu'] = 'Plugin and Template Manager';
 
 // custom language strings for the plugin
+$lang['js']['confirm_del']      = 'Are you sure you want to delete this?';
 $lang['download']               = "Download and install a new plugin";
 $lang['manage']                 = "Installed Plugins";
 $lang['protected_head']         = 'Protected Plugins';
@@ -33,7 +34,6 @@ $lang['btn_enable']             = 'Save';
 $lang['browse']                 = 'Browse all plugins';
 $lang['select_all']             = 'Select All';
 $lang['select_none']            = 'Select None';
-$lang['confirm_del']            = 'Are you sure you want to delete this?';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
 
@@ -83,7 +83,7 @@ $lang['render']                 = 'Render';
 $lang['helper']                 = 'Helper';
 
 // info titles
-$lang['plugin']                 = 'Plugin:';
+$lang['plugin']                 = 'Plugin';
 $lang['components']             = 'Components';
 $lang['noinfo']                 = 'This plugin returned no information, it may be invalid.';
 $lang['name']                   = 'Name:';

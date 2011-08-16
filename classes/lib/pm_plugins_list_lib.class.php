@@ -141,14 +141,14 @@ class pm_plugins_list_lib {
 
     function make_class($info) {
         $class = ($info->is_template) ? 'template' : 'plugin';
-        if($this->manager->tab != 'search') {
+        if($info->is_installed) {
+            $class.=' installed';
             $class.= ($info->is_enabled) ? ' enabled':' disabled';
-        } else {
-            if(!$info->can_select()) $class.= ' notselect';
-            if($info->is_installed) $class.=' installed';
         }
+        if(!$info->can_select()) $class.= ' notselect';
         if($info->is_protected)
             $class.=  ' protected';
+        if($info->highlight()) $class.= ' highlight';
         return $class;
     }
     function make_author($info) {
