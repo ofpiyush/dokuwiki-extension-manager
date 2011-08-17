@@ -3,15 +3,19 @@ class pm_enable_action extends pm_base_action {
 
     var $result = array();
     function act() {
-        $disabled = array_filter($this->plugin,'plugin_isdisabled');
-        if(is_array($disabled) && count($disabled)) {
-            $this->result['enabled']      = array_filter($disabled,'plugin_enable');
-            $this->result['notenabled']   = array_diff_key($disabled,$this->result['enabled']);
+        if(is_array($this->plugin) && count($this->plugin)) {
+            $this->result['enabled']      = array_filter($this->plugin,array($this,'enable'));
+            $this->result['notenabled']   = array_diff_key($this->plugin,$this->result['enabled']);
+            $this->show_results();
         }
-        $this->show_results();
-        $this->refresh();
+        $this->refresh($this->manager->tab);
     }
 
+    function enable($plugin) {
+        $info = $this->manager->info->get($plugin,$this->manager->tab);
+        if(!$info->can_enable()) return false;
+        return plugin_enable($plugin);
+    }
     function say_enabled($plugin,$key) {
         msg(sprintf($this->manager->getLang('enabled'),$plugin),1);
     }
