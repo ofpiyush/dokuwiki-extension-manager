@@ -13,7 +13,7 @@ abstract class pm_base_action {
     }
 
     /**
-     * 
+     * takes the requested action. to be declared by the child classes
      */
     abstract function act();
     /**
