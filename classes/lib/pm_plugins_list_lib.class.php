@@ -222,7 +222,7 @@ class pm_plugins_list_lib {
     }
     function make_info($info) {
         $return .= '<p>';
-        $default = "<em>".$this->manager->getLang('unknown')."</em>";
+        $default = $this->manager->getLang('unknown');
         $return .= '<strong>'.hsc($this->manager->getLang('author')).'</strong> '.$this->make_author($info).'<br/>';
         $return .= '<strong>'.hsc($this->manager->getLang('source')).'</strong> '.
                 (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default).'<br/>';
@@ -300,6 +300,6 @@ class pm_plugins_list_lib {
         );
         if(!empty($extra)) $params = array_merge($params,$extra);
         $url = wl($ID,$params);
-        return '<a href="'.$url.'" class="'.$action.'" title="'.$text.' : '.$id.'">'.$text.'</a>';
+        return '<a href="'.$url.'" class="'.$action.'" title="'.$id.' : '.$text.'">'.$text.'</a>';
     }
 }
