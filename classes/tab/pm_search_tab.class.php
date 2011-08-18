@@ -17,6 +17,7 @@ class pm_search_tab extends pm_base_tab {
         $this->actions_list = array(
                 'download'=>$this->manager->getLang('btn_download'),
                 'download_disabled'=>$this->manager->getLang('btn_disdown'),
+                'download_dependency' => $this->manager->getLang('btn_dependown'),
                 );
         $this->possible_errors = array(
                 'bundled' => $this->manager->getLang('bundled'),
@@ -26,7 +27,7 @@ class pm_search_tab extends pm_base_tab {
                 'installed' =>$this->manager->getLang('already_installed'),
                 'not_writable' => $this->manager->getLang('not_writable'),
                 );
-        //https://github.com/piyushmishra/dokuwiki/commit/7c4ad50ccd13707eab764363e275286bab428435#commitcomment-529776
+
         $this->search_types = array(
             ''=>$this->manager->getLang('all'),
             'Syntax'=>$this->manager->getLang('syntax')." (Syntax)",

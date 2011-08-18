@@ -30,6 +30,7 @@ $lang['btn_settings']           = 'Settings';
 $lang['btn_download']           = 'Download';
 $lang['btn_reinstall']          = 'Re-install';
 $lang['btn_disdown']            = 'Download as Disabled';
+$lang['btn_dependown']          = 'Download with dependencies';
 $lang['btn_enable']             = 'Save';
 $lang['browse']                 = 'Browse all plugins';
 $lang['select_all']             = 'Select All';

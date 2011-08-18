@@ -22,6 +22,9 @@ class pm_search_single_lib extends pm_base_single_lib {
         if($this->is_installed) return false;
         return true;
     }
+    function can_download_dependency() {
+        return $this->missing_dependency();
+    }
     protected function get_version() {
         return $this->repo['lastupdate'];
     }
