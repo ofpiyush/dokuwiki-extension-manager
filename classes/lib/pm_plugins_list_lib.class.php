@@ -24,7 +24,7 @@ class pm_plugins_list_lib {
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct(admin_plugin_plugin $manager,$id,$actions = array(),$possible_errors=array(),$type ="plugin") {
+    function __construct(admin_plugin_extension $manager,$id,$actions = array(),$possible_errors=array(),$type ="plugin") {
         $this->manager = $manager;
         $this->type = $type;
         $this->possible_errors = $possible_errors;
@@ -36,7 +36,7 @@ class pm_plugins_list_lib {
     }
     function start_form($starttable = true) {
         $this->form .= '<form id="'.$this->id.'" accept-charset="utf-8" method="post" action="">';
-        $hidden['page'] = 'plugin';
+        $hidden['page'] = 'extension';
         //$hidden['fn']   ='multiselect';
         $hidden['do'] = 'admin';
         $hidden['sectok'] = getSecurityToken();
@@ -292,7 +292,7 @@ class pm_plugins_list_lib {
         global $ID;
         $params = array(
             'do'=>'admin',
-            'page'=>'plugin',
+            'page'=>'extension',
             'tab' => $this->manager->tab,
             'fn'=>$action,
             'checked[]'=>$id,

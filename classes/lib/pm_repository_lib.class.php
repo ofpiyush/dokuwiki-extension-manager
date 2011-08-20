@@ -5,7 +5,7 @@ class pm_repository_lib {
     var $repo_cache = NULL;
     var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
 
-    function __construct(admin_plugin_plugin $manager) {
+    function __construct(admin_plugin_extension $manager) {
         $this->repo_cache = new cache('plugin_manager', '.sa');
         $this->check_load();
         $this->repo = $this->fetch();

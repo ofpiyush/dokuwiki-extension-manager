@@ -6,7 +6,7 @@
  * @author     Christopher Smith <chris@jalakai.co.uk>
  */
 
-$lang['menu'] = 'Plugin and Template Manager';
+$lang['menu'] = 'Extension Manager';
 
 // custom language strings for the plugin
 $lang['js']['confirm_del']      = 'Are you sure you want to delete this?';

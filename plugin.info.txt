@@ -1,7 +1,7 @@
-base   plugin
+base   extension
 author Christopher Smith, Piyush Mishra
 email  me@piyushmishra.com
-date   2009-11-11
-name   Plugin and Template Manager
+date   2011-08-20
+name   Extension Manager
 desc   Manage Plugins and Templates, including search and automated plugin installer
-url    http://www.dokuwiki.org/plugin:plugin
+url    http://www.dokuwiki.org/plugin:extension

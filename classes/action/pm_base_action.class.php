@@ -5,7 +5,7 @@
  */
 abstract class pm_base_action {
     
-    final function __construct(admin_plugin_plugin $manager) {
+    final function __construct(admin_plugin_extension $manager) {
         $this->tab = $manager->tab;
         $this->plugin = $manager->plugin;
         $this->manager = $manager;
@@ -27,7 +27,7 @@ abstract class pm_base_action {
         @touch(reset($config_cascade['main']['local']));
 
         global $ID;
-        $params =array('do'=>'admin','page'=>'plugin','tab'=>$tab);
+        $params =array('do'=>'admin','page'=>'extension','tab'=>$tab);
         if(!empty($extra)) $params = array_merge($params,$extra);
         if(!empty($anchor)) $anchor = "#".$anchor;
         send_redirect(wl($ID,$params,true, '&').$anchor);

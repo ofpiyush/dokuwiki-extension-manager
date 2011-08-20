@@ -28,7 +28,7 @@ $plugin_protected = array('acl','plugin','config','usermanager','revert');
  * All DokuWiki plugins to extend the admin function
  * need to inherit from this class
  */
-class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
+class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
     /**
      * Array of plugins sent by POST method
@@ -233,7 +233,7 @@ class admin_plugin_plugin extends DokuWiki_Admin_Plugin {
     function autoload($class) {
         if(stripos($class,'pm_')===0) {
             $folder = @end(explode('_',$class));
-            $path = DOKU_PLUGIN.'plugin/classes/'.$folder.'/'.$class.".class.php";
+            $path = DOKU_PLUGIN.'extension/classes/'.$folder.'/'.$class.".class.php";
             if(@file_exists($path)) {
                 require_once($path);
                 return true;

@@ -54,7 +54,7 @@ abstract class pm_base_single_lib {
 
     var $log = array();
 
-    final function __construct(admin_plugin_plugin $base,$dirname) {
+    final function __construct(admin_plugin_extension $base,$dirname) {
         $this->id = $dirname;
         $this->manager = $base;
     }

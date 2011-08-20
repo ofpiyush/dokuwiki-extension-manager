@@ -1,7 +1,7 @@
 <?php
 class pm_info_lib {
 
-    function __construct(admin_plugin_plugin $manager) {
+    function __construct(admin_plugin_extension $manager) {
         $this->manager = $manager;
     }
 //TODO split into the three child classes (too many if in here :()

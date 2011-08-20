@@ -10,7 +10,7 @@ abstract class pm_base_tab {
     var $plugin = '';
     var $downloaded = array();
 
-    function __construct(admin_plugin_plugin $manager) {
+    function __construct(admin_plugin_extension $manager) {
         $this->manager = $manager;
         $this->plugin = $manager->plugin;
         $this->check_writable();
@@ -48,7 +48,7 @@ abstract class pm_base_tab {
             $url_form = new Doku_Form('install__url');
             $url_form->startFieldset($this->manager->getLang('download'));
             $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('url'),'dw__url'));
-            $url_form->addHidden('page','plugin');
+            $url_form->addHidden('page','extension');
             $url_form->addHidden('fn','download');
             $url_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_download') ));
             $url_form->endFieldset();
@@ -63,7 +63,7 @@ abstract class pm_base_tab {
             $search_form = new Doku_Form($id);
             $search_form->startFieldset($lang['btn_search']);
             $search_form->addElement(form_makeTextField('term',hsc($value),$lang['btn_search'],'pm__sfield'));
-            $search_form->addHidden('page','plugin');
+            $search_form->addHidden('page','extension');
             $search_form->addHidden('tab','search');
             $search_form->addHidden('fn','search');
             $type_default = "";
@@ -85,7 +85,7 @@ abstract class pm_base_tab {
         global $ID;
         $url = wl($ID,array(
             'do'=>'admin',
-            'page'=>'plugin',
+            'page'=>'extension',
             'tab'=>$this->manager->tab,
             'fn'=>'repo_reload',
             'sectok'=>getSecurityToken()
