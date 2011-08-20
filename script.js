@@ -1,9 +1,9 @@
-var plugin_manager = { 
+var extension_manager = { 
     constructor : function () {
-        plugin_manager.setCheckState('#plugin__manager .checknone',false);
-	    plugin_manager.setCheckState('#plugin__manager .checkall',true);
-	    plugin_manager.confirmDelete('#plugin__manager .actions .delete');
-        plugin_manager.confirmDelete('#plugin__manager .bottom .button[name="fn[delete]"]');
+        plugin_manager.setCheckState('#extension__manager .checknone',false);
+	    plugin_manager.setCheckState('#extension__manager .checkall',true);
+	    plugin_manager.confirmDelete('#extension__manager .actions .delete');
+        plugin_manager.confirmDelete('#extension__manager .bottom .button[name="fn[delete]"]');
     },
     setCheckState : function (clickSelector,bool) {
         jQuery(clickSelector).show();
@@ -13,8 +13,8 @@ var plugin_manager = {
     },
     confirmDelete : function (delSelector) {
         jQuery(delSelector).click(function(e) {
-            if(!confirm(LANG.plugins['plugin']['confirm_del'])) { e.preventDefault(); }});
+            if(!confirm(LANG.plugins['extension']['confirm_del'])) { e.preventDefault(); }});
     }
 };
-jQuery(plugin_manager.constructor);
+jQuery(extension_manager.constructor);
 

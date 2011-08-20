@@ -1,19 +1,19 @@
 
-#plugin__manager .pm_menu,
-#plugin__manager p,
-#plugin__manager label {
+#extension__manager .pm_menu,
+#extension__manager p,
+#extension__manager label {
     text-align: right;
 }
 
-#plugin__manager .pm_menu ul li a {
+#extension__manager .pm_menu ul li a {
     float: right;
 }
 
-#plugin__manager .common fieldset {
+#extension__manager .common fieldset {
     text-align: right;
 }
 
 
-#plugin__manager  .legend {
+#extension__manager  .legend {
     text-align: right;
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin management functions
+ * Extension management functions
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Christopher Smith <chris@jalakai.co.uk>
@@ -221,7 +221,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
             $this->handler->process();
         }
 
-        ptln('<div id="plugin__manager">');
+        ptln('<div id="extension__manager">');
         $this->handler->html();
         ptln('</div><!-- #plugin_manager -->');
     }
