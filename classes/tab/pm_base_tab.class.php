@@ -35,7 +35,7 @@ abstract class pm_base_tab {
 	    foreach($tabs_array as $tab =>$text) {
 	        // not showing search tab when no repo is present
 	        if(empty($this->manager->repo) && $tab == 'search') continue;
-	        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>$tab)).'">'.$text.'</a></li>');
+	        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'extension','tab'=>$tab)).'">'.$text.'</a></li>');
 	    }
 	    ptln('    </ul>');
         ptln('</div>');
