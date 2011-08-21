@@ -64,7 +64,9 @@ class pm_info_lib {
             $return->is_installed = in_array($id,$this->manager->template_list);
             $return->is_enabled = ($id == $conf['template']);
         } else {
-            $cascade = plugin_getcascade();
+            if (function_exists('plugin_getcascade')) {
+                $cascade = plugin_getcascade();
+            }
             if(!empty($cascade['protected'])) {
                 $protected = array_merge(array_keys($cascade['protected']),$plugin_protected);
             } else {
@@ -112,7 +114,7 @@ class pm_info_lib {
     }
 
     function comptoinfo($index) {
-        $components = get_plugin_components($index);
+        $components = $this->manager->get_plugin_components($index);
         if(!empty($components)) {
             $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
             if(!empty($obj)) {
