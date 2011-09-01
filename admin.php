@@ -223,7 +223,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
         ptln('<div id="extension__manager">');
         $this->handler->html();
-        ptln('</div><!-- #plugin_manager -->');
+        ptln('</div><!-- #extension__manager -->');
     }
 
     /**

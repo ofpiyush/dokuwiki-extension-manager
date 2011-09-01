@@ -115,7 +115,7 @@ class pm_info_lib {
         $components = get_plugin_components($index);
         if(!empty($components)) {
             $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
-            if(!empty($obj)) {
+            if(is_object($obj) && method_exists($obj,'getInfo') ) {
                 $obj_info = $obj->getInfo();
                 return  $this->clean_info($obj_info);
             }
@@ -123,6 +123,7 @@ class pm_info_lib {
     }
 
     function clean_info($raw_info) {
+        if(!is_array($raw_info)) return false;
         $info = array(
             'base'  => false,
             'author'=> false,
