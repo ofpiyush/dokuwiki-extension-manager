@@ -120,11 +120,11 @@
     width:5%;
     text-align:center;
 }
-#extension__manager #plugins__list .disabled, #extension__manager #templates__list .disabled {
+#extension__manager #extensionplugin__pluginslist .disabled, #extension__manager #extensionplugin__templateslist .disabled {
     background: #eee;
     color: #555;
 }
-#extension__manager #search__result .notselect, #extension__manager #browse__list .notselect {
+#extension__manager #extensionplugin__searchresult .notselect, #extension__manager #extensionplugin__browselist .notselect {
     background: #eee;
     color: #555;
 }
@@ -142,7 +142,7 @@
     background: #fcc;
     color: #000;
 }
-#extension__manager #install__search label span {
+#extension__manager #extensionplugin__installsearch label span {
     display:none;
 }
 #extension__manager .legend {

@@ -107,7 +107,7 @@ class pm_plugins_list_lib {
         echo $this->form;
     }
     private function start_row($info,$class) {
-        $this->form .= '<tr id="'.$this->manager->tab.'__'.$info->id.'" class="'.$class.'">'; 
+        $this->form .= '<tr id="extensionplugin__'.$this->manager->tab.$info->id.'" class="'.$class.'">'; 
     }
     private function populate_column($class,$html) {
         $this->form .= '<td class="'.$class.'">'.$html.'</td>';

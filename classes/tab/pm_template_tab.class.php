@@ -28,8 +28,8 @@ class pm_template_tab extends pm_base_tab {
 
     function html() {
         $this->html_menu();
-        $this->render_search('tpl__search',$this->manager->getLang('tpl_search'),'','Template');
-        $list = new pm_plugins_list_lib($this->manager,'templates__list',$this->actions_list,$this->possible_errors,'template');
+        $this->render_search('extensionplugin__tplsearch',$this->manager->getLang('tpl_search'),'','Template');
+        $list = new pm_plugins_list_lib($this->manager,'extensionplugin__templateslist',$this->actions_list,$this->possible_errors,'template');
         $list->add_header($this->manager->getLang('tpl_manage'));
         $list->start_form();
         if(!empty($this->templates)) {

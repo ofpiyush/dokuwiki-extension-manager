@@ -39,12 +39,12 @@ class pm_plugin_tab extends pm_base_tab {
         global $lang;
         $this->html_menu();
         print $this->manager->locale_xhtml('admin_plugin');
-        $this->render_search('pm__search',$this->manager->getLang('search_plugin'));
+        $this->render_search('extensionplugin__search',$this->manager->getLang('search_plugin'));
         /**
          * List plugins
          */
         if(is_array($this->plugins) && count($this->plugins)) {
-            $list = new pm_plugins_list_lib($this->manager,'plugins__list',$this->actions_list,$this->possible_errors);
+            $list = new pm_plugins_list_lib($this->manager,'extensionplugin__pluginslist',$this->actions_list,$this->possible_errors);
             $list->add_header($this->manager->getLang('manage'));
             $list->start_form();
             foreach($this->plugins as $type => $plugins) {
@@ -56,7 +56,7 @@ class pm_plugin_tab extends pm_base_tab {
             $list->render();
         }
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
-            $protected_list = new pm_plugins_list_lib($this->manager,'plugins__protected',array(),$this->possible_errors);
+            $protected_list = new pm_plugins_list_lib($this->manager,'extensionplugin__pluginsprotected',array(),$this->possible_errors);
             $protected_list->add_header($this->manager->getLang('protected_head'));
             $protected_list->add_p($this->manager->getLang('protected_desc'));  
             $protected_list->start_form();
