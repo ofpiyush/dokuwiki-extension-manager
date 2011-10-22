@@ -37,7 +37,6 @@ class pm_plugins_list_lib {
     function start_form($starttable = true) {
         $this->form .= '<form id="'.$this->id.'" accept-charset="utf-8" method="post" action="">';
         $hidden['page'] = 'extension';
-        //$hidden['fn']   ='multiselect';
         $hidden['do'] = 'admin';
         $hidden['sectok'] = getSecurityToken();
         if($type == "template")
@@ -123,7 +122,6 @@ class pm_plugins_list_lib {
      * @return string url or title of the plugin
      */
     function make_title($info) {
-        $name = hsc($info->name);
         if(!empty($info->dokulink)) {
             $info->url = "http://www.dokuwiki.org/".$info->dokulink;
             return $this->make_link($info,"interwiki iw_doku");
@@ -135,8 +133,7 @@ class pm_plugins_list_lib {
             else
                 return $this->make_link($info,"urlextern");
         }
-
-        return  hsc($info->name);
+        return hsc($info->name);
     }
 
     function make_class($info) {

@@ -47,7 +47,7 @@ class pm_plugin_tab extends pm_base_tab {
             $list = new pm_plugins_list_lib($this->manager,'extensionplugin__pluginslist',$this->actions_list,$this->possible_errors);
             $list->add_header($this->manager->getLang('manage'));
             $list->start_form();
-            foreach($this->plugins as $type => $plugins) {
+            foreach($this->plugins as $status => $plugins) {
                 foreach($plugins as $info) {
                     $list->add_row($info);
                 }
@@ -60,7 +60,7 @@ class pm_plugin_tab extends pm_base_tab {
             $protected_list->add_header($this->manager->getLang('protected_head'));
             $protected_list->add_p($this->manager->getLang('protected_desc'));  
             $protected_list->start_form();
-            foreach($this->protected_plugins as $type => $plugins)
+            foreach($this->protected_plugins as $status => $plugins)
                 foreach( $plugins as  $info) {
                     $protected_list->add_row($info);
             }

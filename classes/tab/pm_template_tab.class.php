@@ -33,10 +33,10 @@ class pm_template_tab extends pm_base_tab {
         $list->add_header($this->manager->getLang('tpl_manage'));
         $list->start_form();
         if(!empty($this->templates)) {
-            foreach($this->templates as $type => $templates) {
+            foreach($this->templates as $status => $templates) {
                 foreach ($templates as $template) {
                     $list->add_row($template);
-                    if($type == "enabled") $list->rowadded = false;
+                    if($status == "enabled") $list->rowadded = false;
                 }
             }
         }
