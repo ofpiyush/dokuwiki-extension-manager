@@ -37,13 +37,13 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
     /**
      * The action to be carried out
-     * one from either admin_plugin_plugin::$functions or admin_plugin_plugin::$commands
+     * one from either admin_plugin_extension::$functions or admin_plugin_extension::$commands
      */
     var $cmd = 'display';
 
     /**
      * The current tab which is being shown
-     * one from admin_plugin_plugin::$nav_tabs
+     * one from admin_plugin_extension::$nav_tabs
      */
     var $tab = 'plugin';
 
@@ -68,7 +68,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     var $_bundled = array();
 
     /**
-     * Instance of the tab from admin_plugin_plugin::$tab
+     * Instance of the tab from admin_plugin_extension::$tab
      */
     var $handler = NULL;
 
@@ -84,7 +84,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     var $functions = array('delete','enable','update','disable','reinstall','info');
 
     /**
-     * list of actions that do not require a plugin name
+     * list of actions that do not require a plugin name (e.g. download might use URL instead)
      */
     var $commands = array('search','download','download_disabled','repo_reload');
 
@@ -156,9 +156,9 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     }
 
     /**
-     * Determines which action has been requested and requests the action
-     * stores name of action in admin_plugin_plugin::$cmd and the 
-     * instance of action in admin_plugin_plugin::$action 
+     * Determines which action has been requested and executes the action
+     * stores name of action in admin_plugin_extension::$cmd and the 
+     * instance of action in admin_plugin_extension::$action 
      */
     function setup_action() {
         $fn = $_REQUEST['fn'];
@@ -166,10 +166,6 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
             $this->cmd = key($fn);
         } else {
             $this->cmd = $fn;
-        }
-        //non-functional still here to allow reverting to multiselect
-        if($this->cmd == 'multiselect') {
-            $this->cmd = $_REQUEST['action'];
         }
         if(!empty($_REQUEST['checked'])) {
             $this->plugin = $_REQUEST['checked'];

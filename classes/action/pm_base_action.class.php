@@ -6,7 +6,6 @@
 abstract class pm_base_action {
     
     final function __construct(admin_plugin_extension $manager) {
-        $this->tab = $manager->tab;
         $this->plugin = $manager->plugin;
         $this->manager = $manager;
         $this->act();
