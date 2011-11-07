@@ -8,6 +8,8 @@
  */
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
+
+if(!defined('DOKU_TPLLIB')) define('DOKU_TPLLIB',DOKU_INC.'lib/tpl/');
 //ini_set('display_errors','on');
 //error_reporting(E_STRICT);
 
@@ -21,9 +23,6 @@ if(!defined('DOKU_INC')) die();
 // global $plugin_types;
 // $plugin_types = array('syntax', 'admin');
 
-// plugins that are an integral part of dokuwiki, they shouldn't be disabled or deleted
-global $plugin_protected;
-$plugin_protected = array('acl','plugin','config','usermanager','revert');
 /**
  * All DokuWiki plugins to extend the admin function
  * need to inherit from this class
@@ -277,7 +276,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      */
     private function _get_template_list() {
         if(empty($this->template_list)) {
-            $tpl_dir = DOKU_INC.'lib/tpl/';
+            $tpl_dir = DOKU_TPLLIB;
             $list = array();
             if($dh = @opendir($tpl_dir)) {
                 while(false !== ($template = readdir($dh))) {

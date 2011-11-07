@@ -112,7 +112,7 @@ class pm_download_action extends pm_base_action {
                     $this->current = $item;
                     // where to install?
                     if($item['type'] == 'template'){
-                        $target_base_dir = DOKU_INC.'lib/tpl/';
+                        $target_base_dir = DOKU_TPLLIB;
                         if(!empty($default_base) && !file_exists($item['tmp'].'/template.info.txt'))
                             $item['base'] = $default_base;
                     }else{

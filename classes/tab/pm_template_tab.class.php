@@ -44,8 +44,8 @@ class pm_template_tab extends pm_base_tab {
         $list->render();
     }
     function check_writable() {
-        if(!is_writable(DOKU_INC.'lib/tpl/')) {
-            msg($this->manager->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
+        if(!is_writable(DOKU_TPLLIB)) {
+            msg($this->manager->getLang('not_writable')." ".DOKU_TPLLIB,-1);
         }
     }
     function _info_list($template) {

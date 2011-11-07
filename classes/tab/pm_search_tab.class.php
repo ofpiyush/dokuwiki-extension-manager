@@ -90,8 +90,8 @@ class pm_search_tab extends pm_base_tab {
     }
 
     function check_writable() {
-        if(!is_writable(DOKU_INC.'lib/tpl/')) {
-            msg($this->manager->getLang('not_writable')." ".DOKU_INC.'lib/tpl/',-1);
+        if(!is_writable(DOKU_TPLLIB)) {
+            msg($this->manager->getLang('not_writable')." ".DOKU_TPLLIB,-1);
         }
         if(!is_writable(DOKU_PLUGIN)) {
             msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);

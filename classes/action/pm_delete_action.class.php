@@ -26,7 +26,7 @@ class pm_delete_action extends pm_base_action {
     function delete($plugin) {
         $info = $this->manager->info->get($plugin,$this->manager->tab);
         if($info->is_template)
-            $path = DOKU_INC.'lib/tpl/'.$plugin;
+            $path = DOKU_TPLLIB.$plugin;
         else
             $path = DOKU_PLUGIN.plugin_directory($plugin);
         if(!$info->can_delete()) return false;
