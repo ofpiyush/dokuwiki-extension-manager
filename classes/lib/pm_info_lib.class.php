@@ -64,17 +64,9 @@ class pm_info_lib {
             $return->is_installed = in_array($id,$this->manager->template_list);
             $return->is_enabled = ($id == $conf['template']);
         } else {
-            if (function_exists('plugin_getcascade')) {
-                $cascade = plugin_getcascade();
-            }
-            if(!empty($cascade['protected'])) {
-                $protected = array_merge(array_keys($cascade['protected']),$plugin_protected);
-            } else {
-                $protected = $plugin_protected;
-            }
             $return->is_installed = in_array($return->id,$this->manager->plugin_list);
-            $return->is_protected = in_array($return->id,$protected);
             $return->is_bundled = in_array($return->id,$this->manager->_bundled);
+            $return->is_protected = in_array($return->id,$this->manager->protected);
             $return->is_enabled = !plugin_isdisabled($return->id);
         }
     }

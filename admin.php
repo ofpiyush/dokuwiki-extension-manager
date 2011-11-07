@@ -65,7 +65,18 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * array list of bundled plugins
      */
-    var $_bundled = array();
+    var $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
+
+    /**
+     * plugins that are an integral part of dokuwiki, this is only valid for pre-"Angua" releases
+     * now this information is stored in 'conf/plugins.required.php'
+     */
+    var $legacy_protected = array('acl','plugin','config','usermanager');
+
+    /**
+     * plugins that are protected from being managed with the extension manager
+     */
+    var $protected = array();
 
     /**
      * Instance of the tab from admin_plugin_extension::$tab
@@ -118,7 +129,16 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
     function __construct() {
         spl_autoload_register(array($this,'autoload'));
-        $this->_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
+
+        if (function_exists('plugin_getcascade')) {
+            $cascade = plugin_getcascade();
+            if(!empty($cascade['protected'])) {
+                $this->protected = array_keys($cascade['protected']);
+            }
+        } else {
+            // support for using extension manager with pre-"Angua" (okt2011) releases
+            $this->protected = $this->legacy_protected;
+        }
     }
 
     /**
