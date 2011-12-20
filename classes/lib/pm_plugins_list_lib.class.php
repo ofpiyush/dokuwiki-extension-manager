@@ -34,7 +34,8 @@ class pm_plugins_list_lib {
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
     }
-    function start_form($starttable = true) {
+
+    function start_form() {
         $this->form .= '<form id="'.$this->id.'" accept-charset="utf-8" method="post" action="">';
         $hidden['page'] = 'extension';
         $hidden['do'] = 'admin';
@@ -42,10 +43,8 @@ class pm_plugins_list_lib {
         if($type == "template")
             $hidden['template'] = 'template';
         $this->add_hidden($hidden);
-        if($starttable) {
-            $this->intable = true;
-            $this->form .= '<table class="inline">';
-        }
+        $this->form .= '<table class="inline">';
+        $this->intable = true;
     }
     /**
      * Build single row of plugin table
