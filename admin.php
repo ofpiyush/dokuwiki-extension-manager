@@ -110,10 +110,20 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     var $plugin_list = array();
 
     /**
+     * bool indicating whether directory DOKU_PLUGIN is writable or not
+     */
+    var $pluginfolder_writable = false;
+
+    /**
      * array list of installed template foldernames
      * saved after the trigger 'PLUGIN_PLUGINMANAGER_TEMPLATELIST'
      */
     var $template_list = array();
+
+    /**
+     * bool indicating whether directory DOKU_TPLLIB is writable or not
+     */
+    var $templatefolder_writable = false;
 
     /**
      * Saves return value pm_*_tab::process() (not used by the plugin manager currently)
@@ -138,6 +148,8 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
             // support for using extension manager with pre-"Angua" (okt2011) releases
             $this->protected = $this->legacy_protected;
         }
+        $this->pluginfolder_writable = is_writable(DOKU_PLUGIN);
+        $this->templatefolder_writable = is_writable(DOKU_TPLLIB);
     }
 
     /**

@@ -71,7 +71,7 @@ class pm_plugin_tab extends pm_base_tab {
     }
 
     function check_writable() {
-        if(!is_writable(DOKU_PLUGIN)) {
+        if(!$this->manager->pluginfolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
     }

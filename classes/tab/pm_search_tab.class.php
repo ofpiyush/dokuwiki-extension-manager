@@ -90,10 +90,10 @@ class pm_search_tab extends pm_base_tab {
     }
 
     function check_writable() {
-        if(!is_writable(DOKU_TPLLIB)) {
+        if(!$this->manager->templatefolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_TPLLIB,-1);
         }
-        if(!is_writable(DOKU_PLUGIN)) {
+        if(!$this->manager->pluginfolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
     }

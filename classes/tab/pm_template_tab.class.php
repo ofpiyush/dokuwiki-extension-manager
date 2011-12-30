@@ -43,8 +43,9 @@ class pm_template_tab extends pm_base_tab {
         $list->end_form(array('update','delete','reinstall'));
         $list->render();
     }
+
     function check_writable() {
-        if(!is_writable(DOKU_TPLLIB)) {
+        if(!$this->manager->templatefolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_TPLLIB,-1);
         }
     }
