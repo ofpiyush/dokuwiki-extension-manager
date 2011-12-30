@@ -25,9 +25,8 @@ class pm_search_single_lib extends pm_base_single_lib {
 
     function can_download_disabled() {
         if(empty($this->downloadurl)) return false;
-        if(!$this->is_writable) return false;
         if($this->is_installed) return false;
-        if($this->is_protected) return false;
+        if($this->no_fileactions_allowed()) return false;
         return true;
     }
 
