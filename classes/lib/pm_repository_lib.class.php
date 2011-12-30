@@ -12,7 +12,7 @@ class pm_repository_lib {
         $this->manager = $manager;
     }
     /**
-     * checks to see if a valid cache exists, if it doesnot, makes one...
+     * checks to see if a valid cache exists, if it doesn't, makes one...
      */
     function check_load() {
         if(!$this->repo_cache->useCache(array('age'=>172800)))
@@ -27,7 +27,7 @@ class pm_repository_lib {
         return $this->repo;
     }
     /**
-     * Downloads and reloads cache. may be moving to serialized result directly from server would work better?
+     * Downloads and reloads cache     // TODO may be moving to serialized result directly from server would work better?
      */
     function reload() {
         $error = true;
@@ -63,7 +63,7 @@ class pm_repository_lib {
     }
     
     /**
-     * Converts objects to arrays. may be should be kept under parseutils??
+     * Converts objects to arrays     // TODO may be should be kept under parseutils??
      */
     function obj_array($obj) {
         $data = array();
@@ -80,7 +80,7 @@ class pm_repository_lib {
     }
     
     /**
-     * Converts XML to arrays. may be should be kept under parseutils??
+     * Converts XML to arrays     // TODO may be should be kept under parseutils??
      */
     function xml_array ($string) {
         $parser = xml_parser_create('');

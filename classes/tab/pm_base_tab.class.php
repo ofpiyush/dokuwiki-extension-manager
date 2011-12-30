@@ -21,9 +21,10 @@ abstract class pm_base_tab {
     abstract function html();
 
     abstract function check_writable();
-    // build our standard menu
+
     function html_menu() {
         global $ID;
+
         $tabs_array = array(
             'plugin' => rtrim($this->manager->getLang('plugin'),":"),
             'template' =>$this->manager->getLang('template'),

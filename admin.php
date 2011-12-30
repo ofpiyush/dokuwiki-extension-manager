@@ -87,7 +87,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * @see pm_base_single_lib::$id
      */
     var $showinfo = null;
-    
+
     /**
      * list of actions(classes/action/*.class.php) that require a plugin name
      */

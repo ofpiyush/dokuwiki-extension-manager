@@ -7,6 +7,7 @@
  * @author     Piyush Mishra <me@piyushmishra.com>
  */
 
+/**
  * For installed plugins only (can be used while downloading too)
  * @property string $version Version date string from various sources 
  * @property string $name Name of the plugin/template defaults to "id"
@@ -54,17 +55,40 @@ abstract class pm_base_single_lib {
     var $is_template = false;
 
 
+    /**
+     * Content in $repo[] array (see http://www.dokuwiki.org/plugin:repository:manual)
+     */
     var $repo = array();
 
+    /**
+     * Content in $info[] array (http://www.dokuwiki.org/devel:plugin_info)
+     * @property string base    The technical name of the plugin. Plugin Manager will install it into this directory.
+     * @property string author  The full name of the plugin author
+     * @property string email   E-Mail to contact the plugin author about this plugin
+     * @property string date    The date of the last update of this plugin in YYYY-MM-DD form. Don't forget to update this when you update your plugin!
+     * @property string name    The human readable name of the plugin
+     * @property string desc    A description of what the plugin does
+     * @property string url     URL to where more info about the plugin is available
+     */
     var $info = array();
 
+    /**
+     * Content in $log[] array
+     * @property string downloadurl     URL used for last download              // TODO should be named url for backward compatibility?
+     * @property string installed       RFC 2822 date time of installation
+     * @property string updated         RFC 2822 date time of update
+     */
     var $log = array();
 
-    final function __construct(admin_plugin_extension $base,$dirname) {
-        $this->id = $dirname;
-        $this->manager = $base;
+    final function __construct(admin_plugin_extension $manager,$id) {
+        $this->manager = $manager;
+        $this->id = $id;
     }
 
+    /**
+     * Precedence order for accessing properties
+     *      get(method) -> repository -> *.info.txt -> $log -> default(method)
+     */
     abstract function can_select();
 
     function __get($key) {
@@ -117,6 +141,9 @@ abstract class pm_base_single_lib {
         return true;
     }
 
+    /**
+     * failure reasons, used in combination with $possible_errors
+     */
     function missing_dlurl () {
         if(!empty($this->downloadurl)) return false;
         //bundled plugins should not have download urls
@@ -126,6 +153,7 @@ abstract class pm_base_single_lib {
         if($this->is_protected) return false;
         return true;
     }
+
     function missing_dependency() {
         if(!empty($this->relations['depends']['id'])) {
             foreach((array) $this->relations['depends']['id'] as $depends) {

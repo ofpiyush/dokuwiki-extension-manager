@@ -37,6 +37,9 @@ class pm_plugin_single_lib extends pm_base_single_lib {
         return (!$this->is_protected && $this->is_enabled);
     }
 
+    /**
+     * return list of component types supplied by this plugin
+     */
     function wrong_folder() {
         if(!empty($this->info['base']) && $this->info['base'] != $this->id) return true;
         return false;
