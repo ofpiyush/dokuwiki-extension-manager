@@ -57,4 +57,13 @@ class pm_log_lib {
         if(!empty($this->log[$hash][$field])) return $this->log[$hash][$field];
         return false;
     }
+
+    function trace($extension, $action, $msg) {
+        $file = DOKU_PLUGIN.'extension/trace.log';
+        $out = sprintf("%s  %s  %s  %s  %s \n",date('Y-m-d  H:i:s'), $extension, $action, $_SERVER['REMOTE_USER'], $msg);
+        if (!$fp = @fopen($file, 'a')) return false;
+        $write = fwrite($fp, $out);
+        fclose($fp);
+        return $write;
+    }
 }
