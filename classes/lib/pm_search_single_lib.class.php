@@ -1,4 +1,12 @@
 <?php
+/**
+ * Detailed info object for a single unistalled extension (plugin or template repository search result)
+ * it also define capabilities like 'can_download'
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_search_single_lib extends pm_base_single_lib {
 
     function can_select() {

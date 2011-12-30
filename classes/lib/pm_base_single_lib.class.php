@@ -1,6 +1,12 @@
 <?php
 /**
- * Detailed info of a single plugin
+ * Detailed info object for a single extension (plugin/template)
+ * it also defines capabilities like 'can_enable'
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
  * For installed plugins only (can be used while downloading too)
  * @property string $version Version date string from various sources 
  * @property string $name Name of the plugin/template defaults to "id"

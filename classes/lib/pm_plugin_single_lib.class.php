@@ -1,4 +1,11 @@
 <?php
+/**
+ * Detailed info object for a single __installed__ plugin
+ * it also define capabilities like 'can_enable'
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
 
 class pm_plugin_single_lib extends pm_base_single_lib {
 

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Factory class to create information objects from plugin/tempalate id's
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_info_lib {
 
     function __construct(admin_plugin_extension $manager) {
