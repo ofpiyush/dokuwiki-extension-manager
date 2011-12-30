@@ -69,6 +69,7 @@ class pm_info_lib {
                 $repokey = (($is_template) ? 'template:' : '').$return->info['base'];
             }
             $return->log = $this->manager->log->read($path);
+            $return->is_gitmanaged = file_exists($path.'.git');
         }
 
         $return->repokey = $repokey;

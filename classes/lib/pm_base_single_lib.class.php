@@ -49,11 +49,11 @@ abstract class pm_base_single_lib {
     var $is_writable = false;
 
     /**
-     * if it is compatible with the current DokuWiki version (should have a "no" state)
-     * current states true = yes false = may be
-     * @var bool (should be string later)
+     * If the extension is version controlled by git
+     * @var bool
      */
-    var $is_compatible = false;
+    var $is_gitmanaged = false;
+
     /**
      * if it is a plugin or a template
      * @var bool
@@ -249,6 +249,7 @@ abstract class pm_base_single_lib {
         if(!$this->is_writable) return true;
         if($this->is_bundled) return true;
         if($this->is_protected) return true;
+        if($this->is_gitmanaged) return true;
         return false;
     }
 
