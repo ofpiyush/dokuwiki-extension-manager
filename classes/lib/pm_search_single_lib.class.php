@@ -42,4 +42,8 @@ class pm_search_single_lib extends pm_base_single_lib {
         return false;
     }
 
+    function url_changed() {
+        return false;
+    }
+
 }

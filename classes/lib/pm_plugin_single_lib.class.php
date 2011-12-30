@@ -9,6 +9,16 @@
 
 class pm_plugin_single_lib extends pm_base_single_lib {
 
+    function __construct(admin_plugin_extension $manager,$id,$is_template) {
+        parent::__construct($manager,$id,$is_template);
+
+        $this->is_enabled = !plugin_isdisabled($id);
+    }
+
+    function install_directory() {
+        return DOKU_PLUGIN.plugin_directory($this->id).'/';
+    }
+
     function can_select() {
         return (!$this->is_protected);
     }

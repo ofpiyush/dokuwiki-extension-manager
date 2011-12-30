@@ -30,17 +30,23 @@
 
 abstract class pm_base_single_lib {
     /**
-     * Identifier (name of directory for installed plugins and "id" for repository plugins)
+     * Identifier, name of directory for installed plugins/templates OR "id" without any prefix for repository entries
+     * There might be clashes between plugin & template id's. The directory might also not be the same as "base" in info.txt
      * @property string $id
      */
     var $id = null;
 
     /**
+     * Unique identifier, $id prefixed with 'template:' for templates
+     * @property string $id
+     */
+    var $repokey = null;
+
+    /**
      * If the manager can write in the folder
      * @var bool
      */ 
-    var $is_writable = true;
-
+    var $is_writable = false;
 
     /**
      * if it is compatible with the current DokuWiki version (should have a "no" state)
@@ -98,9 +104,18 @@ abstract class pm_base_single_lib {
      */
     var $log = array();
 
-    final function __construct(admin_plugin_extension $manager,$id) {
+    function __construct(admin_plugin_extension $manager,$id,$is_template) {
         $this->manager = $manager;
         $this->id = $id;
+        $this->is_template = $is_template;
+
+        if($is_template) {
+            $this->is_bundled = ($id == 'default'); // TODO include in bundled array?
+            $this->is_protected = ($id == 'default'); // TODO already protected elsewhere?
+        } else {
+            $this->is_bundled = in_array($id,$manager->_bundled);
+            $this->is_protected = in_array($id,$manager->protected);
+        }
     }
 
     /**
@@ -326,11 +341,20 @@ abstract class pm_base_single_lib {
     }
 
     /**
-     * wrong_folder (overridden in pm_search_single_lib)
+     * error notice when plugin/template folder doesn't match *.info.txt data (overridden in pm_search_single_lib)
      */
     function wrong_folder() {
         if(!empty($this->info['base']) && $this->info['base'] != $this->id) return true;
         return false;
+    }
+
+    /**
+     * warning notice for url changed since last install/update (overridden in pm_search_single_lib)
+     */
+    function url_changed() {
+        if(empty($this->repo['downloadurl']) || empty($this->log['downloadurl'])) return false;
+        if($this->repo['downloadurl'] == $this->log['downloadurl']) return false;
+        return true;
     }
 
     function highlight() {
