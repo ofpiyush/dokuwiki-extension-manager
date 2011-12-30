@@ -100,37 +100,41 @@
     padding: 0.5em;
 }
 #extension__manager .checks {
-    margin-left:1em;
+    margin-left: 1em;
 }
-#extension__manager .checkall,#extension__manager .checknone {
-    display:none;
+#extension__manager .checkall,
+#extension__manager .checknone {
+    display: none;
 }
-#extension__manager .checkall:hover,#extension__manager .checknone:hover {
-    text-decoration:underline;
-    cursor:pointer;
+#extension__manager .checkall:hover,
+#extension__manager .checknone:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 #extension__manager table {
-    width:100%;
+    width: 100%;
 }
 
 #extension__manager table td {
-    vertical-align:middle;
+    vertical-align: middle;
 }
 #extension__manager .checkbox {
     width:5%;
     text-align:center;
 }
-#extension__manager #extensionplugin__pluginslist .disabled, #extension__manager #extensionplugin__templateslist .disabled {
+#extension__manager #extensionplugin__pluginslist .disabled,
+#extension__manager #extensionplugin__templateslist .disabled {
     background: #eee;
     color: #555;
 }
-#extension__manager #extensionplugin__searchresult .notselect, #extension__manager #extensionplugin__browselist .notselect {
+#extension__manager #extensionplugin__searchresult .notselect,
+#extension__manager #extensionplugin__browselist .notselect {
     background: #eee;
     color: #555;
 }
 #extension__manager .repo_reload {
-    width:100%;
-    text-align:right;
+    width: 100%;
+    text-align: right;
     opacity: 0.7;
 }
 #extension__manager .infoed {
@@ -143,7 +147,7 @@
     color: #000;
 }
 #extension__manager #extensionplugin__installsearch label span {
-    display:none;
+    display: none;
 }
 #extension__manager .legend {
     vertical-align:top;
@@ -162,19 +166,19 @@
     margin:0 0 0 1.5em;
 }
 #extension__manager .inforight {
-    font-size:0.8em;
+    font-size: 0.8em;
 }
 #extension__manager .screenshot {
     padding: 5px;
     width: 90px;
-    text-align:center;
+    text-align: center;
 }
 #extension__manager .actions {
     font-size: 95%;
     width: 20%;
 }
 #extension__manager .actions p {
-    margin:0;
+    margin: 0;
     text-align: center;
 }
 
