@@ -54,6 +54,24 @@ abstract class pm_base_single_lib {
      */
     var $is_template = false;
 
+    /**
+     * If plugin is bundled with currently installed version of DokuWiki
+     * @var bool
+     */
+
+     var $is_bundled = false;
+
+     /**
+     * If plugin is protected (shouldn't be managed)
+     * @var bool
+     */
+    var $is_protected = false;
+
+    /**
+     * If plugin is enabled
+     * @var bool
+     */
+    var $is_enabled = false;
 
     /**
      * Content in $repo[] array (see http://www.dokuwiki.org/plugin:repository:manual)
@@ -89,8 +107,6 @@ abstract class pm_base_single_lib {
      * Precedence order for accessing properties
      *      get(method) -> repository -> *.info.txt -> $log -> default(method)
      */
-    abstract function can_select();
-
     function __get($key) {
         $return = false;
         // do not cache anything returned from a method
@@ -113,6 +129,49 @@ abstract class pm_base_single_lib {
     /**
      * @return bool if the plugin/template can be updated
      */
+    /**
+     * return description from *.info.txt (if no repo info was found)
+     */
+    protected function default_description() {
+        $this->description = "";
+        if(!empty($this->desc)) $this->description = $this->desc;
+        return $this->description;
+    }
+
+
+    function get_is_disabled() {
+        return !$this->is_enabled;
+    }
+
+    /**
+     * capabilities, used in combination with $actions_list
+     */
+    abstract function can_select();
+
+    final function can_info() {
+        return true;
+    }
+
+    function can_enable() {
+        return false;
+    }
+
+    function can_disable() {
+        return false;
+    }
+
+    function can_download() {
+        return false;
+    }
+
+    function can_download_disabled() {
+        return false;
+    }
+
+    function can_download_dependency() {
+        return false;
+    }
+
     function can_update() {
         if(empty($this->newversion)) return false;
         if(empty($this->downloadurl)) return false;
@@ -169,19 +228,18 @@ abstract class pm_base_single_lib {
         return false;
     }
 
-    function wrong_folder() {
-        return false;
-    }
-    function highlight() {
-        if($this->manager->showinfo == $this->id) return true;
-        return false;
-    }
     function not_writable() {
         return (!$this->is_writable && !$this->is_bundled && !$this->is_protected);
     }
+
     function bundled() {
         return $this->is_bundled;
     }
+
+    function installed() {
+        return $this->is_installed;
+    }
+
     function has_conflicts() {
         if(!empty($this->relations['conflicts']['id'])) {
             $key = ($this->is_template) ? 'template' : 'plugin';
@@ -226,17 +284,22 @@ abstract class pm_base_single_lib {
         return $this->version;
     }
 
-    function get_is_disabled() {
-        return !$this->is_enabled;
-    }
-    protected function default_description() {
-        $this->description ="";
-        if(!empty($this->desc)) $this->description = $this->desc;
-        return $this->description;
-    }
     protected function default_name() {
         return $this->id;
     }
 
-    final function can_info() { return true;}
+    /**
+     * wrong_folder (overridden in pm_search_single_lib)
+     */
+    function wrong_folder() {
+        if(!empty($this->info['base']) && $this->info['base'] != $this->id) return true;
+        return false;
+    }
+
+    function highlight() {
+        if($this->manager->showinfo == $this->id) return true;
+        return false;
+    }
+
+
 }
