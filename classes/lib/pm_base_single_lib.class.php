@@ -109,15 +109,24 @@ abstract class pm_base_single_lib {
      */
     function __get($key) {
         $return = false;
-        // do not cache anything returned from a method
-        //if its necessary, the method will cache it itself
+
         if(method_exists($this,'get_'.$key)) { 
+            // do not cache anything returned from a method
+            // if its necessary, the method will cache it itself
             return $this->{'get_'.$key}();
-        } elseif(isset($this->repo[$key])){
-             $return = $this->repo[$key];
-        }elseif(isset($this->info[$key])){ $return = $this->info[$key];
-        }elseif(isset($this->log[$key])){ $return = $this->log[$key];
-        }elseif(method_exists($this,'default_'.$key)){ return $this->{'default_'.$key}();}
+
+        } elseif(isset($this->repo[$key])) {
+            $return = $this->repo[$key];
+
+        } elseif(isset($this->info[$key])) {
+            $return = $this->info[$key];
+
+        } elseif(isset($this->log[$key])) {
+            $return = $this->log[$key];
+
+        } elseif(method_exists($this,'default_'.$key)) {
+            return $this->{'default_'.$key}();
+        }
         $this->$key = $return;
         return $return;
     }
@@ -127,8 +136,15 @@ abstract class pm_base_single_lib {
     }
 
     /**
-     * @return bool if the plugin/template can be updated
+     * return same name as displayed by repo plugin at www.dokuwiki.org
      */
+    protected function get_displayname() {
+        $name = $this->id;
+        if(!empty($this->base)) $name = $this->base;
+        $this->displayname =  ucfirst($name).(($this->is_template) ? ' template' : ' plugin');
+        return $this->displayname;
+    }
+
     /**
      * return description from *.info.txt (if no repo info was found)
      */
@@ -138,6 +154,26 @@ abstract class pm_base_single_lib {
         return $this->description;
     }
 
+    function get_update_available() {
+        $this->update_available = false;
+        if (!$this->is_installed) return false;
+        if (empty($this->lastupdate)) return false;
+        if ($this->lastupdate <= $this->date) return false;
+
+        $this->update_available = true;
+        return true;
+    }
+
+    function get_install_date() {
+        $time = '';
+        if(!empty($this->updated)) {
+            $time = $this->updated;
+        } elseif(!empty($this->installed)) {
+            $time = $this->installed;
+        }
+        $this->install_date = $time;
+        return $this->install_date;
+    }
 
     function get_is_disabled() {
         return !$this->is_enabled;
@@ -173,31 +209,32 @@ abstract class pm_base_single_lib {
     }
 
     function can_update() {
-        if(empty($this->newversion)) return false;
+        if(!$this->update_available) return false;
         if(empty($this->downloadurl)) return false;
-        if(!$this->is_writable) return false;
-        if($this->is_bundled) return false;
-        // no action should be allowed on protected plugins
-        if($this->is_protected) return false;
+        if($this->no_fileactions_allowed()) return false;
         return true;
     }
 
     function can_delete() {
-        if(!$this->is_writable) return false;
-        if($this->is_bundled) return false;
-        // no action should be allowed on protected plugins
-        if($this->is_protected) return false;
+        if($this->no_fileactions_allowed()) return false;
         return true;
     }
 
     function can_reinstall() {
+        if($this->update_available) return false;
         if(empty($this->downloadurl)) return false;
-        if(!$this->is_writable) return false;
-        if($this->is_bundled) return false;
-        // no action should be allowed on protected plugins
-        if($this->is_protected) return false;
-        if(!empty($this->newversion)) return false;
+        if($this->no_fileactions_allowed()) return false;
         return true;
+    }
+
+    /**
+     * no disk actions allowed on protected plugins
+     */
+    protected function no_fileactions_allowed() {
+        if(!$this->is_writable) return true;
+        if($this->is_bundled) return true;
+        if($this->is_protected) return true;
+        return false;
     }
 
     /**
