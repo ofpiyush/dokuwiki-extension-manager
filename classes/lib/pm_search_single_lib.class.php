@@ -27,6 +27,7 @@ class pm_search_single_lib extends pm_base_single_lib {
         if(empty($this->downloadurl)) return false;
         if(!$this->is_writable) return false;
         if($this->is_installed) return false;
+        if($this->is_protected) return false;
         return true;
     }
 
