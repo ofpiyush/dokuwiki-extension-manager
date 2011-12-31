@@ -1,5 +1,0 @@
-===== Plugin Management =====
-
-On this page you can manage everything to do with Dokuwiki [[doku>plugins|plugins]].
-
-

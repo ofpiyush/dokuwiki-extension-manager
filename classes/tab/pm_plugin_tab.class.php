@@ -5,7 +5,6 @@ class pm_plugin_tab extends pm_base_tab {
     var $actions_list;
 
     function process() {
-        global $plugin_protected;
         $this->actions_list = array(
             'enable'=>$this->manager->getLang('enable'),
             'disable'=>$this->manager->getLang('btn_disable'),
@@ -29,23 +28,37 @@ class pm_plugin_tab extends pm_base_tab {
         $this->protected_plugins['disabled'] = array_diff_key($protected,$this->protected_plugins['enabled']);
     }
 
+    /**
+     * Filter functions
+     */
     function _is_protected($info) {
         return $info->is_protected;
     }
+
     function _is_enabled($info) {
         return $info->is_enabled;
     }
+
+    /**
+     * Plugin tab rendering
+     */
     function html() {
-        global $lang;
         $this->html_menu();
-        print $this->manager->locale_xhtml('admin_plugin');
-        $this->render_search('extensionplugin__search',$this->manager->getLang('search_plugin'));
-        /**
-         * List plugins
-         */
+        ptln('<div class="panelHeader">');
+        $summary = sprintf($this->manager->getLang('summary_plugin'),count($this->manager->plugin_list),count($this->plugins['enabled'])+count($this->protected_plugins['enabled']));
+	    ptln('<h3>'.$summary.'</h3>');
+        ptln('</div><!-- panelHeader -->');
+
+        ptln('<div class="panelContent">');
+        $this->html_extensionlist();
+        ptln('</div><!-- panelContent -->');
+    }
+
+    function html_extensionlist() {
+        // managable plugins
         if(is_array($this->plugins) && count($this->plugins)) {
             $list = new pm_plugins_list_lib($this->manager,'extensionplugin__pluginslist',$this->actions_list,$this->possible_errors);
-            $list->add_header($this->manager->getLang('manage'));
+            $list->add_header('installed_plugins',$this->manager->getLang('header_plugin_installed'));
             $list->start_form();
             foreach($this->plugins as $status => $plugins) {
                 foreach($plugins as $info) {
@@ -55,10 +68,11 @@ class pm_plugin_tab extends pm_base_tab {
             $list->end_form(array('enable','disable','delete','update'));
             $list->render();
         }
+        // protected plugins
         if(is_array($this->protected_plugins) && count($this->protected_plugins)) {
             $protected_list = new pm_plugins_list_lib($this->manager,'extensionplugin__pluginsprotected',array(),$this->possible_errors);
-            $protected_list->add_header($this->manager->getLang('protected_head'));
-            $protected_list->add_p($this->manager->getLang('protected_desc'));  
+            $protected_list->add_header('protected_plugins',$this->manager->getLang('header_plugin_protected'));
+            $protected_list->add_p($this->manager->getLang('text_plugin_protected'));
             $protected_list->start_form();
             foreach($this->protected_plugins as $status => $plugins)
                 foreach( $plugins as  $info) {
@@ -67,7 +81,6 @@ class pm_plugin_tab extends pm_base_tab {
             $protected_list->end_form(array());
             $protected_list->render();
         }
-        //end list plugins
     }
 
     function check_writable() {

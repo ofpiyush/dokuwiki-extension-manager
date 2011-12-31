@@ -15,10 +15,12 @@ class pm_search_tab extends pm_base_tab {
         $this->doku_version = $doku['date'];
         $this->clean_repo();
         $this->actions_list = array(
-                'download'=>$this->manager->getLang('btn_download'),
-                'download_disabled'=>$this->manager->getLang('btn_disdown'),
-                'download_dependency' => $this->manager->getLang('btn_dependown'),
-                );
+            'enable'=>$this->manager->getLang('enable'),
+            'disable'=>$this->manager->getLang('btn_disable'),
+            'download'=>$this->manager->getLang('btn_download'),
+            'download_disabled'=>$this->manager->getLang('btn_disdown'),
+            'download_dependency' => $this->manager->getLang('btn_dependown'),
+            );
         $this->possible_errors = array(
             'bundled' => $this->manager->getLang('bundled'),
             'has_conflicts' => $this->manager->getLang('conflicts'),
@@ -53,14 +55,28 @@ class pm_search_tab extends pm_base_tab {
         }
     }
 
+    /**
+     * Search tab rendering
+     */
     function html() {
         $this->html_menu();
-        $this->render_search('extensionplugin__installsearch', $this->manager->getLang('search_plugin'),$this->term,$this->search_types);
+        ptln('<div class="panelHeader">');
+        $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo));
+	    ptln('<h3>'.$summary.'</h3>');
+        $this->html_urldownload();
+        ptln('</div><!-- panelHeader -->');
 
+        ptln('<div class="panelContent">');
+        $this->html_search($this->manager->getLang('search_extension'),$this->search_types,$this->term);
+        $this->html_extensionlist();
+        ptln('</div><!-- panelContent -->');
+    }
+
+    function html_extensionlist() {
         if(is_array($this->search_result) && count($this->search_result)) {
             $type = (!empty($this->extra['type']) && $this->extra['type'] == "Template" )? 'template': 'plugin' ;
             $list = new pm_plugins_list_lib($this->manager,'extensionplugin__searchresult',$this->actions_list,$this->possible_errors,$type);
-            $list->add_header(sprintf($this->manager->getLang('search_results'),hsc($this->term)));
+            $list->add_header('search_results',sprintf($this->manager->getLang('header_search_results'),hsc($this->term)));
             $list->start_form();
             foreach($this->search_result as $result) {
                 foreach($result as $info) {
@@ -72,13 +88,13 @@ class pm_search_tab extends pm_base_tab {
             $list->render();
         } elseif(!is_null($this->term)) {
             $no_result = new pm_plugins_list_lib($this->manager,'extensionplugin__noresult');
-            $no_result->add_header(sprintf($this->manager->getLang('not_found'),hsc($this->term)));
+            $no_result->add_header('search_results',sprintf($this->manager->getLang('not_found'),hsc($this->term)));
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
             $no_result->add_p(sprintf($this->manager->getLang('no_result'),$url,$url));
             $no_result->render();
         } else {
             $full_list = new pm_plugins_list_lib($this->manager,'extensionplugin__browselist',$this->actions_list,$this->possible_errors);
-            $full_list->add_header($this->manager->getLang('browse'));
+            $full_list->add_header('search_results',$this->manager->getLang('browse'));
             $full_list->start_form();
             foreach($this->filtered_repo as $info) {
                 $info = $this->_info_list($info['id'],'search');

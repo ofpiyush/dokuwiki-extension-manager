@@ -304,42 +304,6 @@ abstract class pm_base_single_lib {
         }
         return false;
     }
-    /**
-     * Precedence Order
-     * #1 DokuWiki version for bundled plugins and template
-     * #2 "pm_date_version" from manager.dat(lastupdate string form repository while installing)
-     * #3 "date" from *.info.txt
-     */
-    protected function get_version() {
-        $time = 0;
-        if($this->is_bundled) {
-            $version = getVersionData();
-            return  $this->manager->getLang('bundled').'<br /> <em>('.$version['date'].')</em>';
-        } elseif(!empty($this->pm_date_version)) {
-            $time = $this->pm_date_version;
-            $this->version = $this->pm_date_version;
-        } elseif(!empty($this->date)) {
-            $time = $this->date;
-            $this->version = $this->date;
-        }elseif(!empty($this->updated)) {
-            $time = $this->updated;
-        } elseif(!empty($this->installed)) {
-            $time = $this->installed;
-        }
-        if(!empty($this->lastupdate) && !empty($time) && $this->lastupdate > $time) {
-            $this->newversion = $this->lastupdate;
-        }
-        if(empty($this->version)) {
-            $this->version = $this->manager->getLang('unknown');
-            if($time !== 0) $this->version .= '<br /> <em>('.date('Y-m-d',strtotime($time)).')</em>';
-        }
-
-        return $this->version;
-    }
-
-    protected function default_name() {
-        return $this->id;
-    }
 
     /**
      * error notice when plugin/template folder doesn't match *.info.txt data (overridden in pm_search_single_lib)

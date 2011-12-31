@@ -40,15 +40,14 @@ class pm_plugins_list_lib {
         $hidden['page'] = 'extension';
         $hidden['do'] = 'admin';
         $hidden['sectok'] = getSecurityToken();
-        if($type == "template")
-            $hidden['template'] = 'template';
+        if($this->type == "template")            // TODO why ?
+            $hidden['type'] = 'template';
         $this->add_hidden($hidden);
         $this->form .= '<table class="inline">';
         $this->intable = true;
     }
     /**
      * Build single row of plugin table
-     * @param string $class    class of the table row
      * @param array  $info     a single plugin from repo cache
      * @param string $actions  html for what goes into the action column
      * @param array  $checkbox the optional parameters to be passed in for the checkbox (use-case disabling downloads)
@@ -57,27 +56,31 @@ class pm_plugins_list_lib {
         if($this->intable) {
             $this->rowadded = true;
             $this->start_row($info,$this->make_class($info));
-            $this->populate_column('checkbox',$this->make_checkbox($info,$checkbox));
-            $this->populate_column('legend',$this->make_legend($info,$class));
-            $this->populate_column('version',$this->make_version($info,$class));
+            $this->populate_column('selection',$this->make_checkbox($info,$checkbox));
+            $this->populate_column('legend',$this->make_legend($info));
+            $this->populate_column('version',$this->make_version($info));
             if($this->type == 'template') {
                 $this->populate_column('screenshot',$this->make_screenshot($info));
             }
-            $this->populate_column('actions','<p>'.$this->make_actions($info).'</p>');
+            $this->populate_column('actions',$this->make_actions($info));
             $this->end_row();
         }
     }
 
-    function add_header($header,$level=2) {
-        $this->form .='<h'.$level.'>'.hsc($header).'</h'.$level.'>';
+    function add_header($id,$header,$level=2) {
+        $this->form .='<h'.$level.' id="'.$id.'">'.hsc($header).'</h'.$level.'>';
     }
+
     function add_p($data) {
         $this->form .= '<p>'.$data.'</p>';
     }
+
     function add_hidden(array $array) {
+        $this->form .= '<div class="no">';  // TODO why use div here, compare with inc/form.php
         foreach ($array as $key => $value) {
-            $this->form .= '<div class="no"><input type="hidden" name="'.$key.'" value="'.$value.'" /></div>';
+            $this->form .= '<input type="hidden" name="'.$key.'" value="'.$value.'" />';
         }        
+        $this->form .= '</div>';
     }
 
     /**
@@ -85,19 +88,21 @@ class pm_plugins_list_lib {
      */
     function end_form($actions = array()) {
         if($this->intable) $this->form .= '</table>';
+        $cmdButtons = '';
         if($this->rowadded) {
             $acted = array_filter($this->acted);
             if(!empty($acted)) {
-            $this->form .= '<div class="checks"><span class="checkall">['.$this->manager->getLang('select_all').']</span>'.
+            $cmdButtons .= '<div class="checks"><span class="checkall">['.$this->manager->getLang('select_all').']</span>'.
                             '  <span class="checknone">['.$this->manager->getLang('select_none').']</span></div>';
             }
-            $this->form .= '<div class="bottom">';
+            $cmdButtons .= '<div class="bottom">';
             foreach($this->actions as $value => $text) {
                 if(!in_array($value,$actions) || empty($acted[$value])) continue;
-                $this->form .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
+                $cmdButtons .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }
-            $this->form .= '</div>';
+            $cmdButtons .= '</div>';
         }
+        $this->form .= $cmdButtons;
         $this->form .= '</form>';
         $this->form .= '</div>';
     }
@@ -105,22 +110,19 @@ class pm_plugins_list_lib {
         echo $this->form;
     }
     private function start_row($info,$class) {
-        $this->form .= '<tr id="extensionplugin__'.$this->manager->tab.$info->id.'" class="'.$class.'">'; 
+        $this->form .= '<tr id="extensionplugin__'.$info->repokey.'" class="'.$class.'">';
     }
     private function populate_column($class,$html) {
         $this->form .= '<td class="'.$class.'">'.$html.'</td>';
     }
     private function end_row() {
-        $this->form .= '</tr>';
+        $this->form .= '</tr>'.DOKU_LF;
     }
 
-
     /**
-     * Generate title url for a single plugin
-     * @param array $info a single plugin from repo cache
-     * @return string url or title of the plugin
+     * Generate documentation/title url for a single plugin
      */
-    function make_title($info) {
+    function make_homepagelink($info) {
         if(!empty($info->dokulink)) {
             $info->url = "http://www.dokuwiki.org/".$info->dokulink;
             return $this->make_link($info,"interwiki iw_doku");
@@ -132,7 +134,13 @@ class pm_plugins_list_lib {
             else
                 return $this->make_link($info,"urlextern");
         }
-        return hsc($info->name);
+        return '';
+    }
+
+    function make_link($info, $class) {
+        $linktext = sprintf($this->manager->getLang('homepage_link'),hsc($info->displayname));
+        $linktext = 'Documentation';
+        return '<a href="'.hsc($info->url).'" title="'.hsc($info->url).'" class ="'.$class.'">'.$linktext.'</a>';
     }
 
     function make_class($info) {
@@ -147,6 +155,7 @@ class pm_plugins_list_lib {
         if($info->highlight()) $class.= ' highlight';
         return $class;
     }
+
     function make_author($info) {
         if(!empty($info->author)) {
             if(!empty($info->email)) {
@@ -156,15 +165,28 @@ class pm_plugins_list_lib {
         }
         return "<em>".$this->manager->getLang('unknown')."</em>";
     }
-    function make_link($info, $class) {
-        return '<a href="'.hsc($info->url).'" title="'.hsc($info->url).'" class ="'.$class.'">'.hsc($info->name).'</a>';
-    }
 
-    function make_version($info,$class) {
-        $return = '<p>';
-        $return .= '<strong>'.$this->manager->getLang('version').'</strong> ';
-        if(empty($info->version)) $info->version = '<em>'.$this->manager->getLang('unknown').'</em>';
-        $return .= $info->version."</p>";
+    function make_version($info) {
+        $return .= '<dl>';
+        if ($info->is_installed) {
+            if ($info->date) {
+                $return .= '<dt>'.$this->manager->getLang('installed_version').'</dt>';
+                $return .= '<dd>';
+                $return .= hsc($info->date);
+                $return .= '</dd>';
+            } else {
+                $return .= '<dt>'.$this->manager->getLang('install_date').'</dt>';
+                $return .= '<dd>';
+                $return .= ($info->install_date ? hsc($info->install_date) : $this->manager->getLang('unknown'));
+                $return .= '</dd>';
+            }
+        } else {
+            $return .= '<dt>'.$this->manager->getLang('available_version').'</dt>';
+            $return .= '<dd>';
+            $return .= ($info->lastupdate ? hsc($info->lastupdate) : $this->manager->getLang('unknown'));
+            $return .= '</dd>';
+        }
+        $return .= '</dl>';
         return $return;
     }
 
@@ -173,42 +195,55 @@ class pm_plugins_list_lib {
         if(!empty($info->screenshoturl)) {
             if($info->screenshoturl[0] == ':')
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
-            $return .= '<a title="'.hsc($info->name).'" href="'.$info->screenshoturl.'">'.
-                    '<img alt="'.hsc($info->name).'" width="80" src="'.hsc($info->screenshoturl).'" />'.
+            $return .= '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'">'.
+                    '<img alt="'.hsc($info->displayname).'" width="80" src="'.hsc($info->screenshoturl).'" />'.
                     '</a>';
         }
         return $return;
     }
-    function make_legend($info,$class) {
-        $return = '<p class="head">'.
-                    '<label for="'.$this->id.'_'.hsc($info->id).'">'.hsc($info->id).':</label>'.
-                    $this->make_title($info).
-                  '</p>';
+
+    /**
+     * Plugin/template summary
+     */
+    function make_legend($info) {
+        global $lang;
+
+        // plugin main description
+        $return .= '<img alt="" width="48" src="lib/plugins/extension/images/plugin.png" />';
+        $return .= '<label for="'.$this->id.'_'.hsc($info->id).'">'.hsc($info->displayname).'</label>';
+        $return .= ' by '.$this->make_author($info);
+        $return .= '<p>';
         if(!empty($info->description)) {
-            $return .=  '<p>'.
-                        hsc($info->description).'</p>';
+            $return .=  hsc($info->description).' ';
         }
-        if(!empty($info->newversion)) {
-            $return .=  '<div class="notify">'.
-                            sprintf($this->manager->getLang('update_available'),hsc($info->newversion)).
-                        '</div>';
-        }
+        $return .= $this->make_homepagelink($info);
+        $return .= '</p>';
+        $return .= '<div class="clearer"></div>';
+
+        // plugin info notices
         if($info->wrong_folder()) {
-            global $lang;
-            $return .= '<div class="error">'.
-                            sprintf($lang['plugin_insterr'],hsc($info->id),hsc($info->base)).
+            $return .= '<div class="message error">'.
+                            sprintf($this->manager->getLang('wrong_folder'),hsc($info->id),hsc($info->base)).
                         '</div>';
         }
         if(!empty($info->securityissue)) {
-            $return .= '<div class="error">'.
-                            '<strong>'.$this->manager->getLang('security_issue').'</strong> '.
-                            hsc($info->securityissue).
+            $return .= '<div class="message error">'.
+                            sprintf($this->manager->getLang('security_issue'),hsc($info->securityissue)).
                         '</div>';
         }
         if(!empty($info->securitywarning)) {
-            $return .= '<div class="notify">'.
-                            '<strong>'.$this->manager->getLang('security_warning').'</strong> '.
-                            hsc($info->securitywarning).
+            $return .= '<div class="message notify">'.
+                            sprintf($this->manager->getLang('security_warning'),hsc($info->securitywarning)).
+                        '</div>';
+        }
+        if($info->update_available) {
+            $return .=  '<div class="message notify">'.
+                            sprintf($this->manager->getLang('update_available'),hsc($info->lastupdate)).
+                        '</div>';
+        }
+        if($info->url_changed()) {
+            $return .=  '<div class="message notify">'.
+                            sprintf($this->manager->getLang('url_change'),hsc($info->repo['downloadurl']),hsc($info->log['downloadurl'])).
                         '</div>';
         }
         if($this->manager->showinfo == $info->id) {
@@ -216,37 +251,59 @@ class pm_plugins_list_lib {
         }
         return $return;
     }
+
+    /**
+     * Plugin/template details
+     */
     function make_info($info) {
-        $return .= '<p>';
         $default = $this->manager->getLang('unknown');
-        $return .= '<strong>'.hsc($this->manager->getLang('author')).'</strong> '.$this->make_author($info).'<br/>';
-        $return .= '<strong>'.hsc($this->manager->getLang('source')).'</strong> '.
-                (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default).'<br/>';
-        $return .= '<strong>'.hsc($this->manager->getLang('components')).':</strong> '.
-                (!empty($info->type) ? hsc($info->type) : $default).'<br/>';
-        if($this->manager->tab != "search") {
-            $return .= '<strong>'.hsc($this->manager->getLang('installed')).'</strong> <em>'.
-                    (!empty($info->installed) ? hsc($info->installed): $default).'</em><br/>';
-            $return .= '<strong>'.hsc($this->manager->getLang('lastupdate')).'</strong> <em>'.
-                    (!empty($info->updated) ? hsc($info->updated) : $default).'</em><br/>';
-        }
+
+        $return .= '<dl class="details">';
+        $return .= '<dt>'.$this->manager->getLang('source').'</dt>';
+        $return .= '<dd>';
+        $return .= (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default);
+        $return .= '</dd>';
+
+        $return .= '<dt>'.$this->manager->getLang('installed').'</dt>';
+        $return .= '<dd>';
+        $return .= (!empty($info->install_date) ? hsc($info->install_date) : $default);
+        $return .= '</dd>';
+
+        $return .= '<dt>'.$this->manager->getLang('components').'</dt>';
+        $return .= '<dd>';
+        $return .= (!empty($info->type) ? hsc($info->type) : $default);
+        $return .= '</dd>';
+
         if(!empty($info->relations['depends']['id'])) {
-            $return .= '<strong>'.$this->manager->getLang('depends').':</strong> '.
-                hsc(implode(', ',(array)$info->relations['depends']['id'])).'<br/>';
+            $return .= '<dt>'.$this->manager->getLang('depends').'</dt>';
+            $return .= '<dd>';
+            $return .= hsc(implode(', ',(array)$info->relations['depends']['id']));
+            $return .= '</dd>';
         }
+
         if(!empty($info->relations['similar']['id'])) {
-            $return .= '<strong>'.$this->manager->getLang('similar').':</strong> '.
-                hsc(implode(', ',(array)$info->relations['similar']['id'])).'<br/>';
+            $return .= '<dt>'.$this->manager->getLang('similar').'</dt>';
+            $return .= '<dd>';
+            $return .= hsc(implode(', ',(array)$info->relations['similar']['id']));
+            $return .= '</dd>';
         }
+
         if(!empty($info->relations['conflicts']['id'])) {
-            $return .= '<strong>'.$this->manager->getLang('conflicts').':</strong> '.
-                hsc(implode(', ',(array)$info->relations['conflicts']['id'])).'<br/>';
+            $return .= '<dt>'.$this->manager->getLang('conflicts').'</dt>';
+            $return .= '<dd>';
+            $return .= hsc(implode(', ',(array)$info->relations['conflicts']['id']));
+            $return .= '</dd>';
         }
-        $return .= '<strong>'.$this->manager->getLang('tags').'</strong> '.
-                (!empty($info->tags) ? hsc(implode(', ',(array)$info->tags['tag'])) : $default).'<br/>';
-        $return .= '</p>';
+
+        if(!empty($info->tags)) {
+            $return .= '<dt>'.$this->manager->getLang('tags').'</dt>';
+            $return .= '<dd>';
+            $return .= hsc(implode(', ',(array)$info->tags['tag']));
+            $return .= '</dd>';
+        }
         return $return;
     }
+
     function make_checkbox($info) {
         $checked =" ";
         if(!$info->can_select()) {
@@ -255,8 +312,10 @@ class pm_plugins_list_lib {
         return '<input id="'.$this->id.'_'.hsc($info->id).'" type="checkbox"'.
                ' name="checked[]" value="'.$info->id.'" '.$checked.' />';
     }
+
     function make_actions($info) {
         $extra =  null;
+        // preserve search query when pressing info action
         if($this->manager->tab == "search" ) {
             if(!empty($this->manager->handler->term))
                 $extra['term'] = $this->manager->handler->term;

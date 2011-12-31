@@ -249,8 +249,21 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         }
 
         ptln('<div id="extension__manager">');
+        print $this->locale_xhtml('extension_intro');   // TODO: maybe move intro to lang.php (faster)
+        ptln('<div class="panel">');
         $this->handler->html();
+        ptln('</div><!-- panel -->');
         ptln('</div><!-- #extension__manager -->');
+    }
+
+    function getTOC() {
+        if ($this->tab != 'plugin') return array();
+
+        $toc = array();
+        $toc[] = html_mktocitem('extension_manager', $this->getLang('menu'), 1);
+        $toc[] = html_mktocitem('installed_plugins', $this->getLang('header_plugin_installed'), 2);
+        $toc[] = html_mktocitem('protected_plugins', $this->getLang('header_plugin_protected'), 2);
+        return $toc;
     }
 
     /**

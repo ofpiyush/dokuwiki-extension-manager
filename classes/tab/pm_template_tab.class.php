@@ -26,11 +26,24 @@ class pm_template_tab extends pm_base_tab {
         );
     }
 
+    /**
+     * Template tab rendering
+     */
     function html() {
         $this->html_menu();
-        $this->render_search('extensionplugin__tplsearch',$this->manager->getLang('tpl_search'),'','Template');
+        ptln('<div class="panelHeader">');
+        $summary = sprintf($this->manager->getLang('summary_template'),count($this->manager->template_list));
+	    ptln('<h3>'.$summary.'</h3>');
+        ptln('</div><!-- panelHeader -->');
+
+        ptln('<div class="panelContent">');
+        $this->html_extensionlist();
+        ptln('</div><!-- panelContent -->');
+    }
+
+    function html_extensionlist() {
         $list = new pm_plugins_list_lib($this->manager,'extensionplugin__templateslist',$this->actions_list,$this->possible_errors,'template');
-        $list->add_header($this->manager->getLang('tpl_manage'));
+        $list->add_header('installed_templates',$this->manager->getLang('header_template_installed'));
         $list->start_form();
         if(!empty($this->templates)) {
             foreach($this->templates as $status => $templates) {

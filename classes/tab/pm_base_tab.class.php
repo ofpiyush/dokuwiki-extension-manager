@@ -26,73 +26,74 @@ abstract class pm_base_tab {
         global $ID;
 
         $tabs_array = array(
-            'plugin' => rtrim($this->manager->getLang('plugin'),":"),
-            'template' =>$this->manager->getLang('template'),
-            'search' =>$this->manager->getLang('install')
+            'plugin' => $this->manager->getLang('tab_plugin'),
+            'template' =>$this->manager->getLang('tab_template'),
+            'search' =>$this->manager->getLang('tab_search')
         );
         $selected = array_key_exists($this->manager->tab,$tabs_array)? $this->manager->tab : 'plugin' ;
-        ptln('<div class="pm_menu">');
-	    ptln('    <ul>');
+
+	    ptln('<ul class="tabs">');
 	    foreach($tabs_array as $tab =>$text) {
-	        // not showing search tab when no repo is present
-	        if(empty($this->manager->repo) && $tab == 'search') continue;
-	        ptln('	    <li><a class="'.(($tab == $selected)? "selected": "notsel").'" href="'.wl($ID,array('do'=>'admin','page'=>'extension','tab'=>$tab)).'">'.$text.'</a></li>');
+            if ($tab == $selected) {
+                ptln('<li><strong>'.$text.'</strong></li>');
+            } else {
+                ptln('<li><a '.$class.' href="'.wl($ID,array('do'=>'admin','page'=>'extension','tab'=>$tab)).'">'.$text.'</a></li>');
+            }
 	    }
-	    ptln('    </ul>');
-        ptln('</div>');
+	    ptln('</ul>');
     }
 
-    protected function render_search($id,$head,$value = '',$type = null) {
-        if($this->manager->tab == 'search' || (empty($this->manager->repo) && $this->manager->tab == 'plugin')) {
-            ptln('<div class="common">');
-            ptln('  <h2>'.$this->manager->getLang('download').'</h2>');
-            $url_form = new Doku_Form('install__url');
-            $url_form->startFieldset($this->manager->getLang('download'));
-            $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('url'),'dw__url'));
-            $url_form->addHidden('page','extension');
-            $url_form->addHidden('fn','download');
-            $url_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_download') ));
-            $url_form->endFieldset();
-            $url_form->printForm();
-            ptln('</div>');
+    protected function html_urldownload() {
+
+        $url_form = new Doku_Form('extension__manager_urldownload');
+        $url_form->startFieldset($this->manager->getLang('urldownload_text'));
+        $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('urldownload_text'),'dw__url'));
+        $url_form->addHidden('page','extension');
+        $url_form->addHidden('fn','download');
+        $url_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_download') )); // change to img button
+        $url_form->endFieldset();
+        $url_form->printForm();
+    }
+
+    protected function html_search($header,$type = null,$value = '') {
+        global $lang;
+
+        ptln('<h2>'.$header.'</h2>');
+        ptln('Duis rutrum lacinia sem, eu ultrices libero fringilla eget. Nam pretium tristique ligula, sit amet consequat lacus ultricies at. Mauris at ligula mi. Vivamus interdum aliquam risus vitae rutrum. Quisque faucibus sem in nibh aliquam sagittis ultrices sapien pharetra. Ut ac felis massa, a suscipit ligula. Curabitur sed ligula lorem. Donec neque est, commodo nec interdum vitae, dictum in nisl. Integer mattis, magna fringilla rhoncus scelerisque');
+        $search_form = new Doku_Form('extension__manager_search');
+        $search_form->startFieldset($lang['btn_search']);
+        $search_form->addElement(form_makeTextField('term',hsc($value),$lang['btn_search'],'extensionplugin__searchtext'));
+        $search_form->addHidden('page','extension');
+        $search_form->addHidden('tab','search');
+        $search_form->addHidden('fn','search');
+        // TODO maybe remove this listbox type selection in favor for a search query parser?
+        $type_default = "";
+        if(!empty($this->extra['type'])) $type_default = $this->extra['type'];
+        if($type !== null) {
+            if(is_array($type) && count($type)) {
+                $search_form->addElement(form_makeMenuField('type',$type,$type_default,$this->manager->getLang('type')));
+            } else {
+                $search_form->addHidden('type',$type);
+            }
         }
-        // No point producing search when there is no repo
-        if(!empty($this->manager->repo)) {
-            global $lang;
-            ptln('<div class="common">');
-            ptln('  <h2>'.hsc($head).'</h2>');
-            $search_form = new Doku_Form($id);
-            $search_form->startFieldset($lang['btn_search']);
-            $search_form->addElement(form_makeTextField('term',hsc($value),$lang['btn_search'],'pm__sfield'));
-            $search_form->addHidden('page','extension');
-            $search_form->addHidden('tab','search');
-            $search_form->addHidden('fn','search');
-            $type_default = "";
-            if(!empty($this->extra['type'])) $type_default = $this->extra['type'];
-            if($type !== null)
-                if(is_array($type) && count($type))
-                    $search_form->addElement(form_makeMenuField('type',$type,$type_default,$this->manager->getLang('type')));
-                else
-                    $search_form->addHidden('type',$type);
-            $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
-            $search_form->endFieldset();
-            $search_form->printForm();
-            ptln('</div>');
-        }
-        $this->reload_repo_link();
+        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
+        $search_form->endFieldset();
+        $search_form->printForm();
     }
 
     function reload_repo_link() {
         global $ID;
-        $url = wl($ID,array(
-            'do'=>'admin',
-            'page'=>'extension',
-            'tab'=>$this->manager->tab,
-            'fn'=>'repo_reload',
-            'sectok'=>getSecurityToken()
-            )
-        );
-        ptln('<div class="repo_reload">'.sprintf($this->manager->getLang('repo_reload'),2,$url).'</div>');
+
+        $params = array('do'=>'admin',
+                        'page'=>'extension',
+                        'tab'=>$this->manager->tab,
+                        'fn'=>'repo_reload',
+                        'sectok'=>getSecurityToken()
+                        );
+
+        echo '<div class="repo_reload">'.sprintf($this->manager->getLang('repo_reload'),2); // TODO move hardcoded value
+        echo html_btn('reload', $ID, '', $params, 'post', '', 'Reload');
+        echo '</div>';
     }
 
     function _info_list($index,$type ="plugin") {
@@ -101,6 +102,6 @@ abstract class pm_base_tab {
 
     //sorting based on name
     protected function _sort($a,$b) {
-        return strnatcasecmp($a->name,$b->name);
+        return strnatcasecmp($a->id,$b->id);
     }
 }

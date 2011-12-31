@@ -5,79 +5,55 @@
  * @link    http://wiki.jalakai.co.uk/dokuwiki/doku.php/tutorials/adminplugin
  */
 
+/*
+ * tab support not included in "Angua", copied from _mediamanager.css
+ */
+#extension__manager .panelHeader {
+    background-color: __background_alt__;
+    margin: 0 10px 10px 0;
+    padding: 10px 10px 8px;
+    text-align: left;
+    min-height: 20px;
+    overflow: hidden;
+}
+#extension__manager .panelHeader h3 {
+    float: left;
+    font-weight: normal;
+    font-size: 1em;
+    padding: 0;
+    margin: 0 0 3px;
+}
+
+/*
+ * general layout
+ */
 #extension__manager h2 {
     margin-left: 0;
 }
 
+/*
+ * search & url download forms
+ */
+#extension__manager_urldownload fieldset {
+    border: none;
+    width: auto;
+    text-align: right;
+    padding: 0;
+}
+/*
 #extension__manager form {
     display: block;
     margin: 0;
     padding: 0;
 }
-
 #extension__manager legend {
     display: none;
 }
-
 #extension__manager fieldset {
     width: auto;
 }
-
 #extension__manager .button {
     margin: 0.3em;
-}
-
-#extension__manager p,
-#extension__manager label {
-    margin:0;
-}
-
-#extension__manager .hidden {
-    display: none;
-}
-
-#extension__manager .pm_menu {
-    margin: 0;
-    text-align: left;
-    float: left;
-    width: 100%;
-    border-bottom:1px solid __border__;
-}
-#extension__manager .pm_menu ul {
-    list-style:none;
-    padding:0 0.3em;
-    margin:1em 0 0 1em;
-}
-
-#extension__manager .pm_menu ul li {
-    list-style:none;
-}
-
-#extension__manager .pm_menu ul li a {
-    font-weight: bold;
-    display: block;
-    float:left;
-    padding: 10px;
-    padding-bottom: 5px;
-    padding-top: 5px;
-    margin-right: 2px;
-    -moz-border-radius-topright: 10px;
-    -webkit-border-top-right-radius: 10px;
-    -moz-border-radius-topleft: 10px;
-    -webkit-border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
-}
-
-#extension__manager .pm_menu .selected {
-    background-color: __background_alt__;
-    color: __text_alt__;
-}
-
-#extension__manager .pm_menu a:hover {
-    background-color: __background_alt__;
-    color: __text_alt__;
-    opacity: 0.5;
 }
 
 #extension__manager .common fieldset {
@@ -86,16 +62,13 @@
     text-align: left;
     border: none;
 }
-
 #extension__manager .common input.edit {
     width: 24em;
     margin: 0.5em;
 }
-
 #extension__manager .common input.tag {
     width: 10em;
 }
-
 #extension__manager .bottom {
     padding: 0.5em;
 }
@@ -111,17 +84,27 @@
     text-decoration: underline;
     cursor: pointer;
 }
+#extension__manager .repo_reload {
+    width: 100%;
+    text-align: right;
+    opacity: 0.7;
+}
+#extension__manager fieldset.buttons {
+    border: none;
+}
+#extension__manager fieldset.buttons .button {
+    float: left;
+}
+
+ * extensions table
+ */
 #extension__manager table {
     width: 100%;
 }
-
 #extension__manager table td {
     vertical-align: middle;
 }
-#extension__manager .checkbox {
-    width:5%;
-    text-align:center;
-}
+
 #extension__manager #extensionplugin__pluginslist .disabled,
 #extension__manager #extensionplugin__templateslist .disabled {
     background: #eee;
@@ -132,42 +115,27 @@
     background: #eee;
     color: #555;
 }
-#extension__manager .repo_reload {
-    width: 100%;
-    text-align: right;
-    opacity: 0.7;
-}
-#extension__manager .infoed {
-    background: __background__;
-    color: __text__;
-}
 
-#extension__manager .secissue {
-    background: #fcc;
-    color: #000;
-}
-#extension__manager #extensionplugin__installsearch label span {
-    display: none;
+#extension__manager .selection {
+    width: 5%;
+    text-align: center;
 }
 #extension__manager .legend {
-    vertical-align:top;
-    padding:0.2em;
-    padding-top:0.3em;
+    vertical-align: top;
+    padding: 0.3em 0.5em 0.2em 0.2em;
 }
-#extension__manager .legend .head {
-    clear: both;
-    font-weight:bold;
-    margin:0;
+#extension__manager .legend img {
+    margin: 2px;
+    float: left;
 }
 #extension__manager .legend label {
-    font-weight: normal;
+    font-size: 130%;
+    font-weight: bold;
 }
 #extension__manager .legend p {
-    margin:0 0 0 1.5em;
+    margin: 0.2em 0em 0.1em 52px;
 }
-#extension__manager .inforight {
-    font-size: 0.8em;
-}
+/* TODO .version styles */
 #extension__manager .screenshot {
     padding: 5px;
     width: 90px;
@@ -182,12 +150,42 @@
     text-align: center;
 }
 
-#extension__manager fieldset.buttons {
-    border: none;
+/*
+ * extensions table, detailed info box
+ */
+#extension__manager dl.details {
+    margin-top: 0.2em;
+    border: 1px dashed gray;
+    font-size: 85%;
+}
+#extension__manager dl.details dt {
+	clear: left;
+	float: left;
+	width: 180px;
+	margin: 0;
+    text-align: right;
+    font-weight: bold;
+	padding: 0.2em 5px 0 0;
+}
+#extension__manager dl.details dd {
+	margin-left: 180px;
+	padding: 0.2em 0 0 5px;
 }
 
-#extension__manager fieldset.buttons .button {
-    float: left;
+/*
+ * extensions table, messages
+ */
+#extension__manager div.message {
+    background-position: 0.6em 0.1em;
+    padding: 0.1em 1em 0.2em 3em;
+    margin-top: 0.2em;
+    border-radius: 1em;
+}
+#extension__manager div.notify {
+    border: 1px solid #DDDD00;
+}
+#extension__manager div.error {
+    border: 1px solid red;
 }
 
 /* end admin plugin styles */

@@ -1,25 +1,51 @@
 <?php
 /**
- * english language file
+ * Extension plugin - english language file
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Christopher Smith <chris@jalakai.co.uk>
  */
 
+// admin screen meny text
 $lang['menu'] = 'Extension Manager';
 
-// custom language strings for the plugin
+// java script language strings
 $lang['js']['confirm_del']      = 'Are you sure you want to delete this?';
-$lang['download']               = "Download and install a new plugin";
-$lang['manage']                 = "Installed Plugins";
-$lang['protected_head']         = 'Protected Plugins';
-$lang['protected_desc']         = 'These plugins are protected and can not be disabled and/or deleted from the plugin and template manager.';
+
+// language strings for the extension plugin
+$lang['tab_plugin']             = 'Plugins';
+$lang['tab_template']           = 'Templates';
+$lang['tab_search']             = 'Search & Install';
+$lang['summary_plugin']         = 'You have %d plugins installed, %d enabled';
+$lang['summary_template']       = 'You have %d templates installed';
+$lang['summary_search']         = 'DokuWiki repository contains a total of %d extensions!';
+// search box
+$lang['search_plugin']          = 'Search among plugins at %s';
+$lang['search_template']        = 'Search among templates at %s';
+$lang['search_extension']       = 'Search among both plugins and templates at %s';
+
+$lang['repo_reload']            = 'The search list auto-updates every %d days old';
+$lang['btn_reload']             = 'Reload';
+
+// download url box
+$lang['urldownload_text']       = 'Install by URL';
+
+// plugin tab headings
+$lang['header_plugin_installed']  = 'Installed Plugins';
+$lang['header_plugin_protected']  = 'Protected Plugins';
+$lang['text_plugin_protected']    = 'These plugins are protected and can not be disabled and/or deleted from the plugin and template manager.';
+
+// template tab headings
+$lang['header_template_installed']= 'Installed Templates';
+
+// search tab headings
+$lang['header_search_results']  = 'Search results for "%s"';
+$lang['not_found']              = 'The term "%s" was not found';
+$lang['no_result']              = 'Please try with a simpler query or <a href="%s" title="%s" />browse all plugins</a>';
+$lang['browse']                 = 'Browse all plugins';
+
+// extension list
 $lang['tpl_search']             = 'Search for a new Template';
-$lang['search_plugin']          = 'Search for a new Plugin or Template';
-$lang['search_results']         = 'Search results for "%s"';
-$lang['tpl_manage']             = 'Installed Templates';
-$lang['template']               = 'Template';
-$lang['install']                = 'Install';
 $lang['btn_info']               = 'Info';
 $lang['btn_update']             = 'Update';
 $lang['btn_delete']             = 'Delete';
@@ -32,22 +58,23 @@ $lang['btn_reinstall']          = 'Re-install';
 $lang['btn_disdown']            = 'Download as Disabled';
 $lang['btn_dependown']          = 'Download with dependencies';
 $lang['btn_enable']             = 'Save';
-$lang['browse']                 = 'Browse all plugins';
 $lang['select_all']             = 'Select All';
 $lang['select_none']            = 'Select None';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
 
-$lang['url']                    = 'URL';
 
+$lang['homepage_link']          = '%s documentation';
 $lang['installed']              = 'Installed:';
 $lang['lastupdate']             = 'Last updated:';
 $lang['source']                 = 'Source:';
-$lang['unknown']                = 'unknown';
-$lang['version']                = 'Version:';
-$lang['depends']                = 'Depends on';
-$lang['similar']                = 'Similar to';
-$lang['conflicts']              = 'Conflicts with';
+$lang['unknown']                = '<em>unknown</em>';
+$lang['installed_version']      = 'Installed version:';
+$lang['install_date']           = 'Installed on:';
+$lang['available_version']      = 'Available version:';
+$lang['depends']                = 'Depends on:';
+$lang['similar']                = 'Similar to:';
+$lang['conflicts']              = 'Conflicts with:';
 
 // ..ing = header message
 // ..ed = success message
@@ -60,7 +87,6 @@ $lang['reinstalled']            = 'Plugin %s re-installed successfully';
 $lang['tempreinstalled']        = 'Template %s re-installed successfully';
 $lang['updates']                = 'The following plugins have been updated successfully';
 $lang['update_none']            = 'No updates found.';
-$lang['update_available']       = '<strong>Newer Version:</strong> <em>%s</em> is available.';
 $lang['already_installed']      = 'Already installed';
 $lang['deleting']               = 'Deleting ...';
 $lang['deleted']                = 'Plugin %s deleted.';
@@ -73,8 +99,6 @@ $lang['downloads']              = 'The following plugins have been installed suc
 $lang['download_none']          = 'No plugins found, or there has been an unknown problem during downloading and installing.';
 // Notices
 $lang['autogen_info']           = "Auto generated and saved info.txt for <em>%s</em>";
-$lang['repo_reload']            = 'The search list auto-updates every %d days. But you can, <a href="%s" title ="Reload repository cache">force reload repository cache</a>';
-$lang['url_change']             = "The download URL for <strong>%s</strong> has been changed to <br /> %s <br /> from <br/> %s on the DokuWiki server. <br />The new URL will be used next time you update or re-install <strong>%s.</strong><br />Click <em>%s</em> to see the URL again next to <em>%s</em><br />To prevent accidental overwriting, make sure the directory %s is <strong>not</strong> writeable by your web server";
 //plugin types
 $lang['all']                    = 'All';
 $lang['syntax']                 = 'Syntax';
@@ -85,7 +109,7 @@ $lang['helper']                 = 'Helper';
 
 // info titles
 $lang['plugin']                 = 'Plugin';
-$lang['components']             = 'Components';
+$lang['components']             = 'Components:';
 $lang['noinfo']                 = 'This plugin returned no information, it may be invalid.';
 $lang['name']                   = 'Name:';
 $lang['date']                   = 'Date:';
@@ -100,10 +124,11 @@ $lang['update_error']           = 'There was an error while updating';
 $lang['reinstall_error']        = 'There was an error while re-installing';
 $lang['repocache_error']        = "There was an error retrieving the plugin list from the dokuwiki.org server, please force reload later";
 $lang['repoxmlformat_error']    = 'Repository XML unformatted';
-$lang['security_issue']         = 'Security Issue:';
-$lang['security_warning']       = 'Security Warning:';
-$lang['no_result']              = 'Please try with a simpler query or <a href="%s" title="%s" />browse all plugins</a>';
-$lang['not_found']              = 'The term "%s" was not found';
+$lang['security_issue']         = '<strong>Security Issue:</strong> %s';
+$lang['security_warning']       = '<strong>Security Warning:</strong> %s';
+$lang['update_available']       = '<strong>Update:</strong> New version %s is available.';
+$lang['wrong_folder']           = '<strong>Plugin installed incorrectly:</strong> Rename plugin directory "%s" to "%s".';
+$lang['url_change']             = '<strong>URL changed:</strong> Download URL has changed since last download.<br />New: %s<br />Old: %s';
 $lang['no_url']                 = 'No download URL';
 $lang['no_manager']             = 'Could not find manager.dat file';
 $lang['error']                  = 'An unknown error occurred';

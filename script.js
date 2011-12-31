@@ -1,9 +1,10 @@
 var extension_manager = { 
     constructor : function () {
-        plugin_manager.setCheckState('#extension__manager .checknone',false);
-	    plugin_manager.setCheckState('#extension__manager .checkall',true);
-	    plugin_manager.confirmDelete('#extension__manager .actions .delete');
-        plugin_manager.confirmDelete('#extension__manager .bottom .button[name="fn[delete]"]');
+        jQuery('#extensionplugin__searchtext').focus();
+        extension_manager.setCheckState('#extension__manager .checknone',false);
+	    extension_manager.setCheckState('#extension__manager .checkall',true);
+	    extension_manager.confirmDelete('#extension__manager .actions .delete');
+        extension_manager.confirmDelete('#extension__manager .bottom .button[name="fn[delete]"]');
     },
     setCheckState : function (clickSelector,bool) {
         jQuery(clickSelector).show();
