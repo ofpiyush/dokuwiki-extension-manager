@@ -274,7 +274,7 @@ class pm_plugins_list_lib {
         if(!empty($this->possible_errors)) {
             foreach($this->possible_errors as $error => $text) {
                 if($info->$error()) {
-                    if(!empty($info->$error)) {
+                    if(is_array($info->$error)) {
                         $return .= "<br />(<em>".$text." ".hsc(implode(', ',$info->$error))."</em>)";
                     } else {
                         $return .= "<br />(<em>".$text."</em>)";
