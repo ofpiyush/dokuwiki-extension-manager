@@ -1,8 +1,11 @@
 <?php
 /**
  * Base action class, common functions for all child actions
- * @author Piyush Mishra <me@piyushmishra.com>
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
  */
+
 abstract class pm_base_action {
     
     final function __construct(admin_plugin_extension $manager) {

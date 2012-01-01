@@ -1,4 +1,11 @@
 <?php
+/**
+ * Info action class
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_info_action extends pm_base_action {
     function act() {
         if(!empty($this->manager->plugin)) {

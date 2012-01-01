@@ -1,4 +1,11 @@
 <?php
+/**
+ * Download as disabled action class
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_download_disabled_action extends pm_download_action {
 
     function down() {

@@ -1,6 +1,9 @@
 <?php
 /**
- * Manage class (Base class with most common functions for more than 1 tabs)
+ * Base render class
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
  */
 
 abstract class pm_base_tab {

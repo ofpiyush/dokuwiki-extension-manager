@@ -1,4 +1,11 @@
 <?php
+/**
+ * Update action class
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_update_action extends pm_download_action {
     var $overwrite = true;
     function down() {

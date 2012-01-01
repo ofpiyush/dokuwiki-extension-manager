@@ -1,4 +1,11 @@
 <?php
+/**
+ * Re-install action class
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_reinstall_action extends pm_update_action {
 
     function successtemp($base) {

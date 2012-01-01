@@ -1,4 +1,11 @@
 <?php
+/**
+ * Plugin tab render class
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_plugin_tab extends pm_base_tab {
     var $plugins;
     var $protected_plugins;
