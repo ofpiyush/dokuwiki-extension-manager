@@ -22,9 +22,10 @@ class pm_search_tab extends pm_base_tab {
             'download_dependency' => $this->manager->getLang('btn_dependown'),
             );
         $this->possible_errors = array(
-            'bundled' => $this->manager->getLang('bundled'),
+            'bundled' => $this->manager->getLang('bundled_source'),
             'has_conflicts' => $this->manager->getLang('conflicts'),
             'missing_dependency' => $this->manager->getLang('depends'),
+            'gitmanaged' => $this->manager->getLang('gitmanaged'),
             'missing_dlurl' => $this->manager->getLang('no_url'),
             'installed' =>$this->manager->getLang('already_installed'),
             'not_writable' => $this->manager->getLang('not_writable'),

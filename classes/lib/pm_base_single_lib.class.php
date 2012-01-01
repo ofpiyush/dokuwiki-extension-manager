@@ -302,6 +302,10 @@ abstract class pm_base_single_lib {
         return $this->is_installed;
     }
 
+    function gitmanaged() {
+        return $this->is_gitmanaged;
+    }
+
     function has_conflicts() {
         if(!empty($this->relations['conflicts']['id'])) {
             $key = ($this->is_template) ? 'template' : 'plugin';

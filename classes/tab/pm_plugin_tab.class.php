@@ -15,7 +15,8 @@ class pm_plugin_tab extends pm_base_tab {
         $this->possible_errors = array(
             'missing_dependency' => $this->manager->getLang('depends'),
             'not_writable' => $this->manager->getLang('not_writable'),
-            'bundled' => $this->manager->getLang('bundled'),
+            'bundled' => $this->manager->getLang('bundled_source'),
+            'gitmanaged' => $this->manager->getLang('gitmanaged'),
             'missing_dlurl' => $this->manager->getLang('no_url'),
         );
         $list = array_map(array($this,'_info_list'),$this->manager->plugin_list);

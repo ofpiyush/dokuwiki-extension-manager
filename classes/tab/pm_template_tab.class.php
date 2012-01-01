@@ -21,7 +21,8 @@ class pm_template_tab extends pm_base_tab {
         $this->possible_errors = array(
             'missing_dependency' => $this->manager->getLang('depends'),
             'not_writable' => $this->manager->getLang('not_writable'),
-            'bundled' => $this->manager->getLang('bundled'),
+            'bundled' => $this->manager->getLang('bundled_source'),
+            'gitmanaged' => $this->manager->getLang('gitmanaged'),
             'missing_dlurl' => $this->manager->getLang('no_url'),
         );
     }
