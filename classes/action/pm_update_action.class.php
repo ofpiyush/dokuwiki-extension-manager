@@ -10,7 +10,7 @@ class pm_update_action extends pm_download_action {
     var $overwrite = true;
     function down() {
         $base_path = ($this->manager->tab == "template")? DOKU_TPLLIB : DOKU_PLUGIN;
-        foreach($this->plugin as $plugin) {
+        foreach($this->selection as $plugin) {
             if(in_array($plugin,$this->manager->_bundled)) continue;
             $this->current = null;
             $this->manager->error = null;

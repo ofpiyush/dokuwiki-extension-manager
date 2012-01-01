@@ -12,8 +12,8 @@ class pm_delete_action extends pm_base_action {
 
     function act() {
         if(in_array($this->manager->tab,array('plugin','template'))) {
-            $this->result[$this->manager->tab.'deleted']      = array_filter($this->plugin,array($this,'delete'));
-            $this->result[$this->manager->tab.'notdeleted']   = array_diff($this->plugin,$this->result[$this->manager->tab.'deleted']);
+            $this->result[$this->manager->tab.'deleted']      = array_filter($this->selection,array($this,'delete'));
+            $this->result[$this->manager->tab.'notdeleted']   = array_diff($this->selection,$this->result[$this->manager->tab.'deleted']);
             $this->show_results();
             $this->refresh($this->manager->tab);
             $list = $this->manager->tab.'_list';

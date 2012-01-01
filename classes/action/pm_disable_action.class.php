@@ -12,8 +12,8 @@ class pm_disable_action extends pm_base_action {
 
     function act() {
         if($this->manager->tab == 'plugin') {
-            $this->result['disabled']      = array_filter($this->plugin,array($this,'disable'));
-            $this->result['notdisabled']   = array_diff_key($this->plugin,$this->result['disabled']);
+            $this->result['disabled']      = array_filter($this->selection,array($this,'disable'));
+            $this->result['notdisabled']   = array_diff_key($this->selection,$this->result['disabled']);
             $this->show_results();
         }
         $this->refresh($this->manager->tab);

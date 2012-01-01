@@ -9,7 +9,7 @@
 abstract class pm_base_action {
     
     final function __construct(admin_plugin_extension $manager) {
-        $this->plugin = $manager->plugin;
+        $this->selection = $manager->selection;
         $this->manager = $manager;
         $this->act();
     }

@@ -31,8 +31,9 @@ class pm_download_action extends pm_base_action {
     function down() {
         if(array_key_exists('url',$_REQUEST)) {
             $this->url_download();
-        }elseif(is_array($this->plugin) && count($this->plugin)) {
-            foreach ($this->plugin as $plugin) {
+
+        } elseif (is_array($this->selection) && count($this->selection)) {
+            foreach ($this->selection as $plugin) {
                 if(array_key_exists($plugin,$this->manager->repo)) {
                     $info = $this->manager->info->get($plugin,'search');
                     if($info->can_download()) {

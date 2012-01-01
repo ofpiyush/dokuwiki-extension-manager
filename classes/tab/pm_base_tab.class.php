@@ -10,12 +10,10 @@ abstract class pm_base_tab {
 
     var $manager = NULL;
     var $lang = array();
-    var $plugin = '';
     var $downloaded = array();
 
     function __construct(admin_plugin_extension $manager) {
         $this->manager = $manager;
-        $this->plugin = $manager->plugin;
         $this->check_writable();
     }
 

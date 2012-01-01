@@ -10,9 +10,9 @@ class pm_enable_action extends pm_base_action {
 
     var $result = array();
     function act() {
-        if(is_array($this->plugin) && count($this->plugin)) {
-            $this->result['enabled']      = array_filter($this->plugin,array($this,'enable'));
-            $this->result['notenabled']   = array_diff_key($this->plugin,$this->result['enabled']);
+        if(is_array($this->selection) && count($this->selection)) {
+            $this->result['enabled']      = array_filter($this->selection,array($this,'enable'));
+            $this->result['notenabled']   = array_diff_key($this->selection,$this->result['enabled']);
             $this->show_results();
         }
         $this->refresh($this->manager->tab);

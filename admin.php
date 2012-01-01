@@ -30,9 +30,9 @@ if(!defined('DOKU_TPLLIB')) define('DOKU_TPLLIB',DOKU_INC.'lib/tpl/');
 class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
     /**
-     * Array of plugins sent by POST method
+     * Array of extensions sent by POST method
      */
-    var $plugin = NULL;
+    var $selection = NULL;
 
     /**
      * The action to be carried out
@@ -199,7 +199,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
             $this->cmd = $fn;
         }
         if(!empty($_REQUEST['checked'])) {
-            $this->plugin = $_REQUEST['checked'];
+            $this->selection = $_REQUEST['checked'];
         }
         // verify $_REQUEST vars and check for security token
         if ($this->valid_request()) {
@@ -228,8 +228,8 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         if(empty($this->cmd)) return false;
         if(in_array($this->cmd, $this->commands) && checkSecurityToken()) return true;
         if(in_array($this->cmd, $this->functions) && checkSecurityToken()) {
-            if(count(array_intersect($this->plugin, $this->plugin_list)) == count($this->plugin)) return true;
-            if(count(array_intersect($this->plugin, $this->template_list)) == count($this->plugin)) return true;
+            if(count(array_intersect($this->selection, $this->plugin_list)) == count($this->selection)) return true;
+            if(count(array_intersect($this->selection, $this->template_list)) == count($this->selection)) return true;
             if($this->cmd == 'info' && $this->tab == "search") return true;
         }
         return false;
