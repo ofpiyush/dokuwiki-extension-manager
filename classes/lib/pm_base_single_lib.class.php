@@ -111,7 +111,7 @@ abstract class pm_base_single_lib {
 
         if($is_template) {
             $this->is_bundled = ($id == 'default'); // TODO include in bundled array?
-            $this->is_protected = ($id == 'default'); // TODO already protected elsewhere?
+            // no protected templates
         } else {
             $this->is_bundled = in_array($id,$manager->_bundled);
             $this->is_protected = in_array($id,$manager->protected);
