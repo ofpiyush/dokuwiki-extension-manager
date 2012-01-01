@@ -195,6 +195,22 @@ abstract class pm_base_single_lib {
     }
 
     /**
+     * no disk actions allowed on protected plugins
+     */
+    function get_no_fileactions_allowed() {
+        $this->no_fileactions_allowed = true;
+
+        if(!$this->is_writable) return true;
+        if($this->is_bundled) return true;
+        if($this->is_protected) return true;
+        if($this->is_gitmanaged) return true;
+        if (!$this->manager->getConf('allow_download')) return true;
+
+        $this->no_fileactions_allowed = false;
+        return false;
+    }
+
+    /**
      * capabilities, used in combination with $actions_list
      */
     abstract function can_select();
@@ -226,31 +242,20 @@ abstract class pm_base_single_lib {
     function can_update() {
         if(!$this->update_available) return false;
         if(empty($this->downloadurl)) return false;
-        if($this->no_fileactions_allowed()) return false;
+        if($this->no_fileactions_allowed) return false;
         return true;
     }
 
     function can_delete() {
-        if($this->no_fileactions_allowed()) return false;
+        if($this->no_fileactions_allowed) return false;
         return true;
     }
 
     function can_reinstall() {
         if($this->update_available) return false;
         if(empty($this->downloadurl)) return false;
-        if($this->no_fileactions_allowed()) return false;
+        if($this->no_fileactions_allowed) return false;
         return true;
-    }
-
-    /**
-     * no disk actions allowed on protected plugins
-     */
-    protected function no_fileactions_allowed() {
-        if(!$this->is_writable) return true;
-        if($this->is_bundled) return true;
-        if($this->is_protected) return true;
-        if($this->is_gitmanaged) return true;
-        return false;
     }
 
     /**

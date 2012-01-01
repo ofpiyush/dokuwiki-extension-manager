@@ -13,6 +13,7 @@ $lang['menu'] = 'Extension Manager';
 $lang['js']['confirm_del']      = 'Are you sure you want to delete this?';
 
 // language strings for the extension plugin
+$lang['download_disabled']      = 'Download disabled in configuration settings';
 $lang['tab_plugin']             = 'Plugins';
 $lang['tab_template']           = 'Templates';
 $lang['tab_search']             = 'Search & Install';

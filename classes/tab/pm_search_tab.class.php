@@ -63,6 +63,7 @@ class pm_search_tab extends pm_base_tab {
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo));
 	    ptln('<h3>'.$summary.'</h3>');
+        $this->html_download_disabled();
         $this->html_urldownload();
         ptln('</div><!-- panelHeader -->');
 

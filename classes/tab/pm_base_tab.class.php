@@ -43,7 +43,16 @@ abstract class pm_base_tab {
 	    ptln('</ul>');
     }
 
+    protected function html_download_disabled() {
+        if ($this->manager->getConf('allow_download')) return;
+
+        echo '<div class="message notify">';
+        echo $this->manager->getLang('download_disabled');
+        echo '</div>';
+    }
+
     protected function html_urldownload() {
+        if (!$this->manager->getConf('allow_download')) return;
 
         $url_form = new Doku_Form('extension__manager_urldownload');
         $url_form->startFieldset($this->manager->getLang('urldownload_text'));

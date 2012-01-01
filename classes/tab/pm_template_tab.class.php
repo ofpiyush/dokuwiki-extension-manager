@@ -34,6 +34,7 @@ class pm_template_tab extends pm_base_tab {
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_template'),count($this->manager->template_list));
 	    ptln('<h3>'.$summary.'</h3>');
+        $this->html_download_disabled();
         ptln('</div><!-- panelHeader -->');
 
         ptln('<div class="panelContent">');
