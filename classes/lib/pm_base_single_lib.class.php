@@ -169,11 +169,15 @@ abstract class pm_base_single_lib {
         return $this->description;
     }
 
+    /**
+     * check if update available by comparing repository (lastupdate) with local info (date/install_date)
+     */
     function get_update_available() {
         $this->update_available = false;
         if (!$this->is_installed) return false;
         if (empty($this->lastupdate)) return false;
         if ($this->lastupdate <= $this->date) return false;
+        if ($this->lastupdate <= $this->install_date) return false;
 
         $this->update_available = true;
         return true;
@@ -186,7 +190,7 @@ abstract class pm_base_single_lib {
         } elseif(!empty($this->installed)) {
             $time = $this->installed;
         }
-        $this->install_date = $time;
+        $this->install_date = date('Y-m-d',strtotime($time));
         return $this->install_date;
     }
 

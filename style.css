@@ -135,7 +135,16 @@
 #extension__manager .legend p {
     margin: 0.2em 0em 0.1em 52px;
 }
-/* TODO .version styles */
+#extension__manager .version {
+    width: 12%;
+}
+#extension__manager .version dt {
+    font-size: 85%;
+    padding: 0.2em;
+}
+#extension__manager .version dd {
+    text-align: center;
+}
 #extension__manager .screenshot {
     padding: 5px;
     width: 90px;

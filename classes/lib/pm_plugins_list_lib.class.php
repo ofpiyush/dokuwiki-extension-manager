@@ -180,7 +180,8 @@ class pm_plugins_list_lib {
                 $return .= ($info->install_date ? hsc($info->install_date) : $this->manager->getLang('unknown'));
                 $return .= '</dd>';
             }
-        } else {
+        }
+        if (!$info->is_installed || $info->update_available) {
             $return .= '<dt>'.$this->manager->getLang('available_version').'</dt>';
             $return .= '<dd>';
             $return .= ($info->lastupdate ? hsc($info->lastupdate) : $this->manager->getLang('unknown'));

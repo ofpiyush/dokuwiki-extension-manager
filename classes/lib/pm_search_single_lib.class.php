@@ -34,10 +34,6 @@ class pm_search_single_lib extends pm_base_single_lib {
         return $this->missing_dependency();
     }
 
-    protected function get_version() {
-        return $this->repo['lastupdate'];
-    }
-
     function wrong_folder() {
         return false;
     }
