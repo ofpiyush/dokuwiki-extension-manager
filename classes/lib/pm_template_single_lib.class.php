@@ -23,4 +23,9 @@ class pm_template_single_lib extends pm_base_single_lib {
     function can_select() {
         return (!$this->is_protected);
     }
+
+    function can_enable() {
+        return (!$this->is_protected && !$this->is_enabled);
+    }
+
 }

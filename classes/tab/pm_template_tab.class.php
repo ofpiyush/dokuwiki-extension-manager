@@ -14,6 +14,7 @@ class pm_template_tab extends pm_base_tab {
         $this->templates['disabled'] = array_map(array($this,'_info_list'),$disabled); 
         usort($this->templates['disabled'],array($this,'_sort'));
         $this->actions_list = array(
+            'enable'=>$this->manager->getLang('enable'),
             'delete'=>$this->manager->getLang('btn_delete'),
             'update'=>$this->manager->getLang('btn_update'),
             'reinstall' =>$this->manager->getLang('btn_reinstall'),
