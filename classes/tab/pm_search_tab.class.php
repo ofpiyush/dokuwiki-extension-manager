@@ -130,7 +130,8 @@ class pm_search_tab extends pm_base_tab {
      * TODO assign weights to matches, like id matches highest in ordering
      */
     protected function lookup() {
-        foreach ($this->filtered_repo as $single) {
+        $repo = array_merge($this->filtered_repo, $this->local_extensions());
+        foreach ($repo as $single) {
             $matches = array_filter($single,array($this,'search'));
             if(count($matches)) {
                 $count = count(array_intersect_key($this->filters,$matches));
@@ -146,6 +147,24 @@ class pm_search_tab extends pm_base_tab {
         return krsort($this->search_result);
     }
 
+    /**
+     * Create dummy repo entries for local extensions that doesn't exist in repo
+     */
+    function local_extensions() {
+        $retval = array();
+        $templates = array_map(create_function('$id','return "template:".$id;') ,$this->manager->template_list);
+        $list = array_map(array($this,'_info_list'),array_merge($this->manager->plugin_list,$templates));
+        foreach ($list as $info) {
+            if (!$info->repo) {
+                $retval[] = array('id' => $info->repokey,
+                                  'name' => $info->name,
+                                  'author' => $info->author,
+                                  'description' => $info->desc
+                                  );
+            }
+        }
+        return $retval;
+    }
     /**
      * Search for the term in every plugin and return matches.
      */
