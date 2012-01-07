@@ -63,6 +63,7 @@ $lang['select_all']             = 'Select All';
 $lang['select_none']            = 'Select None';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
+$lang['manual_install']         = 'manual install';
 
 $lang['homepage_link']          = '%s documentation';
 $lang['installed']              = 'Installed:';

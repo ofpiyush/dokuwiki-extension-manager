@@ -182,13 +182,13 @@ abstract class pm_base_single_lib {
     }
 
     function get_install_date() {
-        $time = '';
+        $time = null;
         if(!empty($this->updated)) {
             $time = $this->updated;
         } elseif(!empty($this->installed)) {
             $time = $this->installed;
         }
-        $this->install_date = date('Y-m-d',strtotime($time));
+        $this->install_date = ($time ? date('Y-m-d',strtotime($time)) : $this->manager->getLang('manual_install'));
         return $this->install_date;
     }
 
