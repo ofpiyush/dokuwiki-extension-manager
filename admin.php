@@ -209,9 +209,10 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         if(empty($this->cmd)) return false;
         if(in_array($this->cmd, $this->commands) && checkSecurityToken()) return true;
         if(in_array($this->cmd, $this->functions) && checkSecurityToken()) {
-            if(count(array_intersect($this->selection, $this->plugin_list)) == count($this->selection)) return true;
-            if(count(array_intersect($this->selection, $this->template_list)) == count($this->selection)) return true;
             if($this->cmd == 'info' && $this->tab == "search") return true;
+            $local_extensions = array_map(create_function('$a','return "template:".$a;'), $this->template_list);
+            $local_extensions = array_merge($local_extensions, $this->plugin_list);
+            if(count(array_intersect($this->selection, $local_extensions)) == count($this->selection)) return true;
         }
         return false;
     }
