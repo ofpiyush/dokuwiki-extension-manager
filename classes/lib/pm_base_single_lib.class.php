@@ -9,12 +9,10 @@
 
 /**
  * For installed plugins only (can be used while downloading too)
- * @property string $version Version date string from various sources 
  * @property string $name Name of the plugin/template defaults to "id"
- * @property string $newversion if new version is available, its value
+ * @property string $update_available if new version is available
  * @property string $url for more info
  * @property string $screenshoturl Screenshoturl (from repo) Only applicable if $is_template = true;
- * @property string $repoid Repo id (from previous install or "base" match from *.info.txt)
  * @property string $securityissue from repo
  * @property string $securitywarning fromrepo
  * @property array $depends Dependencies
@@ -27,6 +25,7 @@
  * @property string $downloadurl URL for download
  * @property string $base "base" from *.info.txt defaults to "id"
  */
+
 
 abstract class pm_base_single_lib {
     /**

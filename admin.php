@@ -14,14 +14,8 @@ if(!defined('DOKU_TPLLIB')) define('DOKU_TPLLIB',DOKU_INC.'lib/tpl/');
 //error_reporting(E_STRICT);
 
 // todo
-// - maintain a history of file modified
 // - allow a plugin to contain extras to be copied to the current template (extra/tpl/)
 // - to images (lib/images/) [ not needed, should go in lib/plugin/images/ ]
-
-//--------------------------[ GLOBALS ]------------------------------------------------
-// note: probably should be dokuwiki wide globals, where they can be accessed by pluginutils.php
-// global $plugin_types;
-// $plugin_types = array('syntax', 'admin');
 
 /**
  * All DokuWiki plugins to extend the admin function
@@ -125,17 +119,6 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      */
     var $templatefolder_writable = false;
 
-    /**
-     * Saves return value pm_*_tab::process() (not used by the plugin manager currently)
-     */
-    var $msg = '';
-
-    /**
-     * Saves error sent from pm_*_action
-     * used to display error messages
-     */
-    var $error = '';
-
     function __construct() {
         spl_autoload_register(array($this,'autoload'));
 
@@ -167,8 +150,6 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         $this->_get_template_list();
         if(isset($_REQUEST['info']))
             $this->showinfo = $_REQUEST['info'];
-        // enable direct access to language strings if used anywhere
-        $this->setupLocale();
         //Setup the selected tab
         if(!empty($_REQUEST['tab']) && in_array($_REQUEST['tab'],$this->nav_tabs)) {
             $this->tab = $_REQUEST['tab'];
@@ -183,7 +164,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         $this->setup_action();
         $this->handler = $this->instantiate($this->tab,'tab');
         if(is_null($this->handler)) $this->handler = new pm_plugin_tab($this);
-        $this->msg = $this->handler->process();
+        $this->handler->process();
     }
 
     /**
@@ -239,11 +220,9 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * output appropriate html
      */
     function html() {
-        // enable direct access to language strings
-        $this->setupLocale();
-        $this->_get_plugin_list();
 
         if (is_null($this->handler)) {
+            $this->_get_plugin_list();
             $this->handler = new pm_plugin_tab($this);
             $this->handler->process();
         }
