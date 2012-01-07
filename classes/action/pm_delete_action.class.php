@@ -11,13 +11,8 @@ class pm_delete_action extends pm_base_action {
     var $result = array();
 
     function act() {
-        if(in_array($this->manager->tab,array('plugin','template'))) {
-            $this->result[$this->manager->tab.'deleted']      = array_filter($this->selection,array($this,'delete'));
-            $this->result[$this->manager->tab.'notdeleted']   = array_diff($this->selection,$this->result[$this->manager->tab.'deleted']);
-            $this->show_results();
-            $this->refresh($this->manager->tab);
-            $list = $this->manager->tab.'_list';
-            $this->manager->$list = array_diff($this->manager->$list,$this->result[$this->manager->tab.'deleted']);
+        if(is_array($this->selection)) {
+            array_walk($this->selection,array($this,'delete'));
         }
     }
 
@@ -26,32 +21,22 @@ class pm_delete_action extends pm_base_action {
      * @param string name of the plugin or template directory to delete
      * @return bool if the directory delete was successful or not
      */
-    function delete($plugin) {
-        $info = $this->manager->info->get($plugin,$this->manager->tab);
-        if($info->is_template)
-            $path = DOKU_TPLLIB.$plugin;
-        else
-            $path = DOKU_PLUGIN.plugin_directory($plugin);
+    function delete($repokey) {
+        $info = $this->manager->info->get($repokey);
         if(!$info->can_delete()) return false;
-        return $this->dir_delete($path);
+
+        $path = $info->install_directory();
+        $path = substr($path, 0, -1); // remove trailing slash
+        if ($this->dir_delete($path)) {
+            $list = $this->manager->tab.'_list';
+            $this->manager->$list = array_diff($this->manager->$list,array($info->id));
+            $this->report(1,$info,'deleted');
+            return true;
+
+        } else {
+            $this->report(1,$info,'notdeleted');
+            return false;
+        }
     }
 
-    /**
-     * say_<type><action taken> functions
-     * parameters plugin name and unused key from array_walk
-     */
-    function say_plugindeleted($plugin,$key) {
-        msg(sprintf($this->manager->getLang('deleted'),$plugin),1);
-    }
-
-    function say_pluginnotdeleted($plugin,$key) {
-        msg(sprintf($this->manager->getLang('error_delete'),$plugin),-1);
-    }
-    function say_templatedeleted($plugin,$key) {
-        msg(sprintf($this->manager->getLang('template_deleted'),$plugin),1);
-    }
-
-    function say_templatenotdeleted($plugin,$key) {
-        msg(sprintf($this->manager->getLang('template_error_delete'),$plugin),-1);
-    }
 }

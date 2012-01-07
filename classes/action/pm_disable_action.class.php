@@ -11,25 +11,25 @@ class pm_disable_action extends pm_base_action {
     var $result = array();
 
     function act() {
-        if($this->manager->tab == 'plugin') {
-            $this->result['disabled']      = array_filter($this->selection,array($this,'disable'));
-            $this->result['notdisabled']   = array_diff_key($this->selection,$this->result['disabled']);
-            $this->show_results();
+        if(is_array($this->selection)) {
+            array_walk($this->selection,array($this,'disable'));
         }
         $this->refresh($this->manager->tab);
     }
 
-    function disable($plugin) {
-        $info = $this->manager->info->get($plugin,$this->manager->tab);
+    function disable($repokey) {
+        $info = $this->manager->info->get($repokey);
         if(!$info->can_disable()) return false;
-        return plugin_disable($plugin);
-    }
-    function say_disabled($plugin,$key) {
-        msg(sprintf($this->manager->getLang('disabled'),$plugin),1);
+        if($info->is_template) return false;
+
+        if (plugin_disable($info->id)) {
+            $this->report(1,$info,'disabled');
+            return true;
+        } else {
+            $this->report(-1,$info,'notdisabled');
+            return false;
+        }
     }
 
-    function say_notdisabled($plugin,$key) {
-        msg(sprintf($this->manager->getLang('notdisabled'),$plugin),-1);
-    }
 }
 

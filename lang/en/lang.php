@@ -64,7 +64,6 @@ $lang['select_none']            = 'Select None';
 //$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
 $lang['bundled']                = 'bundled';
 
-
 $lang['homepage_link']          = '%s documentation';
 $lang['installed']              = 'Installed:';
 $lang['lastupdate']             = 'Last updated:';
@@ -77,29 +76,41 @@ $lang['depends']                = 'Depends on:';
 $lang['similar']                = 'Similar to:';
 $lang['conflicts']              = 'Conflicts with:';
 
-// ..ing = header message
-// ..ed = success message
+$lang['msg_tpl_deleted']        = 'Template %s deleted';
+$lang['msg_tpl_notdeleted']     = 'Template %s could not be deleted';
+$lang['msg_deleted']            = 'Plugin %s deleted';
+$lang['msg_notdeleted']         = 'Plugin %s could not be deleted';
 
+$lang['msg_tpl_enabled']        = 'Template %s enabled';
+$lang['msg_tpl_notenabled']     = 'Template %s could not be enabled, check file permissions';
+$lang['msg_enabled']            = 'Plugin %s enabled';
+$lang['msg_notenabled']         = 'Plugin %s could not be enabled, check file permissions';
 
-$lang['updating']               = 'Updating ...';
-$lang['updated']                = 'Plugin %s updated successfully';
-$lang['tempupdated']            = 'Template %s successfully updated';
-$lang['reinstalled']            = 'Plugin %s re-installed successfully';
-$lang['tempreinstalled']        = 'Template %s re-installed successfully';
-$lang['updates']                = 'The following plugins have been updated successfully';
-$lang['update_none']            = 'No updates found.';
-$lang['already_installed']      = 'Already installed';
-$lang['deleting']               = 'Deleting ...';
-$lang['deleted']                = 'Plugin %s deleted.';
-$lang['template_deleted']       = 'Template %s deleted';
+$lang['msg_disabled']           = 'Plugin %s disabled';
+$lang['msg_notdisabled']        = 'Plugin %s could not be disabled, check file permissions';
 
-$lang['downloading']            = 'Downloading ...';
-$lang['downloaded']             = 'Plugin %s installed successfully';
-$lang['tempdownloaded']         = "Template %s installed successfully";
-$lang['downloads']              = 'The following plugins have been installed successfully:';
-$lang['download_none']          = 'No plugins found, or there has been an unknown problem during downloading and installing.';
-// Notices
-$lang['autogen_info']           = "Auto generated and saved info.txt for <em>%s</em>";
+$lang['msg_url_failed']         = 'URL [%s] could not be downloaded.<br /> %s';
+$lang['msg_download_failed']    = 'Plugin %s could not be downloaded.<br /> %s';
+$lang['msg_download_success']   = 'Plugin %s installed successfully';
+$lang['msg_tpl_download_failed']  = 'Template %s could not be downloaded.<br /> %s';
+$lang['msg_tpl_download_success'] = 'Template %s installed successfully';
+$lang['msg_download_pkg_success']     = '%s extension package successfully installed (%s)';
+$lang['msg_tpl_download_pkg_success'] = '%s extension package successfully installed (%s)';
+
+$lang['msg_update_success']     = 'Plugin %s successfully updated';
+$lang['msg_update_failed']      = 'Update of plugin %s failed.<br /> %s';
+$lang['msg_tpl_update_success'] = 'Template %s successfully updated';
+$lang['msg_tpl_update_failed']  = 'Update of template %s failed.<br /> %s';
+$lang['msg_update_pkg_success']     = '%s extension package successfully updated (%s)';
+$lang['msg_tpl_update_pkg_success'] = '%s extension package successfully updated (%s)';
+
+$lang['msg_reinstall_success']  = 'Plugin %s re-installed successfully';
+$lang['msg_reinstall_failed']   = 'Failed to re-install plugin %s.<br /> %s';
+$lang['msg_tpl_reinstall_success'] = 'Template %s re-installed successfully';
+$lang['msg_tpl_reinstall_failed']  = 'Failed to re-install template %s.<br /> %s';
+$lang['msg_reinstall_pkg_success']     = '%s extension package successfully reinstalled (%s)';
+$lang['msg_tpl_reinstall_pkg_success'] = '%s extension package successfully reinstalled (%s)';
+
 //plugin types
 $lang['all']                    = 'All';
 $lang['syntax']                 = 'Syntax';
@@ -120,9 +131,8 @@ $lang['author']                 = 'Author:';
 $lang['www']                    = 'Web:';
 $lang['tags']                   = 'Tags:';
 // error messages
+$lang['already_installed']      = 'Already installed';
 $lang['not_writable']           = 'DokuWiki can not write to the folder';
-$lang['update_error']           = 'There was an error while updating';
-$lang['reinstall_error']        = 'There was an error while re-installing';
 $lang['repocache_error']        = "There was an error retrieving the plugin list from the dokuwiki.org server, please force reload later";
 $lang['repoxmlformat_error']    = 'Repository XML unformatted';
 $lang['security_issue']         = '<strong>Security Issue:</strong> %s';
@@ -134,19 +144,12 @@ $lang['gitmanaged']             = 'Git source control';
 $lang['bundled_source']         = 'Bundled with DokuWiki source';
 $lang['no_url']                 = 'No download URL';
 $lang['no_manager']             = 'Could not find manager.dat file';
-$lang['error']                  = 'An unknown error occurred';
-$lang['error_download']         = 'Unable to download the plugin file: %s';
-$lang['error_badurl']           = 'Suspect bad url - unable to determine file name from the url';
+
+$lang['error_badurl']           = 'URL ends with slash - unable to determine file name from the url';
 $lang['error_dircreate']        = 'Unable to create temporary folder to receive download';
-$lang['error_decompress']       = 'The plugin manager was unable to decompress the downloaded file This maybe as a result of a bad download, in which case you should try again; or the compression format may be unknown, in which case you will need to download and install the plugin manually';
-$lang['error_copy']             = 'There was a file copy error while attempting to install files for plugin <em>%s</em>: the disk could be full or file access permissions may be incorrect. This may have resulted in a partially installed plugin and leave your wiki installation unstable';
-$lang['error_delete']           = 'There was an error while attempting to delete plugin <em>%s</em> The most probably cause is insufficient file or directory access permissions';
-$lang['template_error_delete']  = 'Template %s could not be deleted';
-$lang['enabled']                = 'Plugin %s enabled';
-$lang['notenabled']             = 'Plugin %s could not be enabled, check file permissions';
-$lang['disabled']               = 'Plugin %s disabled';
-$lang['notdownloaded']          = "<em>%s</em> could not be downloaded";
-$lang['notdisabled']            = 'Plugin %s could not be disabled, check file permissions';
-$lang['packageinstalled']       = 'Plugin package (%d plugin(s): %s) successfully installed';
+$lang['error_download']         = 'Unable to download the file: %s';
+$lang['error_decompress']       = 'Unable to decompress the downloaded file. This maybe as a result of a bad download, in which case you should try again; or the compression format may be unknown, in which case you will need to download and install manually';
+$lang['error_findfolder']       = 'Unable to identify extension directory, you need to download and install manually';
+$lang['error_copy']             = 'There was a file copy error while attempting to install files for directory <em>%s</em>: the disk could be full or file access permissions may be incorrect. This may have resulted in a partially installed plugin and leave your wiki installation unstable';
 
 //Setup VIM: ex: et ts=4 :

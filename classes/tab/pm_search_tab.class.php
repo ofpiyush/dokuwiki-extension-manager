@@ -106,7 +106,7 @@ class pm_search_tab extends pm_base_tab {
             $full_list->add_header('search_results',$this->manager->getLang('browse'));
             $full_list->start_form();
             foreach($this->filtered_repo as $info) {
-                $info = $this->_info_list($info['id'],'search');
+                $info = $this->_info_list($info['id']);
                 $full_list->add_row($info);
             }
             $full_list->end_form(array_keys($this->actions_list));
@@ -121,10 +121,6 @@ class pm_search_tab extends pm_base_tab {
         if(!$this->manager->pluginfolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
-    }
-
-    function _info_list($single) {
-        return parent::_info_list($single,'search');
     }
 
     protected function clean_repo() {

@@ -12,7 +12,7 @@ class pm_info_lib {
         $this->manager = $manager;
     }
 
-    function get($index,$type = 'plugin') {
+    function get($index,$type = 'search') {
         if(!in_array($type,array('plugin','template','search'))) {
             $type = 'plugin';
         }

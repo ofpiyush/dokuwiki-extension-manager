@@ -13,22 +13,22 @@ class pm_plugins_list_lib {
     protected $actions = array();
     protected $possible_errors = array();
     protected $type = "plugin";
-    protected $id = null;
+    protected $form_id = null;
     protected $manager = null;
     protected $columns = array();
     protected $intable = false;
-    protected $acted = array();
+    protected $actions_shown = array();
     
 
     /**
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct(admin_plugin_extension $manager,$id,$actions = array(),$possible_errors=array(),$type ="plugin") {
+    function __construct(admin_plugin_extension $manager,$form_id,$actions = array(),$possible_errors=array(),$type ="plugin") {
         $this->manager = $manager;
         $this->type = $type;
         $this->possible_errors = $possible_errors;
-        $this->id = $id;
+        $this->form_id = $form_id;
         
         //$this->actions['info'] = $this->manager->getLang('btn_info');
         $this->actions = array_merge($this->actions,$actions);
@@ -36,7 +36,7 @@ class pm_plugins_list_lib {
     }
 
     function start_form() {
-        $this->form .= '<form id="'.$this->id.'" accept-charset="utf-8" method="post" action="">';
+        $this->form .= '<form id="'.$this->form_id.'" accept-charset="utf-8" method="post" action="">';
         $hidden['page'] = 'extension';
         $hidden['do'] = 'admin';
         $hidden['sectok'] = getSecurityToken();
@@ -90,14 +90,14 @@ class pm_plugins_list_lib {
         if($this->intable) $this->form .= '</table>';
         $cmdButtons = '';
         if($this->rowadded) {
-            $acted = array_filter($this->acted);
-            if(!empty($acted)) {
-            $cmdButtons .= '<div class="checks"><span class="checkall">['.$this->manager->getLang('select_all').']</span>'.
-                            '  <span class="checknone">['.$this->manager->getLang('select_none').']</span></div>';
+            $actions_shown = array_filter($this->actions_shown);
+            if(!empty($actions_shown)) {
+                $cmdButtons .= '<div class="checks"><span class="checkall">['.$this->manager->getLang('select_all').']</span>'.
+                               '  <span class="checknone">['.$this->manager->getLang('select_none').']</span></div>';
             }
             $cmdButtons .= '<div class="bottom">';
             foreach($this->actions as $value => $text) {
-                if(!in_array($value,$actions) || empty($acted[$value])) continue;
+                if(!in_array($value,$actions) || empty($actions_shown[$value])) continue;
                 $cmdButtons .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }
             $cmdButtons .= '</div>';
@@ -215,7 +215,7 @@ class pm_plugins_list_lib {
         } else {
             $return .= '<img alt="" width="48" src="lib/plugins/extension/images/plugin.png" />';
         }
-        $return .= '<label for="'.$this->id.'_'.hsc($info->id).'">'.hsc($info->displayname).'</label>';
+        $return .= '<label for="'.$this->form_id.'_'.hsc($info->repokey).'">'.hsc($info->displayname).'</label>';
         $return .= ' by '.$this->make_author($info);
         $return .= '<p>';
         if(!empty($info->description)) {
@@ -251,7 +251,7 @@ class pm_plugins_list_lib {
                             sprintf($this->manager->getLang('url_change'),hsc($info->repo['downloadurl']),hsc($info->log['downloadurl'])).
                         '</div>';
         }
-        if($this->manager->showinfo == $info->id) {
+        if($this->manager->showinfo == $info->repokey) {
             $return .= $this->make_info($info);
         }
         return $return;
@@ -314,8 +314,8 @@ class pm_plugins_list_lib {
         if(!$info->can_select()) {
             $checked .= 'disabled="disabled"';
         }
-        return '<input id="'.$this->id.'_'.hsc($info->id).'" type="checkbox"'.
-               ' name="checked[]" value="'.$info->id.'" '.$checked.' />';
+        return '<input id="'.$this->form_id.'_'.hsc($info->repokey).'" type="checkbox"'.
+               ' name="checked[]" value="'.$info->repokey.'" '.$checked.' /><br />';
     }
 
     function make_actions($info) {
@@ -328,11 +328,11 @@ class pm_plugins_list_lib {
                 $extra = array_merge($extra,$this->manager->handler->extra);
             }
         }
-        $return = $this->make_action('info',$info->id,$this->manager->getLang('btn_info'),$extra);
+        $return = $this->make_action('info',$info,$this->manager->getLang('btn_info'),$extra);
         foreach($this->actions as $act => $text) {
             if($info->{"can_".$act}()) {
-                $this->acted[$act] = true;
-                $return .= " | ".$this->make_action($act,$info->id,$text);
+                $this->actions_shown[$act] = true;
+                $return .= " | ".$this->make_action($act,$info,$text);
             }
         }
         if(!empty($this->possible_errors)) {
@@ -348,18 +348,18 @@ class pm_plugins_list_lib {
         }
         return $return;
     }
-    function make_action($action,$id,$text,$extra =null) {
+    function make_action($action,$info,$text,$extra =null) {
         global $ID;
         $params = array(
             'do'=>'admin',
             'page'=>'extension',
             'tab' => $this->manager->tab,
             'fn'=>$action,
-            'checked[]'=>$id,
+            'checked[]'=>$info->repokey,
             'sectok'=>getSecurityToken()
         );
         if(!empty($extra)) $params = array_merge($params,$extra);
         $url = wl($ID,$params);
-        return '<a href="'.$url.'" class="'.$action.'" title="'.$id.' : '.$text.'">'.$text.'</a>';
+        return '<a href="'.$url.'" class="'.$action.'" title="'.$info->id.' : '.$text.'">'.$text.'</a>';
     }
 }

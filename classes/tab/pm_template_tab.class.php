@@ -72,7 +72,5 @@ class pm_template_tab extends pm_base_tab {
             msg($this->manager->getLang('not_writable')." ".DOKU_TPLLIB,-1);
         }
     }
-    function _info_list($template) {
-        return parent::_info_list($template,'template');
-    }
+
 }

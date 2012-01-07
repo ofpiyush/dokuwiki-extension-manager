@@ -7,7 +7,10 @@
  */
 
 abstract class pm_base_action {
-    
+
+    var $selection = null;
+    var $manager = null;
+
     final function __construct(admin_plugin_extension $manager) {
         $this->selection = $manager->selection;
         $this->manager = $manager;
@@ -60,13 +63,16 @@ abstract class pm_base_action {
     }
 
     /**
-     * if $results are available, call relevant say_* functions to show the results of an action
+     * output message to user & log to file
      */
-    protected function show_results() {
-        if(is_array($this->result) && count($this->result)) {
-            foreach($this->result as $outcome => $changed_plugins)
-                if(is_array($changed_plugins) && count($changed_plugins))
-                    array_walk($changed_plugins,array($this,'say_'.$outcome));
-        }
+    protected function report($lvl, $info, $langkey) {
+        $arg_list = func_get_args();
+        $args = array_merge( array('<em>'.$info->id.'</em>'), array_slice($arg_list, 3));
+
+        $key = 'msg_'.($info->is_template ? 'tpl_':'').$langkey;
+        $message = vsprintf($this->manager->getLang($key), $args);
+
+        msg($message,$lvl);
     }
+
 }

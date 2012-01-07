@@ -10,41 +10,45 @@ class pm_enable_action extends pm_base_action {
 
     var $result = array();
     function act() {
-        if(is_array($this->selection) && count($this->selection)) {
-            $this->result['enabled']      = array_filter($this->selection,array($this,'enable'));
-            $this->result['notenabled']   = array_diff_key($this->selection,$this->result['enabled']);
-            $this->show_results();
+        if(is_array($this->selection)) {
+            array_walk($this->selection,array($this,'enable'));
         }
         $this->refresh($this->manager->tab);
     }
 
-    function enable($plugin) {
-        $info = $this->manager->info->get($plugin,$this->manager->tab);
+    function enable($repokey) {
+        $info = $this->manager->info->get($repokey);
         if(!$info->can_enable()) return false;
+
         if($info->is_template) {
-            return $this->template_enable($plugin);
+            $func = 'template_enable';
         } else {
-            return plugin_enable($plugin);
+            $func = 'plugin_enable';
+        }
+
+        if ($this->$func($info->id)) {
+            $this->report(1,$info,'enabled');
+            return true;
+        } else {
+            $this->report(-1,$info,'notenabled');
+            return false;
         }
     }
-    function say_enabled($plugin,$key) {
-        msg(sprintf($this->manager->getLang('enabled'),$plugin),1);
-    }
 
-    function say_notenabled($plugin,$key) {
-        msg(sprintf($this->manager->getLang('notenabled'),$plugin),-1);
+    function plugin_enable($plugin) {
+        return plugin_enable($plugin);
     }
 
     // TODO remove ugly temporary fix for switching template
-    function template_enable($plugin) {
+    function template_enable($template) {
         global $config_cascade;
 
         $localconfig = end($config_cascade['main']['local']);
         $cfg = file_get_contents($localconfig);
         if (preg_match("/conf\['template'\]/",$cfg)) {
-            $cfg = preg_replace("/(conf\['template'\]\s*=\s*').*?(';)/", '$1'.hsc($plugin).'$2', $cfg);
+            $cfg = preg_replace("/(conf\['template'\]\s*=\s*').*?(';)/", '$1'.hsc($template).'$2', $cfg);
         } else {
-            $cfg .= "\$conf['template'] = '".hsc($plugin)."';\n";
+            $cfg .= "\$conf['template'] = '".hsc($template)."';\n";
         }
         file_put_contents($localconfig, $cfg);
         return true;

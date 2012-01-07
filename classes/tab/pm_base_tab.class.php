@@ -106,8 +106,8 @@ abstract class pm_base_tab {
         echo '</div>';
     }
 
-    function _info_list($index,$type ="plugin") {
-        return $this->manager->info->get($index,$type);
+    protected function _info_list($index) {
+        return $this->manager->info->get($index,$this->manager->tab);
     }
 
     //sorting based on name

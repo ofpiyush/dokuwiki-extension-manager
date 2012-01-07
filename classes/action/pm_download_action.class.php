@@ -8,129 +8,153 @@
 
 class pm_download_action extends pm_base_action {
 
+    var $is_url_download = false;
+    var $downloaded = null;
     var $overwrite = true;
-    var $downerrors = array();
-    var $current = null;
-    var $templated =false;
-    var $plugined = false;
 
     /**
      * Initiate the plugin download
      */
     function act() {
-        $this->down();
-        if($this->manager->tab == "search") {
-            if($this->templated && !$this->plugined)
-                $this->manager->tab = 'template';
-            else
-                $this->manager->tab = 'plugin';
+        if(array_key_exists('url',$_REQUEST)) {
+            $this->url_download();
+
+        } elseif (is_array($this->selection)) {
+            foreach ($this->selection as $repokey) {
+                $info = $this->manager->info->get($repokey);
+                $this->download_single($info);
+            }
         }
         $this->refresh($this->manager->tab);
     }
 
-    function down() {
-        if(array_key_exists('url',$_REQUEST)) {
-            $this->url_download();
-
-        } elseif (is_array($this->selection) && count($this->selection)) {
-            foreach ($this->selection as $plugin) {
-                if(array_key_exists($plugin,$this->manager->repo)) {
-                    $info = $this->manager->info->get($plugin,'search');
-                    if($info->can_download()) {
-                        $this->download_single($info);
-                    }
-                }
-            }
-        }
-    }
-
-    function download_single($info) {
-        $this->current = null;
-        $this->manager->error = null;
-        $type = ($info->is_template) ? 'template' : 'plugin';
-        $default_base = ($info->is_template) ? str_replace('template:','',$info->id) :$info->id;
-        if($this->download($info, $this->overwrite,$default_base,$type)) {
-            $base = $this->current['base'];
-            if($this->current['type'] == 'template') {
-                $this->templated = true;
-                msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
-            } else {
-                $this->plugined = true;
-                msg(sprintf($this->manager->getLang('downloaded'),$base),1);
-            }
-        } else {
-            msg(sprintf($this->manager->getLang('notdownloaded'),$info->id)." <br />".$this->manager->error,-1);
-        }
-    }
+    /**
+     * Download using URL textbox
+     */
     function url_download() {
+        $this->is_url_download = true;
         $obj = new stdClass();
-        $obj->downloadurl = $_REQUEST['url'];
-        if($this->download($obj, $this->overwrite)) {
-            $base = $this->current['base'];
-            if($this->current['type'] = "template")
-                msg(sprintf($this->manager->getLang('tempdownloaded'),$base),1);
-            else
-                msg(sprintf($this->manager->getLang('downloaded'),$base),1);
-        }
-        else {
-            msg($this->manager->error,-1);
+        $obj->downloadurl = $obj->id = $_REQUEST['url'];
+        $this->download($obj, $this->overwrite,'abc');
+    }
+
+    /**
+     * Overridable function to do download action on one url from repository
+     */
+    function download_single($info) {
+        if (!$info->{'can_'.$this->manager->cmd}()) return;
+        $default_type = ($info->is_template) ? 'template' : 'plugin';
+        $this->download($info, $this->overwrite, $info->id, $default_type);
+    }
+
+    /**
+     * Report action failed
+     */
+    function msg_failed($info, $error) {
+        if ($this->is_url_download) {
+            $this->report(-1, $info, 'url_failed', $error);
+        } else {
+            $this->report(-1, $info, 'download_failed', $error);
         }
     }
+
+    /**
+     * Report action succeeded
+     */
+    function msg_success($info) {
+        $this->report(1, $info, 'download_success');
+    }
+
+    /**
+     * Report action succeeded (more than one extension)
+     */
+    function msg_pkg_success($info,$components) {
+        $this->report(1, $info, 'download_pkg_success',$components);
+    }
+
     /**
      * Process the downloaded file
      */
-    function download($plugin , $overwrite=false,$default_base = null, $default_type = "plugin") {
-        global $lang;
-        $url = $plugin->downloadurl;
+    function download($info, $overwrite=false, $default_base = null, $default_type = null) {
+        $error = null;
+        $this->downloaded['plugin'] = array();
+        $this->downloaded['template'] = array();
+
         // check the url
+        $url = $info->downloadurl;
         $matches = array();
         if (!preg_match("/[^\/]*$/", $url, $matches) || !$matches[0]) {
-            $this->manager->error = $this->manager->getLang('error_badurl')."\n";
+            $this->msg_failed($info, $this->manager->getLang('error_badurl'));
             return false;
         }
-
         $file = $matches[0];
 
+        // create tmp directory for download & decompress
         if (!($tmp = io_mktmpdir())) {
-            $this->manager->error = $this->manager->getLang('error_dircreate')."\n";
+            $this->msg_failed($info, $this->manager->getLang('error_dircreate'));
             return false;
         }
 
-        if (!$file = io_download($url, "$tmp/", true, $file)) {
-            $this->manager->error = sprintf($this->manager->getLang('error_download'),$url)."\n";
+        // add default base folder if specified to handle case where zip doesn't contain this
+        if ($default_base) {
+            if (!@mkdir("$tmp/$default_base")) {
+                $this->msg_failed($info, $this->manager->getLang('error_dircreate'));
+                return false;
+            }
         }
 
-        if (!$this->manager->error && !$this->decompress("$tmp/$file", $tmp)) {
-            $this->manager->error = sprintf($this->manager->getLang('error_decompress'),$file)."\n";
+        // download & decompress
+        if (strpos($url, 'c:') === 0) {
+            if (!@copy($url, "$tmp/".basename($url))) {
+                $error = 'Failed to copy file '.$url.' -> '.$tmp;
+            }
+        } elseif (!$file = io_download($url, "$tmp/", true, $file)) {
+            $error = sprintf($this->manager->getLang('error_download'),$url);
         }
 
-        // search $tmp for the folder(s) that has been created
-        // move the folder(s) to lib/plugins/
-        if (!$this->manager->error) {
+        if (!$error && !$this->decompress("$tmp/$file", "$tmp/$default_base")) {
+            $error = sprintf($this->manager->getLang('error_decompress'),$file);
+        }
+
+        // search $tmp/$default_base for the folder(s) that has been created
+        // move the folder(s) to lib/..
+        if (!$error) {
             $result = array('old'=>array(), 'new'=>array());
-            if($this->find_folders($result,$tmp,'', $default_type)){
+
+            if(!$this->find_folders($result,"$tmp/$default_base", $default_type)){
+                $error = $this->manager->getLang('error_findfolder');
+
+            } else {
                 // choose correct result array
                 if(count($result['new'])){
                     $install = $result['new'];
                 }else{
                     $install = $result['old'];
                 }
+
                 // now install all found items
                 foreach($install as $item){
-                    $this->current = $item;
                     // where to install?
                     if($item['type'] == 'template'){
                         $target_base_dir = DOKU_TPLLIB;
-                        if(!empty($default_base) && !file_exists($item['tmp'].'/template.info.txt'))
-                            $item['base'] = $default_base;
                     }else{
-                        // do not rename for plugins as it might not be the name of the class
-                        $target_base_dir = DOKU_INC.'lib/plugins/';
+                        $target_base_dir = DOKU_PLUGIN;
                     }
-                    $target = $target_base_dir.$item['base'];
+
+                    if (!empty($item['base'])) {
+                        // use base set in info.txt
+                    } elseif ($item['type'] == 'template' && count($install) == 1) {
+                        // safe to rename base for templates
+                        $item['base'] = $info->id;
+                    } else {
+                        // default - use directory as found in zip
+                        $item['base'] = basename($item['tmp']);
+                    }
+
                     // check to make sure we aren't overwriting anything
+                    $target = $target_base_dir.$item['base'];
                     if (!$overwrite && @file_exists($target)) {
-                        // remember our settings, ask the user to confirm overwrite, FIXME
+                        // TODO remember our settings, ask the user to confirm overwrite
                         continue;
                     }
 
@@ -139,30 +163,31 @@ class pm_download_action extends pm_base_action {
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
                         $this->downloaded[$item['type']][] = $item['base'];
-                        $version = $repoid = '';
-                        if(!empty($plugin->lastupdate))
-                            $version = $plugin->lastupdate;
-                        if(!empty($default_base) && !file_exists($target.'/'.$item['type'].'.info.txt'))
-                            $repoid = $default_base;
-                        $this->manager->log->write($target, $instruction, array('url' =>$url,'repoid'=>$repoid,'pm_date_version'=>$version));
+                        $this->manager->log->write($target, $instruction, array('url' =>$url));
+                        $this->manager->tab = $item['type'];
                     } else {
-                        $this->manager->error .= sprintf($this->manager->getLang('error_copy')."\n", $item['base']);
+                        $error = sprintf($this->manager->getLang('error_copy')."\n", $item['base']);
+                        break;
                     }
                 }
-
-            } else {
-                $this->manager->error = $this->manager->getLang('error')."\n";
             }
         }
 
         // cleanup
-        if ($tmp) $this->dir_delete($tmp);
+ //       if ($tmp) $this->dir_delete($tmp);
 
-        if (!$this->manager->error) {
-            return true;
+        if ($error) {
+            $this->msg_failed($info, $error);
+            return false;
         }
 
-        return false;
+        $downloaded = array_merge($this->downloaded['plugin'],$this->downloaded['template']);
+        if (count($downloaded) > 1) {
+            $this->msg_pkg_success($info, implode(',',$downloaded));
+        } else {
+            $this->msg_success($info);
+        }
+        return true;
     }
 
     /**
@@ -182,56 +207,80 @@ class pm_download_action extends pm_base_action {
      * @author Andreas Gohr <andi@splitbrain.org>
      * @param arrayref $result - results are stored here
      * @param string $base - the temp directory where the package was unpacked to
+     * @param string $default_type - type used if no info.txt available
      * @param string $dir - a subdirectory. do not set. used by recursion
      * @return bool - false on error
      */
-    function find_folders(&$result,$base,$dir='',$default_type ="plugin"){
-        $dh = @opendir("$base/$dir");
+    function find_folders(&$result,$base,$default_type,$dir=''){
+        $this_dir = "$base$dir";
+        $dh = @opendir($this_dir);
         if(!$dh) return false;
-        while (false !== ($f = readdir($dh))) {
-            if ($f == '.' || $f == '..' || $f == 'tmp') continue;
 
-            if(!is_dir("$base/$dir/$f")){
+        $found_dirs = array();
+        $found_files = 0;
+        $found_template_parts = 0;
+        $found_info_txt = false;
+        while (false !== ($f = readdir($dh))) {
+            if ($f == '.' || $f == '..') continue;
+
+            if(is_dir("$this_dir/$f")) {
+                $found_dirs[] = "$dir/$f";
+
+            } else {
                 // it's a file -> check for config
-                if($f == 'plugin.info.txt'){
-                    $info = array();
-                    $info['type'] = 'plugin';
-                    $info['tmp']  = "$base/$dir";
-                    $conf = confToHash("$base/$dir/$f");
-                    $info['base'] = basename($conf['base']);
-                    if(!$info['base']) $info['base'] = basename("$base/$dir");
-                    $result['new'][] = $info;
-                } elseif($f == 'template.info.txt') {
-                    $info = array();
-                    $info['type'] = 'template';
-                    $info['tmp']  = "$base/$dir";
-                    $conf = confToHash("$base/$dir/$f");
-                    $info['base'] = basename($conf['base']);
-                    if(!$info['base']) $info['base'] = basename("$base/$dir");
-                    $result['new'][] = $info;
-                } elseif($f == 'main.php' || stripos($f,'style.ini')!==false) {
-                    $tempid = basename("$base/$dir");
-                    if(isset($this->repo['template:'.$tempid])) {
+                $found_files++;
+                switch ($f) {
+                    case 'plugin.info.txt':
+                    case 'template.info.txt':
+                        $found_info_txt = true;
                         $info = array();
-                        $info['type'] = 'template';
-                        $info['tmp']  = "$base/$dir";
-                        $info['base'] = $tempid;
+                        $type = explode('.',$f,2);
+                        $info['type'] = $type[0];
+                        $info['tmp']  = $this_dir;
+                        $conf = confToHash("$this_dir/$f");
+                        $info['base'] = basename($conf['base']);
                         $result['new'][] = $info;
-                    }
+                        break;
+
+                    case 'main.php':
+                    case 'details.php':
+                    case 'mediamanager.php':
+                    case 'style.ini':
+                        $found_template_parts++;
+                        break;
                 }
-            }else{
-                // it's a directory -> add to dir list for old method, then recurse
-                if(!$dir){
-                    $info = array();
-                    $info['type'] = $default_type;
-                    $info['tmp']  = "$base/$dir/$f";
-                    $info['base'] = $f;
-                    $result['old'][] = $info;
-                }
-                $this->find_folders($result,$base,"$dir/$f",$default_type);
             }
         }
         closedir($dh);
+
+        // URL downloads default to 'plugin', try extra hard to indentify templates
+        if (!$default_type && $found_template_parts > 2 && !$found_info_txt) {
+            $info = array();
+            $info['type'] = 'template';
+            $info['tmp']  = $this_dir;
+            $result['new'][] = $info;
+        }
+
+        // files in top level but no info.txt, assume this is zip missing a base directory
+        // works for all downloads unless direct URL where $base will be the tmp directory ($info->id was empty)
+        if (!$dir && $found_files > 0 && !$found_info_txt && $default_type) {
+            $info = array();
+            $info['type'] = $default_type;
+            $info['tmp']  = $base;
+            $result['old'][] = $info;
+            return true;
+        }
+
+        foreach ($found_dirs as $found_dir) {
+            // if top level add to dir list for old method, then recurse
+            if(!$dir){
+                $info = array();
+                $info['type'] = ($default_type ? $default_type : 'plugin');
+                $info['tmp']  = "$base$found_dir";
+                $result['old'][] = $info;
+            }
+            $this->find_folders($result,$base,$default_type,"$found_dir");
+        }
         return true;
     }
 
@@ -283,10 +332,12 @@ class pm_download_action extends pm_base_action {
 
             // FIXME sort something out for handling zip error messages meaningfully
             return ($ok==-1?false:true);
-
         }
 
         // unsupported file type
+        if($conf['allowdebug']){
+            msg("Decompress Error: Unsupported file type [$ext]",-1);
+        }
         return false;
     }
 
