@@ -51,12 +51,11 @@ class pm_info_lib {
         $classname = "pm_".$type."_single_lib";
         $return = new $classname($this->manager,$id,$is_template);
         $return->is_installed = $is_installed;
-        $return->is_writable  = $is_writable;
 
         // don't assume extentions installed in correct directory (try read info.txt before repo searching)
         if ($is_installed) {
             $path = $return->install_directory();
-            $return->is_writable = is_writable($path);
+            $is_writable = is_writable($path);
 
             $info_path = $path.$type.'.info.txt';
             $return->info = $this->read_info_txt($info_path);
@@ -72,6 +71,7 @@ class pm_info_lib {
             $return->is_gitmanaged = file_exists($path.'.git');
         }
 
+        $return->is_writable  = $is_writable;
         $return->repokey = $repokey;
         $return->repo = $this->find_repo_entry($return);
         return $return;
