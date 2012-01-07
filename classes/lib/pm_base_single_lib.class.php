@@ -162,10 +162,9 @@ abstract class pm_base_single_lib {
     /**
      * return description from *.info.txt (if no repo info was found)
      */
-    protected function default_description() {
-        $this->description = "";
-        if(!empty($this->desc)) $this->description = $this->desc;
-        return $this->description;
+    protected function get_description() {
+        if(!empty($this->info['desc'])) return $this->info['desc'];
+        return $this->repo['description'];
     }
 
     /**
