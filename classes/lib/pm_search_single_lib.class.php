@@ -31,6 +31,7 @@ class pm_search_single_lib extends pm_base_single_lib {
     }
 
     function can_download_dependency() {
+        if(!$this->can_download_disabled) return false;
         return $this->missing_dependency();
     }
 
