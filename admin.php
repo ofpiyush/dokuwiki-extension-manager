@@ -58,7 +58,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * array list of bundled plugins
      */
-    var $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','default');
+    var $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','template:default');
 
     /**
      * plugins that are an integral part of dokuwiki, this is only valid for pre-"Angua" releases

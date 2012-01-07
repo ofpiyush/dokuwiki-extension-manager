@@ -109,7 +109,7 @@ abstract class pm_base_single_lib {
         $this->is_template = $is_template;
 
         if($is_template) {
-            $this->is_bundled = ($id == 'default'); // TODO include in bundled array?
+            $this->is_bundled = in_array('template:'.$id,$manager->_bundled);
             // no protected templates
         } else {
             $this->is_bundled = in_array($id,$manager->_bundled);
