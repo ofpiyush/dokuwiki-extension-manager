@@ -9,13 +9,7 @@ class pm_log_lib {
         $out = "";
         $write =false;
         if(!empty($data['url'])) {
-            $out = "downloadurl=".$data['url'].PHP_EOL;
-        }
-        if(!empty($data['pm_date_version'])) {
-            $out .= "pm_date_version=".$data['pm_date_version'].PHP_EOL;
-        }
-        if(!empty($data['repoid'])) {
-            $out .= "repoid=".$data['repoid'].PHP_EOL;
+            $out = "url=".$data['url'].PHP_EOL;
         }
         if($cmd == 'install') {
             if($date)
@@ -44,7 +38,8 @@ class pm_log_lib {
             foreach($file as $line) {
                 list($key,$value) = explode('=',trim($line,PHP_EOL),2);
                 $key = trim($key);
-                $value =trim($value);
+                $value = trim($value);
+                // backwards compatible with old plugin manager
                 if($key == 'url') $key = 'downloadurl';
                 $this->log[$hash][$key] = $value;
             }
@@ -58,9 +53,12 @@ class pm_log_lib {
         return false;
     }
 
-    function trace($extension, $action, $msg) {
+    /**
+     * log activity to a common log file
+     */
+    function trace($extension, $msg) {
         $file = DOKU_PLUGIN.'extension/trace.log';
-        $out = sprintf("%s  %s  %s  %s  %s \n",date('Y-m-d  H:i:s'), $extension, $action, $_SERVER['REMOTE_USER'], $msg);
+        $out = sprintf("%s  %s  %-25s  %s \n",date('Y-m-d  H:i:s'), $_SERVER['REMOTE_USER'], $extension, $msg);
         if (!$fp = @fopen($file, 'a')) return false;
         $write = fwrite($fp, $out);
         fclose($fp);

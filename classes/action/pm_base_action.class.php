@@ -72,6 +72,8 @@ abstract class pm_base_action {
         $key = 'msg_'.($info->is_template ? 'tpl_':'').$langkey;
         $message = vsprintf($this->manager->getLang($key), $args);
 
+        // repokey used to avoid repetition of urls in log file when action download (url)
+        $this->manager->log->trace(str_replace('template:','',$info->repokey), strip_tags($message));
         msg($message,$lvl);
     }
 

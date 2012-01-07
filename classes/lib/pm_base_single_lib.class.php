@@ -98,7 +98,7 @@ abstract class pm_base_single_lib {
 
     /**
      * Content in $log[] array
-     * @property string downloadurl     URL used for last download              // TODO should be named url for backward compatibility?
+     * @property string downloadurl     URL used for last download
      * @property string installed       RFC 2822 date time of installation
      * @property string updated         RFC 2822 date time of update
      */
@@ -120,7 +120,7 @@ abstract class pm_base_single_lib {
 
     /**
      * Precedence order for accessing properties
-     *      get(method) -> repository -> *.info.txt -> $log -> default(method)
+     *      get(method) -> *.info.txt -> repository -> $log -> default(method)
      */
     function __get($key) {
         $return = false;
@@ -130,11 +130,11 @@ abstract class pm_base_single_lib {
             // if its necessary, the method will cache it itself
             return $this->{'get_'.$key}();
 
-        } elseif(isset($this->repo[$key])) {
-            $return = $this->repo[$key];
-
         } elseif(isset($this->info[$key])) {
             $return = $this->info[$key];
+
+        } elseif(isset($this->repo[$key])) {
+            $return = $this->repo[$key];
 
         } elseif(isset($this->log[$key])) {
             $return = $this->log[$key];
