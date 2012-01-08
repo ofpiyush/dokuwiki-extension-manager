@@ -37,11 +37,21 @@ class pm_plugins_list_lib {
 
     function start_form() {
         $this->form .= '<form id="'.$this->form_id.'" accept-charset="utf-8" method="post" action="">';
-        $hidden['page'] = 'extension';
-        $hidden['do'] = 'admin';
-        $hidden['sectok'] = getSecurityToken();
-        if($this->type == "template")            // TODO why ?
-            $hidden['type'] = 'template';
+        $hidden = array(
+            'do'=>'admin',
+            'page'=>'extension',
+            'tab' => $this->manager->tab,
+            'sectok'=>getSecurityToken()
+        );
+        // preserve search query when pressing info action
+        if($this->manager->tab == "search" ) {
+            if(!empty($this->manager->handler->term)) {
+                $hidden['term'] = $this->manager->handler->term;
+            }
+            if(!empty($this->manager->handler->extra)) {
+                $hidden = array_merge($hidden,$this->manager->handler->extra);
+            }
+        }
         $this->add_hidden($hidden);
         $this->form .= '<table class="inline">';
         $this->intable = true;
@@ -319,22 +329,15 @@ class pm_plugins_list_lib {
     }
 
     function make_actions($info) {
-        $extra =  null;
-        // preserve search query when pressing info action
-        if($this->manager->tab == "search" ) {
-            if(!empty($this->manager->handler->term))
-                $extra['term'] = $this->manager->handler->term;
-            if(!empty($this->manager->handler->extra)) {
-                $extra = array_merge($extra,$this->manager->handler->extra);
-            }
-        }
-        $return = $this->make_action('info',$info,$this->manager->getLang('btn_info'),$extra);
+        $return = $this->make_action('info',$info,$this->manager->getLang('btn_info'));
+
         foreach($this->actions as $act => $text) {
             if($info->{"can_".$act}()) {
                 $this->actions_shown[$act] = true;
                 $return .= " | ".$this->make_action($act,$info,$text);
             }
         }
+
         if(!empty($this->possible_errors)) {
             foreach($this->possible_errors as $error => $text) {
                 if($info->$error()) {
@@ -348,18 +351,9 @@ class pm_plugins_list_lib {
         }
         return $return;
     }
-    function make_action($action,$info,$text,$extra =null) {
-        global $ID;
-        $params = array(
-            'do'=>'admin',
-            'page'=>'extension',
-            'tab' => $this->manager->tab,
-            'fn'=>$action,
-            'checked[]'=>$info->repokey,
-            'sectok'=>getSecurityToken()
-        );
-        if(!empty($extra)) $params = array_merge($params,$extra);
-        $url = wl($ID,$params);
-        return '<a href="'.$url.'" class="'.$action.'" title="'.$info->id.' : '.$text.'">'.$text.'</a>';
+
+    function make_action($action,$info,$text) {
+        return '<input class="button" name="fn['.$action.']['.$info->repokey.']" type="submit" value="'.$text.'" />';
     }
+
 }

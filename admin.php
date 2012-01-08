@@ -176,6 +176,10 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         $fn = $_REQUEST['fn'];
         if (is_array($fn)) {
             $this->cmd = key($fn);
+            $extension = current($fn);
+            if (is_array($extension)) {
+                $this->selection = array_keys($extension);
+            }
         } else {
             $this->cmd = $fn;
         }
