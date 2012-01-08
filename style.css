@@ -23,6 +23,10 @@
     padding: 0;
     margin: 0 0 3px;
 }
+#extension__manager ul.tabs div.message {
+    display:inline;
+    margin: 0 0 0 0.5em;
+}
 
 /*
  * general layout

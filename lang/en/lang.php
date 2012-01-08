@@ -17,6 +17,7 @@ $lang['download_disabled']      = 'Download disabled in configuration settings';
 $lang['tab_plugin']             = 'Plugins';
 $lang['tab_template']           = 'Templates';
 $lang['tab_search']             = 'Search & Install';
+$lang['updates_available']      = '%d update(s) available';
 $lang['summary_plugin']         = 'You have %d plugins installed, %d enabled';
 $lang['summary_template']       = 'You have %d templates installed';
 $lang['summary_search']         = 'DokuWiki repository contains a total of %d extensions!';

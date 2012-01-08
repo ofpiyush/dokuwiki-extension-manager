@@ -23,7 +23,7 @@ abstract class pm_base_tab {
 
     abstract function check_writable();
 
-    function html_menu() {
+    function html_menu($updates_available=0) {
         global $ID;
 
         $tabs_array = array(
@@ -36,7 +36,11 @@ abstract class pm_base_tab {
 	    ptln('<ul class="tabs">');
 	    foreach($tabs_array as $tab =>$text) {
             if ($tab == $selected) {
-                ptln('<li><strong>'.$text.'</strong></li>');
+                echo '<li><strong>'.$text;
+                if ($updates_available > 0) {
+                    echo '<div class="message notify">'.sprintf($this->manager->getLang('updates_available'),$updates_available).'</div>';
+                }
+                echo '</strong></li>';
             } else {
                 ptln('<li><a '.$class.' href="'.wl($ID,array('do'=>'admin','page'=>'extension','tab'=>$tab)).'">'.$text.'</a></li>');
             }

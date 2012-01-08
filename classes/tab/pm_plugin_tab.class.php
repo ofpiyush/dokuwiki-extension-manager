@@ -8,6 +8,7 @@
 
 class pm_plugin_tab extends pm_base_tab {
     var $plugins;
+    var $updates_available;
     var $protected_plugins;
     var $actions_list;
 
@@ -27,6 +28,7 @@ class pm_plugin_tab extends pm_base_tab {
             'missing_dlurl' => $this->manager->getLang('no_url'),
         );
         $list = array_map(array($this,'_info_list'),$this->manager->plugin_list);
+        $this->updates_available = count(array_filter($list, create_function('$info','return $info->update_available;')));
         usort($list,array($this,'_sort'));
         $protected = array_filter($list,array($this,'_is_protected'));
         $notprotected = array_diff_key($list,$protected);
@@ -51,7 +53,7 @@ class pm_plugin_tab extends pm_base_tab {
      * Plugin tab rendering
      */
     function html() {
-        $this->html_menu();
+        $this->html_menu($this->updates_available);
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_plugin'),count($this->manager->plugin_list),count($this->plugins['enabled'])+count($this->protected_plugins['enabled']));
 	    ptln('<h3>'.$summary.'</h3>');

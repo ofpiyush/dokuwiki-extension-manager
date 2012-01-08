@@ -9,6 +9,7 @@
 class pm_template_tab extends pm_base_tab {
 
     var $templates = array();
+    var $updates_available;
     var $enabled = array();
     var $tpl_default = array();
     var $actions_list = array();
@@ -18,7 +19,11 @@ class pm_template_tab extends pm_base_tab {
         $list = $this->manager->template_list;
         $this->templates['enabled'][0] = $this->_info_list($conf['template']);
         $disabled = array_diff($list,array($conf['template']));
-        $this->templates['disabled'] = array_map(array($this,'_info_list'),$disabled); 
+        $this->templates['disabled'] = array_map(array($this,'_info_list'),$disabled);
+
+        $this->updates_available = count(array_filter($this->templates['disabled'], create_function('$info','return $info->update_available;')));
+        if ($this->templates['enabled'][0]->update_available) $this->updates_available++;
+
         usort($this->templates['disabled'],array($this,'_sort'));
         $this->actions_list = array(
             'enable'=>$this->manager->getLang('enable'),
@@ -39,7 +44,7 @@ class pm_template_tab extends pm_base_tab {
      * Template tab rendering
      */
     function html() {
-        $this->html_menu();
+        $this->html_menu($this->updates_available);
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_template'),count($this->manager->template_list));
 	    ptln('<h3>'.$summary.'</h3>');
