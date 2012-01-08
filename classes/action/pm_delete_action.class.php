@@ -14,6 +14,7 @@ class pm_delete_action extends pm_base_action {
         if(is_array($this->selection)) {
             array_walk($this->selection,array($this,'delete'));
         }
+        $this->refresh($this->manager->tab);
     }
 
     /**
