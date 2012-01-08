@@ -53,7 +53,7 @@ class pm_plugins_list_lib {
             }
         }
         $this->add_hidden($hidden);
-        $this->form .= '<table class="inline">';
+        $this->form .= '<table>';
         $this->intable = true;
     }
     /**
@@ -264,6 +264,7 @@ class pm_plugins_list_lib {
         if($this->manager->showinfo == $info->repokey) {
             $return .= $this->make_info($info);
         }
+        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         return $return;
     }
 
@@ -329,12 +330,11 @@ class pm_plugins_list_lib {
     }
 
     function make_actions($info) {
-        $return = $this->make_action('info',$info,$this->manager->getLang('btn_info'));
 
         foreach($this->actions as $act => $text) {
             if($info->{"can_".$act}()) {
                 $this->actions_shown[$act] = true;
-                $return .= " | ".$this->make_action($act,$info,$text);
+                $return .= $this->make_action($act,$info,$text);
             }
         }
 
