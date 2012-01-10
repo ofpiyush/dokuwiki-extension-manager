@@ -176,7 +176,7 @@ class pm_download_action extends pm_base_action {
         }
 
         // cleanup
- //       if ($tmp) $this->dir_delete($tmp);
+        if ($tmp) $this->dir_delete($tmp);
 
         if ($error) {
             $this->msg_failed($info, $error);
