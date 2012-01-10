@@ -29,8 +29,6 @@ class pm_plugins_list_lib {
         $this->type = $type;
         $this->possible_errors = $possible_errors;
         $this->form_id = $form_id;
-        
-        //$this->actions['info'] = $this->manager->getLang('btn_info');
         $this->actions = array_merge($this->actions,$actions);
         $this->form = '<div class="common">';
     }
@@ -148,8 +146,7 @@ class pm_plugins_list_lib {
     }
 
     function make_link($info, $class) {
-        $linktext = sprintf($this->manager->getLang('homepage_link'),hsc($info->displayname));
-        $linktext = 'Documentation';
+        $linktext = $this->manager->getLang('homepage_link');
         return '<a href="'.hsc($info->url).'" title="'.hsc($info->url).'" class ="'.$class.'">'.$linktext.'</a>';
     }
 
@@ -231,11 +228,23 @@ class pm_plugins_list_lib {
         if(!empty($info->description)) {
             $return .=  hsc($info->description).' ';
         }
-        $return .= $this->make_homepagelink($info);
         $return .= '</p>';
         $return .= '<div class="clearer"></div>';
 
-        // plugin info notices
+        $return .= $this->make_homepagelink($info);
+        if ($info->bugtracker) {
+            $return .= ' <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="urlextern">'.$this->manager->getLang('bugs_features').'</a>';
+        }
+        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
+        $return .= $this->make_info($info);
+        $return .= $this->make_noticearea($info);
+        return $return;
+    }
+
+    /**
+     * Notice area
+     */
+    function make_noticearea($info) {
         if($info->wrong_folder()) {
             $return .= '<div class="message error">'.
                             sprintf($this->manager->getLang('wrong_folder'),hsc($info->id),hsc($info->base)).
@@ -261,10 +270,6 @@ class pm_plugins_list_lib {
                             sprintf($this->manager->getLang('url_change'),hsc($info->repo['downloadurl']),hsc($info->log['downloadurl'])).
                         '</div>';
         }
-        if($this->manager->showinfo == $info->repokey) {
-            $return .= $this->make_info($info);
-        }
-        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         return $return;
     }
 
@@ -272,6 +277,7 @@ class pm_plugins_list_lib {
      * Plugin/template details
      */
     function make_info($info) {
+        if($this->manager->showinfo != $info->repokey) return '';
         $default = $this->manager->getLang('unknown');
 
         $return .= '<dl class="details">';
@@ -279,7 +285,7 @@ class pm_plugins_list_lib {
         $return .= '<dd>';
         $return .= (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default);
         $return .= '</dd>';
-
+// TODO installed, updated
         $return .= '<dt>'.$this->manager->getLang('installed').'</dt>';
         $return .= '<dd>';
         $return .= (!empty($info->install_date) ? hsc($info->install_date) : $default);
@@ -317,6 +323,8 @@ class pm_plugins_list_lib {
             $return .= hsc(implode(', ',(array)$info->tags['tag']));
             $return .= '</dd>';
         }
+        // TODO $info->donationurl
+        $return .= '</dl>';
         return $return;
     }
 

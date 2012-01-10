@@ -148,6 +148,8 @@ class pm_download_action extends pm_base_action {
                         $item['base'] = $info->id;
                     } else {
                         // default - use directory as found in zip
+                        // plugins from github/master without *.info.txt will install in wrong folder
+                        // but using $info->id will make 'code3' fail (which should install in lib/code/..)
                         $item['base'] = basename($item['tmp']);
                     }
 

@@ -45,6 +45,24 @@
     padding: 0;
 }
 /*
+ * multiselect controls
+ */
+#extension__manager .checkall,
+#extension__manager .checknone {
+    display: none;
+}
+#extension__manager .checkall:hover,
+#extension__manager .checknone:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+#extension__manager .checks {
+    margin-left: 1em;
+}
+#extension__manager input.button {
+    margin-left: 0.2em;
+}
+/*
 #extension__manager form {
     display: block;
     margin: 0;
@@ -59,7 +77,6 @@
 #extension__manager .button {
     margin: 0.3em;
 }
-
 #extension__manager .common fieldset {
     margin: 0;
     padding: 0 0 1.0em 0;
@@ -75,18 +92,6 @@
 }
 #extension__manager .bottom {
     padding: 0.5em;
-}
-#extension__manager .checks {
-    margin-left: 1em;
-}
-#extension__manager .checkall,
-#extension__manager .checknone {
-    display: none;
-}
-#extension__manager .checkall:hover,
-#extension__manager .checknone:hover {
-    text-decoration: underline;
-    cursor: pointer;
 }
 #extension__manager .repo_reload {
     width: 100%;
@@ -133,11 +138,14 @@
     float: left;
 }
 #extension__manager .legend label {
-    font-size: 130%;
+    font-size: 120%;
     font-weight: bold;
 }
 #extension__manager .legend p {
     margin: 0.2em 0em 0.1em 52px;
+}
+#extension__manager .legend  input.button {
+    float: right;
 }
 #extension__manager .version {
     width: 12%;
@@ -174,14 +182,14 @@
 #extension__manager dl.details dt {
 	clear: left;
 	float: left;
-	width: 180px;
+	width: 150px;
 	margin: 0;
     text-align: right;
     font-weight: bold;
 	padding: 0.2em 5px 0 0;
 }
 #extension__manager dl.details dd {
-	margin-left: 180px;
+	margin-left: 150px;
 	padding: 0.2em 0 0 5px;
 }
 

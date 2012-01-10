@@ -270,6 +270,7 @@ abstract class pm_base_single_lib {
         if($this->is_bundled) return false;
         // no action should be allowed on protected plugins
         if($this->is_protected) return false;
+        if($this->is_gitmanaged) return false;
         return true;
     }
 
