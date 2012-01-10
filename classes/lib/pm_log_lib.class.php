@@ -8,8 +8,10 @@ class pm_log_lib {
         $file = $target.'/manager.dat';
         $out = "";
         $write =false;
-        if(!empty($data['url'])) {
-            $out = "url=".$data['url'].PHP_EOL;
+        foreach ($data as $key => $value) {
+            if (!empty($value)) {
+                $out .= "$keyurl=$value".PHP_EOL;
+            }
         }
         if($cmd == 'install') {
             if($date)

@@ -68,6 +68,11 @@ class pm_info_lib {
                 $repokey = (($is_template) ? 'template:' : '').$return->info['base'];
             }
             $return->log = $this->manager->log->read($path);
+
+            // installed plugins may have repokey stored from last download to handle case of 'code3' plugin in lib/code/.. 
+            if (!empty($return->log['repokey'])) {
+                $repokey = $return->log['repokey'];
+            }
             $return->is_gitmanaged = file_exists($path.'.git');
         }
 

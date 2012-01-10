@@ -97,6 +97,7 @@ abstract class pm_base_single_lib {
 
     /**
      * Content in $log[] array
+     * @property string repokey         repokey used for last download, used to indentify 'code2' while updating which is (correctly) installed in lib/code/..
      * @property string downloadurl     URL used for last download
      * @property string installed       RFC 2822 date time of installation
      * @property string updated         RFC 2822 date time of update

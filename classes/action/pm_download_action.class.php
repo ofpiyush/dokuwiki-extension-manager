@@ -165,7 +165,7 @@ class pm_download_action extends pm_base_action {
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
                         $this->downloaded[$item['type']][] = $item['base'];
-                        $this->manager->log->write($target, $instruction, array('url' =>$url));
+                        $this->manager->log->write($target, $instruction, array('url' => $url, 'repokey' => $info->repokey));
                         $this->manager->tab = $item['type'];
                     } else {
                         $error = sprintf($this->manager->getLang('error_copy')."\n", $item['base']);
