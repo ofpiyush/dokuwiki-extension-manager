@@ -116,6 +116,6 @@ abstract class pm_base_tab {
 
     //sorting based on name
     protected function _sort($a,$b) {
-        return strnatcasecmp($a->id,$b->id);
+        return strnatcasecmp($a->displayname,$b->displayname);
     }
 }

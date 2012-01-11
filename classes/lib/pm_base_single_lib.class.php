@@ -154,8 +154,7 @@ abstract class pm_base_single_lib {
      * return same name as displayed by repo plugin at www.dokuwiki.org
      */
     protected function get_displayname() {
-        $name = $this->id;
-        if(!empty($this->base)) $name = $this->base;
+        $name = str_replace('template:','',$this->repokey);
         $this->displayname =  ucfirst($name).(($this->is_template) ? ' template' : ' plugin');
         return $this->displayname;
     }
