@@ -10,7 +10,7 @@ class pm_log_lib {
         $write =false;
         foreach ($data as $key => $value) {
             if (!empty($value)) {
-                $out .= "$keyurl=$value".PHP_EOL;
+                $out .= "$key=$value".PHP_EOL;
             }
         }
         if($cmd == 'install') {
