@@ -83,14 +83,9 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     var $showinfo = null;
 
     /**
-     * list of actions(classes/action/*.class.php) that require a plugin name
+     * list of valid actions(classes/action/*.class.php)
      */
-    var $functions = array('delete','enable','update','disable','reinstall','info');
-
-    /**
-     * list of actions that do not require a plugin name (e.g. download might use URL instead)
-     */
-    var $commands = array('search','download','download_disabled','repo_reload');
+    var $valid_actions = array('delete','enable','update','disable','reinstall','info','search','download','download_disabled','repo_reload');
 
     /**
      * array of navigation tab ids
@@ -211,13 +206,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     function valid_request() {
         //if command is empty, we need to make it
         if(empty($this->cmd)) return false;
-        if(in_array($this->cmd, $this->commands) && checkSecurityToken()) return true;
-        if(in_array($this->cmd, $this->functions) && checkSecurityToken()) {
-            if($this->cmd == 'info' && $this->tab == "search") return true;
-            $local_extensions = array_map(create_function('$a','return "template:".$a;'), $this->template_list);
-            $local_extensions = array_merge($local_extensions, $this->plugin_list);
-            if(count(array_intersect($this->selection, $local_extensions)) == count($this->selection)) return true;
-        }
+        if(in_array($this->cmd, $this->valid_actions) && checkSecurityToken()) return true;
         return false;
     }
 

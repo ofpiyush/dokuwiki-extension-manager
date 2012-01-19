@@ -2,7 +2,7 @@
 /**
  * Plugin Manager plugins list
  *
- * @license    GPL 3 (http://www.gnu.org/licenses/gpl.html)
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Piyush Mishra <me@piyushmishra.com>
  */
 
@@ -118,7 +118,7 @@ class pm_plugins_list_lib {
         echo $this->form;
     }
     private function start_row($info,$class) {
-        $this->form .= '<tr id="extensionplugin__'.$info->repokey.'" class="'.$class.'">';
+        $this->form .= '<tr id="extensionplugin__'.hsc($info->html_id).'" class="'.$class.'">';
     }
     private function populate_column($class,$html) {
         $this->form .= '<td class="'.$class.'">'.$html.'</td>';
@@ -211,18 +211,17 @@ class pm_plugins_list_lib {
     }
 
     /**
-     * Plugin/template summary
+     * Extension main description
      */
     function make_legend($info) {
         global $lang;
 
-        // extension main description
         if ($info->is_template) {
             $return .= '<img alt="" width="48" src="lib/plugins/extension/images/template.png" />';
         } else {
             $return .= '<img alt="" width="48" src="lib/plugins/extension/images/plugin.png" />';
         }
-        $return .= '<label for="'.$this->form_id.'_'.hsc($info->repokey).'">'.hsc($info->displayname).'</label>';
+        $return .= '<label for="'.$this->form_id.'_'.hsc($info->html_id).'">'.hsc($info->displayname).'</label>';
         $return .= ' by '.$this->make_author($info);
         $return .= '<p>';
         if(!empty($info->description)) {
@@ -333,8 +332,8 @@ class pm_plugins_list_lib {
         if(!$info->can_select()) {
             $checked .= 'disabled="disabled"';
         }
-        return '<input id="'.$this->form_id.'_'.hsc($info->repokey).'" type="checkbox"'.
-               ' name="checked[]" value="'.$info->repokey.'" '.$checked.' /><br />';
+        return '<input id="'.$this->form_id.'_'.hsc($info->html_id).'" type="checkbox"'.
+               ' name="checked[]" value="'.$info->cmdkey.'" '.$checked.' /><br />';
     }
 
     function make_actions($info) {
@@ -361,7 +360,7 @@ class pm_plugins_list_lib {
     }
 
     function make_action($action,$info,$text) {
-        return '<input class="button" name="fn['.$action.']['.$info->repokey.']" type="submit" value="'.$text.'" />';
+        return '<input class="button" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" />';
     }
 
 }

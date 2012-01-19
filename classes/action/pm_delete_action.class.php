@@ -22,8 +22,8 @@ class pm_delete_action extends pm_base_action {
      * @param string name of the plugin or template directory to delete
      * @return bool if the directory delete was successful or not
      */
-    function delete($repokey) {
-        $info = $this->manager->info->get($repokey);
+    function delete($cmdkey) {
+        $info = $this->manager->info->get($cmdkey);
         if(!$info->can_delete()) return false;
 
         $path = $info->install_directory();

@@ -9,6 +9,10 @@
 
 class pm_search_single_lib extends pm_base_single_lib {
 
+    function get_cmdkey() {
+        return $this->repokey;
+    }
+
     function can_select() {
         if(empty($this->downloadurl)) return false;
         if(!$this->is_writable) return false;

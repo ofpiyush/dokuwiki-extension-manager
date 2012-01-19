@@ -17,8 +17,8 @@ class pm_disable_action extends pm_base_action {
         $this->refresh($this->manager->tab);
     }
 
-    function disable($repokey) {
-        $info = $this->manager->info->get($repokey);
+    function disable($cmdkey) {
+        $info = $this->manager->info->get($cmdkey);
         if(!$info->can_disable()) return false;
         if($info->is_template) return false;
 

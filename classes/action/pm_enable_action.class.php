@@ -16,8 +16,8 @@ class pm_enable_action extends pm_base_action {
         $this->refresh($this->manager->tab);
     }
 
-    function enable($repokey) {
-        $info = $this->manager->info->get($repokey);
+    function enable($cmdkey) {
+        $info = $this->manager->info->get($cmdkey);
         if(!$info->can_enable()) return false;
 
         if($info->is_template) {

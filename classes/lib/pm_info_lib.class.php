@@ -12,31 +12,38 @@ class pm_info_lib {
         $this->manager = $manager;
     }
 
+    /**
+     * Create and return an info object
+     * @property string type    'plugin'   - index is plugin folder name from plugin_list, used in plugin tab
+     *                          'template' - index is template folder name from template_list, used in template tab
+     *                          'search'   - index is repokey/folder (prefixed with 'template:' for tpl), used by all actions
+     */
     function get($index,$type = 'search') {
         if(!in_array($type,array('plugin','template','search'))) {
             $type = 'plugin';
         }
-
         $is_installed = false;
         $is_template = false;
         $is_writable = false;
-        $repokey = $index;
-        $id = $index;
+        list($repokey, $folder) = explode('/',$index,2);
+        $id = $repokey;
 
         if ($type == 'search') {
             // assume plugin repo id (templates are prefixed by 'template:')
-            $id = str_replace('template:','',$index);
-            if(stripos($index,'template:')===0) {
+            if(stripos($repokey,'template:')===0) {
+                $id = substr($repokey,9);
                 $is_template = true;
                 $is_writable = $this->manager->templatefolder_writable;
-                if (in_array($id,$this->manager->template_list)) {
+                if ($folder && in_array($folder,$this->manager->template_list)) {
+                    $id = $folder;
                     $is_installed = true;
                     $type = 'template';
                 }
             } else {
                 $is_template = false;
                 $is_writable = $this->manager->pluginfolder_writable;
-                if (in_array($id,$this->manager->plugin_list)) {
+                if ($folder && in_array($folder,$this->manager->plugin_list)) {
+                    $id = $folder;
                     $is_installed = true;
                     $type = 'plugin';
                 }
@@ -62,7 +69,7 @@ class pm_info_lib {
 
             // only use getInfo fall-back for enabled plugins
             if(empty($return->info) && !$is_template && $return->is_enabled) {
-                $return->info = $this->read_plugin_getInfo($index);
+                $return->info = $this->read_plugin_getInfo($id);
             }
             if(!empty($return->info['base'])) {
                 $repokey = (($is_template) ? 'template:' : '').$return->info['base'];

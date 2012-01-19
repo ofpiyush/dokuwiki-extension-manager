@@ -36,7 +36,7 @@ abstract class pm_base_single_lib {
     var $id = null;
 
     /**
-     * Unique identifier, $id prefixed with 'template:' for templates
+     * Unique identifier used in repository, $id prefixed with 'template:' for templates
      * @property string $id
      */
     var $repokey = null;
@@ -148,6 +148,22 @@ abstract class pm_base_single_lib {
 
     function __isset($key) {
         return $this->$key !== false;
+    }
+
+    /**
+     * return repokey and folder used in action urls
+     */
+    protected function get_cmdkey() {
+        $this->cmdkey = $this->repokey.'/'.$this->id;
+        return $this->cmdkey;
+    }
+
+    /**
+     * return repokey as valid HTML id
+     */
+    protected function get_html_id() {
+        $this->html_id = str_replace(':','_',$this->repokey);
+        return $this->html_id;
     }
 
     /**

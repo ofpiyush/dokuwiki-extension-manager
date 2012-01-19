@@ -20,8 +20,8 @@ class pm_download_action extends pm_base_action {
             $this->url_download();
 
         } elseif (is_array($this->selection)) {
-            foreach ($this->selection as $repokey) {
-                $info = $this->manager->info->get($repokey);
+            foreach ($this->selection as $cmdkey) {
+                $info = $this->manager->info->get($cmdkey);
                 $this->download_single($info);
             }
         }
