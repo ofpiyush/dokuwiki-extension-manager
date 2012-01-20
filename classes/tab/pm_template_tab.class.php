@@ -44,7 +44,7 @@ class pm_template_tab extends pm_base_tab {
      * Template tab rendering
      */
     function html() {
-        $this->html_menu($this->updates_available);
+        $this->html_menu();
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_template'),count($this->manager->template_list));
 	    ptln('<h3>'.$summary.'</h3>');

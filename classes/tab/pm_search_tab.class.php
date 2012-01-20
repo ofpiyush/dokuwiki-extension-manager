@@ -8,14 +8,13 @@
 
 class pm_search_tab extends pm_base_tab {
 
+    var $query = NULL;
     var $term = NULL;
+    var $extra = NULL;
     var $filters = array();
     var $search_result = array();
     var $filtered_repo = NULL;
-    var $extra = NULL;
-    var $versions = array();
     var $actions_list = array();
-    var $search_types = array();
 
     function process() {
         $doku = getVersionData();
@@ -38,26 +37,39 @@ class pm_search_tab extends pm_base_tab {
             'not_writable' => $this->manager->getLang('not_writable'),
             );
 
-        $this->search_types = array(
-            ''=>$this->manager->getLang('all'),
-            'Syntax'=>$this->manager->getLang('syntax')." (Syntax)",
-            'Admin'=>$this->manager->getLang('admin')." (Admin)",
-            'Action'=>$this->manager->getLang('action')." (Action)",
-            'Render'=>$this->manager->getLang('render')." (Render)",
-            'Helper'=>$this->manager->getLang('helper')." (Helper)",
-            'Template'=>$this->manager->getLang('template')." (Template)"
-            );
+        // list of properties that are included in the search
         $this->filters = array('id' => NULL,'name' => NULL,'description' => NULL, 'type' => NULL, 'tag' =>NULL, 'author' => NULL);
 
-        if(!empty($_REQUEST['term']) > 0) {
-            $this->term = $_REQUEST['term'];
-            //add parsing for key=value based extras
+        if(!empty($_REQUEST['q'])) {
+            $this->query = $_REQUEST['q'];
         }
         if(!empty($_REQUEST['type'])) {
-            $this->extra['type'] = $_REQUEST['type'];
+            $this->query .= ' @'.$_REQUEST['type'];
         }
+
+        if (preg_match_all('/(@plugins*|@templates*|\w+\s*:\s*\w+|".*?"|\w+)+/i',$this->query,$matches)) {
+            foreach ($matches[0] as $match) {
+                if (stripos($match,'@plugin') !== false) {
+                    $this->extra['is_template'] = false;
+
+                } elseif (stripos($match,'@template') !== false) {
+                    $this->extra['is_template'] = true;
+
+                } elseif (strpos($match,':') !== false) {
+                    list($key,$val) = explode(':', $match,2);
+                    $this->extra[strtolower(trim($key))] = trim($val);
+
+                } elseif (strpos($match,'"') !== false) {
+                    $this->term[] = str_replace('"','',$match);
+
+                } else {
+                    $this->term[] = $match;
+                }
+            }
+        }
+
         if($this->term !== null || $this->extra !== null ) {
-            if($this->term === null) $this->term = " ";
+            if($this->term === null) $this->term = array();
             if($this->manager->repo !== null)
                 $this->lookup();
         }
@@ -70,13 +82,15 @@ class pm_search_tab extends pm_base_tab {
         $this->html_menu();
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo));
-	    ptln('<h3>'.$summary.'</h3>');
         $this->html_download_disabled();
         $this->html_urldownload();
+        ptln('<div class="search">');
+        ptln('<h3>'.$summary.'</h3>');
+        $this->html_search($this->manager->getLang('search_extension'),$this->query);
+        ptln('</div>');
         ptln('</div><!-- panelHeader -->');
 
         ptln('<div class="panelContent">');
-        $this->html_search($this->manager->getLang('search_extension'),$this->search_types,$this->term);
         $this->html_extensionlist();
         ptln('</div><!-- panelContent -->');
     }
@@ -85,7 +99,7 @@ class pm_search_tab extends pm_base_tab {
         if(is_array($this->search_result) && count($this->search_result)) {
             $type = (!empty($this->extra['type']) && $this->extra['type'] == "Template" )? 'template': 'plugin' ;
             $list = new pm_plugins_list_lib($this->manager,'extensionplugin__searchresult',$this->actions_list,$this->possible_errors,$type);
-            $list->add_header('search_results',sprintf($this->manager->getLang('header_search_results'),hsc($this->term)));
+            $list->add_header('search_results',sprintf($this->manager->getLang('header_search_results'),hsc($this->query)));
             $list->start_form();
             foreach($this->search_result as $result) {
                 foreach($result as $info) {
@@ -95,12 +109,14 @@ class pm_search_tab extends pm_base_tab {
             }
             $list->end_form(array_keys($this->actions_list));
             $list->render();
-        } elseif(!is_null($this->term)) {
+
+        } elseif(!is_null($this->query)) {
             $no_result = new pm_plugins_list_lib($this->manager,'extensionplugin__noresult');
-            $no_result->add_header('search_results',sprintf($this->manager->getLang('not_found'),hsc($this->term)));
+            $no_result->add_header('search_results',sprintf($this->manager->getLang('not_found'),hsc($this->query)));
             $url = wl($ID,array('do'=>'admin','page'=>'plugin','tab'=>'search'));
             $no_result->add_p(sprintf($this->manager->getLang('no_result'),$url,$url));
             $no_result->render();
+
         } else {
             $full_list = new pm_plugins_list_lib($this->manager,'extensionplugin__browselist',$this->actions_list,$this->possible_errors);
             $full_list->add_header('search_results',$this->manager->getLang('browse'));
@@ -123,27 +139,74 @@ class pm_search_tab extends pm_base_tab {
         }
     }
 
-    protected function clean_repo() {
-        $this->filtered_repo = array_filter($this->manager->repo,array($this,'filter_clean'));
-        
-    }
+
     /**
-     * Looks up the term in the repository cache according to filters set. Basic searching.
-     * TODO advanced searching options (case-sensitive, for exact term etc) is it necessary??
-     * TODO assign weights to matches, like id matches highest in ordering
+     * Filter BEFORE the repo is searched on, removes obsolete plugins, security issues etc
+     */
+    protected function clean_repo() {
+        $this->filtered_repo = array_filter($this->manager->repo,create_function('$info','return $info["show"];'));
+        $this->filtered_repo = array_merge($this->filtered_repo, $this->local_extensions());
+        uasort($this->filtered_repo, function($a,$b){return strcasecmp($a['sort'],$b['sort']);});
+    }
+
+    /**
+     * Create dummy repo entries for local extensions
+     */
+    function local_extensions() {
+        $retval = array();
+        $templates = array_map(array($this,'_info_templatelist') ,$this->manager->template_list);
+        $plugins = array_map(array($this,'_info_pluginlist'),$this->manager->plugin_list);
+        $list = array_merge($plugins,$templates);
+        foreach ($list as $info) {
+            if ($info->log['repokey']) {
+                // only use repo if we are sure that this plugin is connected to repo
+                $retval[$info->repokey] = $info->repo;
+                $retval[$info->repokey]['id'] = $info->cmdkey;
+            } else {
+                $retval[$info->repokey] = array('id' => $info->cmdkey,
+                                                'name' => $info->name,
+                                                'author' => $info->author,
+                                                'description' => $info->desc,
+                                                'sort' => str_replace('template:','',$info->repokey)
+                                                );
+            }
+        }
+        return $retval;
+    }
+
+    function _info_pluginlist($index) {
+        return $this->manager->info->get($index,'plugin');
+    }
+
+    function _info_templatelist($index) {
+        return $this->manager->info->get($index,'template');
+    }
+
+    /**
+     * Looks up the term in the repository cache according to filters set
      */
     protected function lookup() {
         $repo = array_merge($this->filtered_repo, $this->local_extensions());
         foreach ($repo as $single) {
+            if (!$this->check($single)) continue;
+
+            // search
             $matches = array_filter($single,array($this,'search'));
             if(count($matches)) {
-                $count = count(array_intersect_key($this->filters,$matches));
-                if($count && $this->check($single)) {
-                    // increase weight for id match
-                    if(stripos($single['id'],$this->term)!==false) $count += 5;
-                    //increase weight for name match
-                    if(stripos($single['name'],$this->term)!==false) $count += 3;
-                    $this->search_result[$count][$single['id']] = $single;
+                $weight = count(array_intersect_key($this->filters,$matches));
+                if($weight) {
+                // TODO
+                    // increase weight for id (repokey) match
+                    // if (stripos($single['id'],$this->term)!==false) {
+                        // $weight += 8;
+                        // if ($single['id'] == $this->term) $weight += 8;
+                    // }
+                    // increase weight for name match
+                    // if(stripos($single['name'],$this->term)!==false) {
+                        // $weight += 6;
+                        // if ($single['name'] == $this->term) $weight += 6;
+                    // }
+                    $this->search_result[$weight][$single['id']] = $single;
                 }
             }
         }
@@ -151,65 +214,40 @@ class pm_search_tab extends pm_base_tab {
     }
 
     /**
-     * Create dummy repo entries for local extensions that doesn't exist in repo
-     */
-    function local_extensions() {
-        $retval = array();
-        $templates = array_map(create_function('$id','return "template:".$id;') ,$this->manager->template_list);
-        $list = array_map(array($this,'_info_list'),array_merge($this->manager->plugin_list,$templates));
-        foreach ($list as $info) {
-            if (!$info->repo) {
-                $retval[] = array('id' => $info->repokey,
-                                  'name' => $info->name,
-                                  'author' => $info->author,
-                                  'description' => $info->desc
-                                  );
-            }
-        }
-        return $retval;
-    }
-    /**
-     * Search for the term in every plugin and return matches.
+     * Search for the term in every plugin and return matches
      */
     protected function search($haystack) {
-        if(is_array($haystack) && array_key_exists('tag',$haystack) && in_array('tag',$this->filters)) {
-            return (bool) count(array_filter((array)$haystack['tag'],array($this,'search')));
-        }        
-        return @stripos($haystack,$this->term) !== false;
+        if(is_array($haystack)) {
+            return (bool) count(array_filter((array)$haystack,array($this,'search')));
+        }
+        foreach ($this->term as $t) {
+            if (@stripos($haystack,$t) === false) return false;
+        }
+        return true;
     }
 
     /**
-     * Checks to figure out if a plugin should be searched, 
-     * based on some settings, version, current context(may be?)
+     * Checks to figure out if a plugin should be searched, all $extra[] conditions must match
      */
     protected function check($plugin) {
-        //$version_data = getVersionData();
-        //print_r($this->extra);
-        if(is_array($this->extra) && count($this->extra))
-            foreach($this->extra as $index => $value)
-                if(count($value)) {
-                    if($index == 'type') {
-                        if(strlen($value) && stripos($plugin['type'],$value) === false) return false;
+        if(is_array($this->extra)) {
+            foreach($this->extra as $key => $value) {
+                if ($key == 'is_template') {
+                    if ($value) {
+                        if (strpos($plugin['id'],'template:') === false) return false;
+                    } else {
+                        if (strpos($plugin['id'],'template:') !== false) return false;
                     }
-                    elseif($index == 'tag') { // Tag based left here for future use
-                        foreach($value as $tag)
-                            if(strlen($tag))
-                                if(@in_array(trim($tag),(array)$plugin['tags']['tag'])===false) return false;
-                    }elseif(!(array_key_exists($index,$plugin) && $plugin[$index] == $value)) return false;
+
+                } elseif ($key == 'tag') {
+                    if(@in_array($value,(array)$plugin['tags']['tag']) === false) return false;
+
+                } elseif (!array_key_exists($key,$plugin) || stripos($plugin[$key], $value) === false) {
+                    return false;
                 }
-        //All tests passed
+            }
+        }
         return true;
     }
 
-    /**
-     * Used to filter BEFORE the repo is searched on. only remove very very important ones
-     */
-    protected function filter_clean($plugin) {
-        //Check for security issue
-        if(!empty($plugin['securityissue'])) return false;
-        if(@in_array('!obsolete',(array)$plugin['tags']['tag'])) return false;
-        if(@in_array('!bundled',(array)$plugin['tags']['tag'])) return false;
-        //all tests passed
-        return true;
-    } 
 }

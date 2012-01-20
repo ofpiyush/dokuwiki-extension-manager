@@ -43,11 +43,8 @@ class pm_plugins_list_lib {
         );
         // preserve search query when pressing info action
         if($this->manager->tab == "search" ) {
-            if(!empty($this->manager->handler->term)) {
-                $hidden['term'] = $this->manager->handler->term;
-            }
-            if(!empty($this->manager->handler->extra)) {
-                $hidden = array_merge($hidden,$this->manager->handler->extra);
+            if(!empty($this->manager->handler->query)) {
+                $hidden['q'] = $this->manager->handler->query;
             }
         }
         $this->add_hidden($hidden);

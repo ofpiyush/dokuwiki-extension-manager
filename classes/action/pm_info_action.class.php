@@ -13,10 +13,8 @@ class pm_info_action extends pm_base_action {
             $extra = array('info'=>$repokey);
 
             // preserve search query
-            if(!empty($_REQUEST['type']))
-                $extra['type'] = $_REQUEST['type'];
-            if(!empty($_REQUEST['term']))
-                $extra['term'] = $_REQUEST['term'];
+            if(!empty($_REQUEST['q']))
+                $extra['q'] = $_REQUEST['q'];
 
             $this->refresh($this->manager->tab,$extra,'extensionplugin__'.str_replace(':','_',$repokey));
         }

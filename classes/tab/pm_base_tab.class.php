@@ -23,7 +23,7 @@ abstract class pm_base_tab {
 
     abstract function check_writable();
 
-    function html_menu($updates_available=0) {
+    function html_menu() {
         global $ID;
 
         $tabs_array = array(
@@ -37,9 +37,7 @@ abstract class pm_base_tab {
 	    foreach($tabs_array as $tab =>$text) {
             if ($tab == $selected) {
                 echo '<li><strong>'.$text;
-                if ($updates_available > 0) {
-                    echo '<div class="message notify">'.sprintf($this->manager->getLang('updates_available'),$updates_available).'</div>';
-                }
+                $this->html_updates_available();
                 echo '</strong></li>';
             } else {
                 ptln('<li><a '.$class.' href="'.wl($ID,array('do'=>'admin','page'=>'extension','tab'=>$tab)).'">'.$text.'</a></li>');
@@ -56,6 +54,11 @@ abstract class pm_base_tab {
         echo '</div>';
     }
 
+    protected function html_updates_available() {
+        if (!$this->updates_available) return;
+        echo '<div class="message notify">'.sprintf($this->manager->getLang('updates_available'),$this->updates_available).'</div>';
+    }
+
     protected function html_urldownload() {
         if (!$this->manager->getConf('allow_download')) return;
 
@@ -69,30 +72,24 @@ abstract class pm_base_tab {
         $url_form->printForm();
     }
 
-    protected function html_search($header,$type = null,$value = '') {
+    protected function html_search($header,$value = '') {
         global $lang;
 
-        ptln('<h2>'.$header.'</h2>');
-        ptln('Duis rutrum lacinia sem, eu ultrices libero fringilla eget. Nam pretium tristique ligula, sit amet consequat lacus ultricies at. Mauris at ligula mi. Vivamus interdum aliquam risus vitae rutrum. Quisque faucibus sem in nibh aliquam sagittis ultrices sapien pharetra. Ut ac felis massa, a suscipit ligula. Curabitur sed ligula lorem. Donec neque est, commodo nec interdum vitae, dictum in nisl. Integer mattis, magna fringilla rhoncus scelerisque');
+//        ptln('<h2>'.$header.'</h2>');
+//        ptln('Duis rutrum lacinia sem, eu ultrices libero fringilla eget. Nam pretium tristique ligula, sit amet consequat lacus ultricies at. Mauris at ligula mi. Vivamus interdum aliquam risus vitae rutrum. Quisque faucibus sem in nibh aliquam sagittis ultrices sapien pharetra. Ut ac felis massa, a suscipit ligula. Curabitur sed ligula lorem. Donec neque est, commodo nec interdum vitae, dictum in nisl. Integer mattis, magna fringilla rhoncus scelerisque');
         $search_form = new Doku_Form('extension__manager_search');
         $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('term',hsc($value),$lang['btn_search'],'extensionplugin__searchtext'));
+        $search_form->addElement(form_makeTextField('q',hsc($value),$lang['btn_search'],'extensionplugin__searchtext'));
         $search_form->addHidden('page','extension');
         $search_form->addHidden('tab','search');
         $search_form->addHidden('fn','search');
-        // TODO maybe remove this listbox type selection in favor for a search query parser?
-        $type_default = "";
-        if(!empty($this->extra['type'])) $type_default = $this->extra['type'];
-        if($type !== null) {
-            if(is_array($type) && count($type)) {
-                $search_form->addElement(form_makeMenuField('type',$type,$type_default,$this->manager->getLang('type')));
-            } else {
-                $search_form->addHidden('type',$type);
-            }
+        if ($this->manager->tab != 'search') {
+            $search_form->addHidden('type',$this->manager->tab);
         }
         $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
         $search_form->endFieldset();
         $search_form->printForm();
+        $this->reload_repo_link();
     }
 
     function reload_repo_link() {
