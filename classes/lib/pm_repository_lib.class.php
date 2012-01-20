@@ -41,13 +41,11 @@ class pm_repository_lib {
                     $array = $this->obj_array($obj);
                     unset($obj);
                     $data = $array['plugin'];
-                }
-                else {
+                } else {
                     $array = $this->xml_array($data);
                     $data = $array['repository']['plugin'];
                 }
-                foreach($data as $single)
-                    $final[$single['id']] = $single;
+                $final = $this->add_repo_index($data);
                 unset($data);
                 $this->repo_cache->storeCache(serialize($final));
                 $error = false;
@@ -61,7 +59,68 @@ class pm_repository_lib {
             msg($this->manager->getLang('repocache_error'), -1);
         }
     }
-    
+
+    /**
+     * Create pre-calculated tag cloud
+     */
+    function add_repo_index(&$data) {
+        foreach($data as $single) {
+            // simplify filtering of entries that shouldn't show up in search
+            $show = true;
+            if(!empty($single['securityissue'])) $show = false;
+            if(@in_array('!obsolete',(array)$single['tags']['tag'])) $show = false;
+            $single['show'] = $show;
+
+            // add missing sort field
+            $single['sort'] = str_replace('template:','',$single['id']);
+
+            // collect tags for cloud
+            if (is_array($single['tags']['tag'])) {
+                foreach ($single['tags']['tag'] as $tag) {
+                    if ($show && substr($tag,0,1) != '!') $tags[$tag]++;
+                }
+            }
+
+            // add key to entry
+            $repo[$single['id']] = $single;
+        }
+        // create tag cloud
+        arsort($tags);
+        $tags = array_slice($tags, 0, 30, true);
+        $max  = 0;
+        $min  = 0;
+        foreach ($tags as $cnt) {
+            if(!$max) $max = $cnt;
+            $min = $cnt;
+        }
+        $this->cloud_weight($tags,$min,$max,5);
+        ksort($tags);
+
+        return array('data' => $repo, 'cloud' => $tags);
+    }
+
+    /**
+     * Assign weight group to each tag in supplied array, use $levels groups
+     */
+    function cloud_weight(&$tags,$min,$max,$levels){
+        // calculate tresholds
+        $tresholds = array();
+        for($i=0; $i<=$levels; $i++){
+            $tresholds[$i] = pow($max - $min + 1, $i/$levels) + $min - 1;
+        }
+
+        // assign weights
+        foreach($tags as $tag => $cnt){
+            foreach($tresholds as $tresh => $val){
+                if($cnt <= $val){
+                    $tags[$tag] = $tresh;
+                    break;
+                }
+                $tags[$tag] = $levels;
+            }
+        }
+    }
+
     /**
      * Converts objects to arrays     // TODO may be should be kept under parseutils??
      */

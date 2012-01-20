@@ -81,9 +81,12 @@ class pm_search_tab extends pm_base_tab {
     function html() {
         $this->html_menu();
         ptln('<div class="panelHeader">');
-        $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo));
+        $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo['data']));
         $this->html_download_disabled();
         $this->html_urldownload();
+        ptln('<div class="tagcloud">');
+        $this->tagcloud();
+        ptln('</div>');
         ptln('<div class="search">');
         ptln('<h3>'.$summary.'</h3>');
         $this->html_search($this->manager->getLang('search_extension'),$this->query);
@@ -139,12 +142,27 @@ class pm_search_tab extends pm_base_tab {
         }
     }
 
+    /**
+     * Output plugin tag filter selection (cloud)
+     */
+    function tagcloud(){
+        global $ID;
+
+        $tags = $this->manager->repo['cloud'];
+        if (count($tags) > 0) {
+            echo '<div class="cloud">'.NL;
+            foreach($tags as $tag => $size){
+                echo $this->html_taglink($tag, 'cl'.$size);
+            }
+            echo '</div>'.NL;
+        }
+    }
 
     /**
      * Filter BEFORE the repo is searched on, removes obsolete plugins, security issues etc
      */
     protected function clean_repo() {
-        $this->filtered_repo = array_filter($this->manager->repo,create_function('$info','return $info["show"];'));
+        $this->filtered_repo = array_filter($this->manager->repo['data'],create_function('$info','return $info["show"];'));
         $this->filtered_repo = array_merge($this->filtered_repo, $this->local_extensions());
         uasort($this->filtered_repo, function($a,$b){return strcasecmp($a['sort'],$b['sort']);});
     }

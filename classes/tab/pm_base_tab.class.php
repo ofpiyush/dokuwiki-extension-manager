@@ -92,6 +92,19 @@ abstract class pm_base_tab {
         $this->reload_repo_link();
     }
 
+    function html_taglink($tag, $class='') {
+        global $ID;
+
+        $params = array(
+            'do'=>'admin',
+            'page'=>'extension',
+            'tab'=>'search',
+            'q'=>'tag:'.$tag,
+        );
+        $url = wl($ID,$params);
+        return '<a href="'.$url.'" class="taglink '.$class.'" title="'.'List all plugins with this tag'.' : '.$tag.'">'.$tag.'</a> ';
+    }
+
     function reload_repo_link() {
         global $ID;
 

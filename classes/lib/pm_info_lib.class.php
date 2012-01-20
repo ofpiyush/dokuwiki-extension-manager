@@ -100,8 +100,8 @@ class pm_info_lib {
     }
 
     function find_repo_entry($return) {
-        if(!empty($this->manager->repo[$return->repokey])) {
-            return $this->manager->repo[$return->repokey];
+        if(!empty($this->manager->repo['data'][$return->repokey])) {
+            return $this->manager->repo['data'][$return->repokey];
         }
         return false;
     }

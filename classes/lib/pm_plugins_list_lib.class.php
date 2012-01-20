@@ -229,7 +229,13 @@ class pm_plugins_list_lib {
 
         $return .= $this->make_homepagelink($info);
         if ($info->bugtracker) {
-            $return .= ' <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="urlextern">'.$this->manager->getLang('bugs_features').'</a>';
+            $return .= ' &bull; <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="urlextern">'.$this->manager->getLang('bugs_features').'</a>';
+        }
+        if(!empty($info->tags) && is_array($info->tags['tag'])) {
+            $return .= ' &bull; '.$this->manager->getLang('tags');
+            foreach ($info->tags['tag'] as $tag) {
+                $return .= $this->manager->handler->html_taglink($tag);
+            }
         }
         $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         $return .= $this->make_info($info);
@@ -282,10 +288,12 @@ class pm_plugins_list_lib {
         $return .= (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default);
         $return .= '</dd>';
 // TODO installed, updated
-        $return .= '<dt>'.$this->manager->getLang('installed').'</dt>';
-        $return .= '<dd>';
-        $return .= (!empty($info->install_date) ? hsc($info->install_date) : $default);
-        $return .= '</dd>';
+        if(!empty($info->install_date)) {
+            $return .= '<dt>'.$this->manager->getLang('installed').'</dt>';
+            $return .= '<dd>';
+            $return .= hsc($info->install_date);
+            $return .= '</dd>';
+        }
 
         $return .= '<dt>'.$this->manager->getLang('components').'</dt>';
         $return .= '<dd>';
@@ -313,12 +321,6 @@ class pm_plugins_list_lib {
             $return .= '</dd>';
         }
 
-        if(!empty($info->tags)) {
-            $return .= '<dt>'.$this->manager->getLang('tags').'</dt>';
-            $return .= '<dd>';
-            $return .= hsc(implode(', ',(array)$info->tags['tag']));
-            $return .= '</dd>';
-        }
         // TODO $info->donationurl
         $return .= '</dl>';
         return $return;

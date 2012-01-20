@@ -66,8 +66,8 @@ $lang['select_none']            = 'Select None';
 $lang['bundled']                = 'bundled';
 $lang['manual_install']         = 'manual install';
 
-$lang['homepage_link']          = 'Documentation';
-$lang['bugs_features']          = 'Bugs and feature requests';
+$lang['homepage_link']          = 'Docs';
+$lang['bugs_features']          = 'Bugs';
 $lang['installed']              = 'Installed:';
 $lang['lastupdate']             = 'Last updated:';
 $lang['source']                 = 'Source:';

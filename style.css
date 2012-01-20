@@ -34,7 +34,10 @@
 #extension__manager h2 {
     margin-left: 0;
 }
-
+#extension__manager a.taglink {
+    padding: 1px 9px;
+    background-color: #bfb;
+}
 /*
  * search & url download forms
  */
@@ -44,6 +47,13 @@
     text-align: right;
     padding: 0;
 }
+/* tag cloud */
+#extension__manager a.cl0 { font-size: 0.7em; }
+#extension__manager a.cl1 { font-size: 0.9em; }
+#extension__manager a.cl2 { font-size: 1em; }
+#extension__manager a.cl3 { font-size: 1.3em; }
+#extension__manager a.cl4 { font-size: 1.6em; }
+#extension__manager a.cl5 { font-size: 1.9em; }
 /*
  * multiselect controls
  */
