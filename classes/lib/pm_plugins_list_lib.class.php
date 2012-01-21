@@ -242,7 +242,6 @@ class pm_plugins_list_lib {
                 $return .= $this->manager->handler->html_taglink($tag);
             }
         }
-        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         $return .= $this->make_info($info);
         $return .= $this->make_noticearea($info);
         return $return;
@@ -284,7 +283,9 @@ class pm_plugins_list_lib {
      * Plugin/template details
      */
     function make_info($info) {
-        if(!$info->showinfo()) return '';
+        if(!$info->showinfo()) {
+            return $this->make_action('info',$info,$this->manager->getLang('btn_info'));
+        }
         $default = $this->manager->getLang('unknown');
 
         $return .= '<dl class="details">';
@@ -328,6 +329,7 @@ class pm_plugins_list_lib {
 
         // TODO $info->donationurl
         $return .= '</dl>';
+        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         return $return;
     }
 
