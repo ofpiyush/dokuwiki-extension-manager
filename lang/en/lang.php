@@ -137,7 +137,7 @@ $lang['type']                   = 'Type:';
 $lang['desc']                   = 'Description:';
 $lang['author']                 = 'Author:';
 $lang['www']                    = 'Web:';
-$lang['tags']                   = 'Tags:';
+$lang['tags']                   = 'Tags';
 // error messages
 $lang['already_installed']      = 'Already installed';
 $lang['not_writable']           = 'DokuWiki can not write to the folder';

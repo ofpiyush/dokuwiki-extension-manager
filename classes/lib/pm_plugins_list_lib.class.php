@@ -241,7 +241,7 @@ class pm_plugins_list_lib {
             $return .= ' &bull; <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="urlextern">'.$this->manager->getLang('bugs_features').'</a>';
         }
         if(!empty($info->tags) && is_array($info->tags['tag'])) {
-            $return .= ' &bull; '.$this->manager->getLang('tags');
+            $return .= ' &bull; '.$this->manager->getLang('tags').' ';
             foreach ($info->tags['tag'] as $tag) {
                 $return .= $this->manager->handler->html_taglink($tag);
             }
