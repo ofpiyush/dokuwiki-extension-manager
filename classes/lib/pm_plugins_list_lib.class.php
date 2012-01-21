@@ -224,6 +224,10 @@ class pm_plugins_list_lib {
             list($progressCount,$progressWidth) = explode(',',$info->popularity,2);
             $return .= '<div class="progress" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
         }
+        $compatible = $info->compatible_status($this->manager->dokuwiki_version['date']);
+        if ($compatible) {
+            $return .= '<div class="status '.$compatible.'" title="'.$this->manager->getLang('status_'.$compatible).'">'.$this->manager->dokuwiki_version['name'].'</div>';
+        }
 
         $return .= '<p>';
         if(!empty($info->description)) {
@@ -306,6 +310,12 @@ class pm_plugins_list_lib {
         $return .= (!empty($info->type) ? hsc($info->type) : $default);
         $return .= '</dd>';
 
+        if(!empty($info->compatible)) {
+            $return .= '<dt>'.$this->manager->getLang('compatible').'</dt>';
+            $return .= '<dd>';
+            $return .= hsc(implode(', ',(array)$info->compatible['release']));
+            $return .= '</dd>';
+        }
         if(!empty($info->relations['depends']['id'])) {
             $return .= '<dt>'.$this->manager->getLang('depends').'</dt>';
             $return .= '<dd>';

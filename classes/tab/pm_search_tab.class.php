@@ -17,8 +17,6 @@ class pm_search_tab extends pm_base_tab {
     var $actions_list = array();
 
     function process() {
-        $doku = getVersionData();
-        $this->doku_version = $doku['date'];
         $this->clean_repo();
         $this->actions_list = array(
             'enable'=>$this->manager->getLang('enable'),

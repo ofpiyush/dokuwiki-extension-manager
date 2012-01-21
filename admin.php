@@ -114,6 +114,16 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      */
     var $templatefolder_writable = false;
 
+    /**
+     * string current DokuWiki version
+     */
+    var $dokuwiki_version = null;
+
+    var $dokuwiki = array('2011-11-10' => 'Angua',
+                          '2011-05-25' => 'Rincewind',
+                          '2010-11-07' => 'Anteater',
+                          '2009-12-25' => 'Lemming');
+
     function __construct() {
         spl_autoload_register(array($this,'autoload'));
 
@@ -128,6 +138,17 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         }
         $this->pluginfolder_writable = is_writable(DOKU_PLUGIN);
         $this->templatefolder_writable = is_writable(DOKU_TPLLIB);
+
+        $ver = getVersionData();
+        if (preg_match('/\d+[-]\d+[-]\d+/',$ver['date'],$date)) {
+            reset($this->dokuwiki);
+            if ($ver['type'] == 'Git' && $date[0] > key($this->dokuwiki)) {
+                $date[0] = key($this->dokuwiki);
+            }
+            $name = $this->dokuwiki[$date[0]];
+            if (!$name) $name = $date[0];
+            $this->dokuwiki_version = array('date' => $date[0], 'name' => $name);
+        }
     }
 
     /**

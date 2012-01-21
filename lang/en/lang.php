@@ -66,6 +66,10 @@ $lang['select_none']            = 'Select None';
 $lang['bundled']                = 'bundled';
 $lang['manual_install']         = 'manual install';
 
+$lang['status_compatible']      = 'Compatible with this DokuWiki release';
+$lang['status_probably']        = 'Probably compatible with this DokuWiki release (works with earlier releases)';
+$lang['status_maybe']           = 'Compatible with later DokuWiki releases (upgrade your installation)';
+
 $lang['homepage_link']          = 'Docs';
 $lang['bugs_features']          = 'Bugs';
 $lang['installed']              = 'Installed:';
@@ -75,6 +79,7 @@ $lang['unknown']                = '<em>unknown</em>';
 $lang['installed_version']      = 'Installed version:';
 $lang['install_date']           = 'Your last update:';
 $lang['available_version']      = 'Available version:';
+$lang['compatible']             = 'Compatible:';
 $lang['depends']                = 'Depends on:';
 $lang['similar']                = 'Similar to:';
 $lang['conflicts']              = 'Conflicts with:';

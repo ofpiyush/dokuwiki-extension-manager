@@ -35,8 +35,9 @@
     margin-left: 0;
 }
 #extension__manager a.taglink {
-    padding: 1px 9px;
-    background-color: #bfb;
+    padding: 1px 4px;
+    background-color: #dedede;
+    border-radius: 3px;
 }
 /*
  * search & url download forms
@@ -171,6 +172,15 @@
 }
 #extension__manager .showinfo .legend  input.button {
     background: transparent url(images/up.png) no-repeat 0 0;
+}
+#extension__manager .legend div.status.maybe {background-color: #fc1;}
+#extension__manager .legend div.status.probably  {background-color: yellow;}
+#extension__manager .legend div.status.compatible {background-color: #bfb;}
+#extension__manager .legend div.status {
+    padding: 0em 0.3em;
+    margin: 0em 0.3em;
+    font-size: 80%;
+    float: right;
 }
 #extension__manager .legend div.progress {
     background-color: __background__;
