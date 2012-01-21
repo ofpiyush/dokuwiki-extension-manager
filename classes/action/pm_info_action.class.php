@@ -10,8 +10,13 @@ class pm_info_action extends pm_base_action {
     function act() {
         if(!empty($this->selection)) {
             list($repokey,$folder) = explode('/',array_pop($this->selection),2);
-            $extra = array('info'=>$repokey);
 
+            if (substr($repokey,0,1) == '-') {
+                $repokey = substr($repokey,1);
+                $extra = array('info'=>'');
+            } else {
+                $extra = array('info'=>$repokey);
+            }
             // preserve search query
             if(!empty($_REQUEST['q']))
                 $extra['q'] = $_REQUEST['q'];

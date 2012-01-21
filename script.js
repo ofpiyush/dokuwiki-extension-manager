@@ -1,6 +1,6 @@
 var extension_manager = { 
     constructor : function () {
-        if (!extension_manager.getUrlVars()['info']) {
+        if (!('info' in extension_manager.getUrlVars())) {
             jQuery('#extensionplugin__searchtext').focus();
         }
         extension_manager.setCheckState('#extension__manager .checknone',false);

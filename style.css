@@ -155,7 +155,14 @@
     margin: 0.2em 0em 0.1em 52px;
 }
 #extension__manager .legend  input.button {
+    background: transparent url(images/down.png) no-repeat 0 0;
+    border-width: 0;
+    height: 14px;
+    text-indent: -99999px;
     float: right;
+}
+#extension__manager .showinfo .legend  input.button {
+    background: transparent url(images/up.png) no-repeat 0 0;
 }
 #extension__manager .legend div.progress {
     background-color: __background__;

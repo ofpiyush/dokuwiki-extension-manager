@@ -350,7 +350,7 @@ abstract class pm_base_single_lib {
         return true;
     }
 
-    function highlight() {
+    function showinfo() {
         if($this->manager->showinfo == $this->repokey) return true;
         return false;
     }

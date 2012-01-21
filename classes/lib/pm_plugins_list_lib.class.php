@@ -18,7 +18,6 @@ class pm_plugins_list_lib {
     protected $columns = array();
     protected $intable = false;
     protected $actions_shown = array();
-    
 
     /**
      * Plugins list constructor
@@ -156,7 +155,7 @@ class pm_plugins_list_lib {
         if(!$info->can_select()) $class.= ' notselect';
         if($info->is_protected)
             $class.=  ' protected';
-        if($info->highlight()) $class.= ' highlight';
+        if($info->showinfo()) $class.= ' showinfo';
         return $class;
     }
 
@@ -285,7 +284,7 @@ class pm_plugins_list_lib {
      * Plugin/template details
      */
     function make_info($info) {
-        if($this->manager->showinfo != $info->repokey) return '';
+        if(!$info->showinfo()) return '';
         $default = $this->manager->getLang('unknown');
 
         $return .= '<dl class="details">';
@@ -365,7 +364,19 @@ class pm_plugins_list_lib {
     }
 
     function make_action($action,$info,$text) {
-        return '<input class="button" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" />';
+        switch ($action) {
+            case 'info':
+                if ($info->showinfo()) {
+                    return '<input class="button" name="fn['.$action.'][-'.$info->cmdkey.']" type="submit" value="'.$text.'" />';
+                }
+            case 'enable':
+            case 'disable':
+            case 'delete':
+                return '<input class="button" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" />';
+
+            default:
+                return '<input class="button" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" title="'.$info->downloadurl.'" />';
+        }
     }
 
 }
