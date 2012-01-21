@@ -136,7 +136,7 @@ $lang['tags']                   = 'Tags:';
 // error messages
 $lang['already_installed']      = 'Already installed';
 $lang['not_writable']           = 'DokuWiki can not write to the folder';
-$lang['repocache_error']        = "There was an error retrieving the plugin list from the dokuwiki.org server, please force reload later";
+$lang['repocache_error']        = 'www.dokuwiki.org extension repository unavailable';
 $lang['repoxmlformat_error']    = 'Repository XML unformatted';
 $lang['security_issue']         = '<strong>Security Issue:</strong> %s';
 $lang['security_warning']       = '<strong>Security Warning:</strong> %s';

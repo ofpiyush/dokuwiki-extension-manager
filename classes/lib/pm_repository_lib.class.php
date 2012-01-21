@@ -55,7 +55,7 @@ class pm_repository_lib {
             }
         }
         if($error) {
-            $this->repo_cache->storeCache(serialize(array()));
+            $this->repo_cache->storeCache(serialize(null));
             msg($this->manager->getLang('repocache_error'), -1);
         }
     }

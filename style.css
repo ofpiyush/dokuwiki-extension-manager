@@ -41,11 +41,19 @@
 /*
  * search & url download forms
  */
-#extension__manager_urldownload fieldset {
-    border: none;
-    width: auto;
-    text-align: right;
-    padding: 0;
+#extension__manager .panelHeader div.message {
+    display:inline;
+}
+#extension__manager .panelHeader div.notify,
+#extension__manager_urldownload  {
+    float: right;
+}
+#dw__url {
+    width: 200px;
+}
+#extension__manager .tagcloud {
+    width: 50%;
+    float: left;
 }
 /* tag cloud */
 #extension__manager a.cl0 { font-size: 0.7em; }

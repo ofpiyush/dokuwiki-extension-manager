@@ -60,6 +60,8 @@ class pm_plugin_tab extends pm_base_tab {
         $this->html_download_disabled();
         ptln('</div><!-- panelHeader -->');
 
+        $this->html_search($this->manager->tab);
+
         ptln('<div class="panelContent">');
         $this->html_extensionlist();
         ptln('</div><!-- panelContent -->');

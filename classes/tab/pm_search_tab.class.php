@@ -70,7 +70,7 @@ class pm_search_tab extends pm_base_tab {
 
         if($this->term !== null || $this->extra !== null ) {
             if($this->term === null) $this->term = array();
-            if($this->manager->repo !== null)
+            if($this->manager->repo)
                 $this->lookup();
         }
     }
@@ -81,17 +81,22 @@ class pm_search_tab extends pm_base_tab {
     function html() {
         $this->html_menu();
         ptln('<div class="panelHeader">');
-        $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo['data']));
+        if ($this->manager->repo) {
+            $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo['data']));
+            ptln('<h3>'.$summary.'</h3>');
+        } else {
+            echo '<div class="message error">'.$this->manager->getLang('repocache_error').'</div>';
+        }
         $this->html_download_disabled();
         $this->html_urldownload();
+        ptln('</div><!-- panelHeader -->');
+
         ptln('<div class="tagcloud">');
         $this->tagcloud();
         ptln('</div>');
         ptln('<div class="search">');
-        ptln('<h3>'.$summary.'</h3>');
-        $this->html_search($this->manager->getLang('search_extension'),$this->query);
+        $this->html_search(null,$this->query);
         ptln('</div>');
-        ptln('</div><!-- panelHeader -->');
 
         ptln('<div class="panelContent">');
         $this->html_extensionlist();
@@ -162,8 +167,12 @@ class pm_search_tab extends pm_base_tab {
      * Filter BEFORE the repo is searched on, removes obsolete plugins, security issues etc
      */
     protected function clean_repo() {
-        $this->filtered_repo = array_filter($this->manager->repo['data'],create_function('$info','return $info["show"];'));
-        $this->filtered_repo = array_merge($this->filtered_repo, $this->local_extensions());
+        if ($this->manager->repo) {
+            $this->filtered_repo = array_filter($this->manager->repo['data'],create_function('$info','return $info["show"];'));
+            $this->filtered_repo = array_merge($this->filtered_repo, $this->local_extensions());
+        } else {
+            $this->filtered_repo = $this->local_extensions();
+        }
         uasort($this->filtered_repo, function($a,$b){return strcasecmp($a['sort'],$b['sort']);});
     }
 

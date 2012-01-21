@@ -56,40 +56,44 @@ abstract class pm_base_tab {
 
     protected function html_updates_available() {
         if (!$this->updates_available) return;
-        echo '<div class="message notify">'.sprintf($this->manager->getLang('updates_available'),$this->updates_available).'</div>';
+
+        echo '<div class="message notify">';
+        echo sprintf($this->manager->getLang('updates_available'),$this->updates_available);
+        echo '</div>';
     }
 
     protected function html_urldownload() {
         if (!$this->manager->getConf('allow_download')) return;
 
         $url_form = new Doku_Form('extension__manager_urldownload');
-        $url_form->startFieldset($this->manager->getLang('urldownload_text'));
-        $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('urldownload_text'),'dw__url'));
         $url_form->addHidden('page','extension');
         $url_form->addHidden('fn','download');
-        $url_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_download') )); // change to img button
-        $url_form->endFieldset();
+        $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('urldownload_text'),'dw__url'));
+        $url_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_download') ));
         $url_form->printForm();
     }
 
-    protected function html_search($header,$value = '') {
+    protected function html_search($type, $value = '') {
         global $lang;
 
 //        ptln('<h2>'.$header.'</h2>');
 //        ptln('Duis rutrum lacinia sem, eu ultrices libero fringilla eget. Nam pretium tristique ligula, sit amet consequat lacus ultricies at. Mauris at ligula mi. Vivamus interdum aliquam risus vitae rutrum. Quisque faucibus sem in nibh aliquam sagittis ultrices sapien pharetra. Ut ac felis massa, a suscipit ligula. Curabitur sed ligula lorem. Donec neque est, commodo nec interdum vitae, dictum in nisl. Integer mattis, magna fringilla rhoncus scelerisque');
         $search_form = new Doku_Form('extension__manager_search');
         $search_form->startFieldset($lang['btn_search']);
-        $search_form->addElement(form_makeTextField('q',hsc($value),$lang['btn_search'],'extensionplugin__searchtext'));
         $search_form->addHidden('page','extension');
         $search_form->addHidden('tab','search');
-        $search_form->addHidden('fn','search');
-        if ($this->manager->tab != 'search') {
-            $search_form->addHidden('type',$this->manager->tab);
-        }
-        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'] ));
+    //    $search_form->addHidden('fn','search');
+        $search_form->addHidden('type',$type);
+        $search_form->addElement(form_makeTextField('q',hsc($value),'','extensionplugin__searchtext'));
+        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'], array('fame' => 'fn[search]')));
+        $search_form->addElement('<p>');
+        $search_form->addElement('Duis rutrum lacinia sem, eu ultrices libero fringilla eget. Nam pretium tristique ligula, sit amet consequat lacus ultricies at');
+        $search_form->addElement('</p>');
+        $search_form->addElement(sprintf($this->manager->getLang('repo_reload'),2)); // TODO move hardcoded value
+        $search_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_reload'), array('fame' => 'fn[repo_reload]')));
         $search_form->endFieldset();
         $search_form->printForm();
-        $this->reload_repo_link();
+   //     $this->reload_repo_link();
     }
 
     function html_taglink($tag, $class='') {
