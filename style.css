@@ -157,6 +157,22 @@
 #extension__manager .legend  input.button {
     float: right;
 }
+#extension__manager .legend div.progress {
+    background-color: __background__;
+    border: 1px solid silver;
+    height: .4em;
+    margin: 0 auto;
+    padding: 1px;
+    width: 5.5em;
+    float: right;
+}
+#extension__manager .legend div.progress div {
+    background-color: __border__;
+    height: 100%;
+}
+#extension__manager .legend div.progress div span {
+    display: none;/* @todo: hide accessibly */
+}
 #extension__manager .version {
     width: 12%;
 }

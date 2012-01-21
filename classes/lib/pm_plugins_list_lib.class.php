@@ -220,6 +220,12 @@ class pm_plugins_list_lib {
         }
         $return .= '<label for="'.$this->form_id.'_'.hsc($info->html_id).'">'.hsc($info->displayname).'</label>';
         $return .= ' by '.$this->make_author($info);
+
+        if ($info->popularity && !$info->is_bundled) {
+            list($progressCount,$progressWidth) = explode(',',$info->popularity,2);
+            $return .= '<div class="progress" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
+        }
+
         $return .= '<p>';
         if(!empty($info->description)) {
             $return .=  hsc($info->description).' ';
