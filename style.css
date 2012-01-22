@@ -226,7 +226,7 @@
  * extensions table, detailed info box
  */
 #extension__manager dl.details {
-    margin-top: 0.2em;
+    margin: 0.2em 0em;
     border: 1px dashed gray;
     font-size: 85%;
 }
@@ -243,7 +243,13 @@
 	margin-left: 150px;
 	padding: 0.2em 0 0 5px;
 }
-
+#extension__manager a.donate {
+    background: transparent url(images/donate.png) no-repeat 0 0;
+	margin-left: 4px;
+	padding: 16px 32px 0 0;
+    position: relative;
+    top: -24px;
+}
 /*
  * extensions table, messages
  */

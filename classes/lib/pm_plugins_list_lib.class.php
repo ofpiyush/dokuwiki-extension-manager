@@ -336,9 +336,11 @@ class pm_plugins_list_lib {
             $return .= $this->make_linklist((array)$info->relations['conflicts']['id']);
             $return .= '</dd>';
         }
-
-        // TODO $info->donationurl
         $return .= '</dl>';
+
+        if ($info->donationurl) {
+            $return .= '<a href="'.hsc($info->donationurl).'" class="donate" title="'.$this->manager->getLang('donate').'"></a>';
+        }
         $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         return $return;
     }

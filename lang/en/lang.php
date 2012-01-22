@@ -83,6 +83,7 @@ $lang['compatible']             = 'Compatible:';
 $lang['depends']                = 'Depends on:';
 $lang['similar']                = 'Similar to:';
 $lang['conflicts']              = 'Conflicts with:';
+$lang['donate']                 = 'Donate';
 
 $lang['msg_tpl_deleted']        = 'Template %s deleted';
 $lang['msg_tpl_notdeleted']     = 'Template %s could not be deleted';
