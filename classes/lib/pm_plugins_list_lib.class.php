@@ -291,13 +291,17 @@ class pm_plugins_list_lib {
             return $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         }
         $default = $this->manager->getLang('unknown');
-
         $return .= '<dl class="details">';
-        $return .= '<dt>'.$this->manager->getLang('source').'</dt>';
-        $return .= '<dd>';
-        $return .= (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default);
-        $return .= '</dd>';
+
+        if (!$info->is_bundled) {
+            $return .= '<dt>'.$this->manager->getLang('source').'</dt>';
+            $return .= '<dd>';
+            $return .= (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default);
+            $return .= '</dd>';
+        }
+
 // TODO installed, updated
+
         if(!empty($info->install_date)) {
             $return .= '<dt>'.$this->manager->getLang('installed').'</dt>';
             $return .= '<dd>';

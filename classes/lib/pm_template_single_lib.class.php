@@ -28,4 +28,8 @@ class pm_template_single_lib extends pm_base_single_lib {
         return (!$this->is_protected && !$this->is_enabled);
     }
 
+    function default_type() {
+        return 'Template';
+    }
+
 }

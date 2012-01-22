@@ -198,6 +198,8 @@ abstract class pm_base_single_lib {
     }
 
     function get_install_date() {
+        if ($this->is_bundled) return false;
+
         $time = null;
         if(!empty($this->updated)) {
             $time = $this->updated;

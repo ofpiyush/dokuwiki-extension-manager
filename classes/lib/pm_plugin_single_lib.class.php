@@ -38,10 +38,9 @@ class pm_plugin_single_lib extends pm_base_single_lib {
         $components = $this->manager->get_plugin_components($this->id);
         $return = "";
         if(!empty($components)) {
-            foreach($components as $component) {
-                $return .= ', '.$component['type'];
-            }
-            $this->type = ltrim($return,',');
+            $types = array_map(function($a){return ucfirst($a['type']);}, $components);
+            $types = array_unique($types);
+            $this->type = implode(', ', $types);
             return $this->type;
         }
         return false;
