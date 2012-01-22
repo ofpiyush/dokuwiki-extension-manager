@@ -319,27 +319,36 @@ class pm_plugins_list_lib {
         if(!empty($info->relations['depends']['id'])) {
             $return .= '<dt>'.$this->manager->getLang('depends').'</dt>';
             $return .= '<dd>';
-            $return .= hsc(implode(', ',(array)$info->relations['depends']['id']));
+            $return .= $this->make_linklist((array)$info->relations['depends']['id']);
             $return .= '</dd>';
         }
 
         if(!empty($info->relations['similar']['id'])) {
             $return .= '<dt>'.$this->manager->getLang('similar').'</dt>';
             $return .= '<dd>';
-            $return .= hsc(implode(', ',(array)$info->relations['similar']['id']));
+            $return .= $this->make_linklist((array)$info->relations['similar']['id']);
             $return .= '</dd>';
         }
 
         if(!empty($info->relations['conflicts']['id'])) {
             $return .= '<dt>'.$this->manager->getLang('conflicts').'</dt>';
             $return .= '<dd>';
-            $return .= hsc(implode(', ',(array)$info->relations['conflicts']['id']));
+            $return .= $this->make_linklist((array)$info->relations['conflicts']['id']);
             $return .= '</dd>';
         }
 
         // TODO $info->donationurl
         $return .= '</dl>';
         $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
+        return $return;
+    }
+
+    function make_linklist($links) {
+        foreach ($links as $link) {
+            $dokulink = hsc($link);
+            if (strpos($link,'template:') !== 0) $dokulink = 'plugin:'.$dokulink;
+            $return .= '<a href="http://www.dokuwiki.org/'.$dokulink.'" title="'.$dokulink.'" class="interwiki iw_doku">'.$link.'</a> ';
+        }
         return $return;
     }
 
