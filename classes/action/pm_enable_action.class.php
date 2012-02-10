@@ -6,9 +6,13 @@
  * @author     Piyush Mishra <me@piyushmishra.com>
  */
 
+if (class_exists('admin_plugin_config')) {
+    require_once(DOKU_PLUGIN.'config/settings/config.class.php');  // main configuration class and generic settings classes
+    require_once(DOKU_PLUGIN.'config/settings/extra.class.php');   // settings classes specific to these settings
+}
+
 class pm_enable_action extends pm_base_action {
 
-    var $result = array();
     function act() {
         if(is_array($this->selection)) {
             array_walk($this->selection,array($this,'enable'));
@@ -39,18 +43,14 @@ class pm_enable_action extends pm_base_action {
         return plugin_enable($plugin);
     }
 
-    // TODO remove ugly temporary fix for switching template
     function template_enable($template) {
-        global $config_cascade;
+        if (!class_exists('admin_plugin_config')) return false;
 
-        $localconfig = end($config_cascade['main']['local']);
-        $cfg = file_get_contents($localconfig);
-        if (preg_match("/conf\['template'\]/",$cfg)) {
-            $cfg = preg_replace("/(conf\['template'\]\s*=\s*').*?(';)/", '$1'.hsc($template).'$2', $cfg);
-        } else {
-            $cfg .= "\$conf['template'] = '".hsc($template)."';\n";
+        $config = new configuration(DOKU_PLUGIN.'config/settings/config.metadata.php');
+
+        if ($config->setting['template']->update($template)) {
+            return $config->save_settings('Extension manager');
         }
-        file_put_contents($localconfig, $cfg);
-        return true;
+        return false;
     }
 }
