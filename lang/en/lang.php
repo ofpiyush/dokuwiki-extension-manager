@@ -22,15 +22,12 @@ $lang['summary_plugin']         = 'You have %d plugins installed, %d enabled';
 $lang['summary_template']       = 'You have %d templates installed';
 $lang['summary_search']         = 'DokuWiki repository contains a total of %d extensions!';
 // search box
-$lang['search_plugin']          = 'Search among plugins at %s';
-$lang['search_template']        = 'Search among templates at %s';
-$lang['search_extension']       = 'Search among both plugins and templates at %s';
-
-$lang['repo_reload']            = 'The search list auto-updates every %d days old';
-$lang['btn_reload']             = 'Reload';
+$lang['search_intro']           = 'Tip! You can use &lt;property&gt;:&lt;value&gt; in your query, for example <strong>author:andi</strong> or <strong>type:admin</strong>. <strong>@plugins</strong> will restrict results, showing plugins only.';
+$lang['btn_reload']             = 'Refresh repository';
 
 // download url box
 $lang['urldownload_text']       = 'Install by URL';
+$lang['url']                    = 'URL';
 
 // plugin tab headings
 $lang['header_plugin_installed']  = 'Installed Plugins';
@@ -148,7 +145,7 @@ $lang['security_issue']         = '<strong>Security Issue:</strong> %s';
 $lang['security_warning']       = '<strong>Security Warning:</strong> %s';
 $lang['update_available']       = '<strong>Update:</strong> New version %s is available.';
 $lang['wrong_folder']           = '<strong>Plugin installed incorrectly:</strong> Rename plugin directory "%s" to "%s".';
-$lang['url_change']             = '<strong>URL changed:</strong> Download URL has changed since last download.<br />New: %s<br />Old: %s';
+$lang['url_change']             = '<strong>URL changed:</strong> Download URL has changed since last download. Check if the new URL is valid before updating the extension.<br />New: %s<br />Old: %s';
 $lang['gitmanaged']             = 'Git source control';
 $lang['bundled_source']         = 'Bundled with DokuWiki source';
 $lang['no_url']                 = 'No download URL';

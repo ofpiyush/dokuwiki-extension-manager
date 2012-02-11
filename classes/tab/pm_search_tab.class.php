@@ -21,6 +21,8 @@ class pm_search_tab extends pm_base_tab {
         $this->actions_list = array(
             'enable'=>$this->manager->getLang('enable'),
             'disable'=>$this->manager->getLang('btn_disable'),
+            'update'=>$this->manager->getLang('btn_update'),
+            'reinstall' =>$this->manager->getLang('btn_reinstall'),
             'download'=>$this->manager->getLang('btn_download'),
             'download_disabled'=>$this->manager->getLang('btn_disdown'),
             'download_dependency' => $this->manager->getLang('btn_dependown'),
@@ -31,7 +33,6 @@ class pm_search_tab extends pm_base_tab {
             'missing_dependency' => $this->manager->getLang('depends'),
             'gitmanaged' => $this->manager->getLang('gitmanaged'),
             'missing_dlurl' => $this->manager->getLang('no_url'),
-            'installed' =>$this->manager->getLang('already_installed'),
             'not_writable' => $this->manager->getLang('not_writable'),
             );
 
@@ -85,8 +86,8 @@ class pm_search_tab extends pm_base_tab {
         } else {
             echo '<div class="message error">'.$this->manager->getLang('repocache_error').'</div>';
         }
+        $this->reload_repo_link();
         $this->html_download_disabled();
-        $this->html_urldownload();
         ptln('</div><!-- panelHeader -->');
 
         ptln('<div class="tagcloud">');
@@ -94,6 +95,7 @@ class pm_search_tab extends pm_base_tab {
         ptln('</div>');
         ptln('<div class="search">');
         $this->html_search(null,$this->query);
+        $this->html_urldownload();
         ptln('</div>');
 
         ptln('<div class="panelContent">');

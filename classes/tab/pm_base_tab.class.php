@@ -49,9 +49,8 @@ abstract class pm_base_tab {
     protected function html_download_disabled() {
         if ($this->manager->getConf('allow_download')) return;
 
-        echo '<div class="message notify">';
-        echo $this->manager->getLang('download_disabled');
-        echo '</div>';
+        echo '<div class="clearer"></div>';
+        msg($this->manager->getLang('download_disabled'),-1);
     }
 
     protected function html_updates_available() {
@@ -68,32 +67,36 @@ abstract class pm_base_tab {
         $url_form = new Doku_Form('extension__manager_urldownload');
         $url_form->addHidden('page','extension');
         $url_form->addHidden('fn','download');
-        $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('urldownload_text'),'dw__url'));
+        $url_form->startFieldset($this->manager->getLang('urldownload_text'));
+        $url_form->addElement(form_makeTextField('url','',$this->manager->getLang('url'),'dw__url'));
         $url_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_download') ));
+        $url_form->endFieldset();
         $url_form->printForm();
     }
 
+    /**
+     * Render search box, $type is used to limit search to only plugins or templates
+     */
     protected function html_search($type, $value = '') {
         global $lang;
 
-//        ptln('<h2>'.$header.'</h2>');
-//        ptln('Duis rutrum lacinia sem, eu ultrices libero fringilla eget. Nam pretium tristique ligula, sit amet consequat lacus ultricies at. Mauris at ligula mi. Vivamus interdum aliquam risus vitae rutrum. Quisque faucibus sem in nibh aliquam sagittis ultrices sapien pharetra. Ut ac felis massa, a suscipit ligula. Curabitur sed ligula lorem. Donec neque est, commodo nec interdum vitae, dictum in nisl. Integer mattis, magna fringilla rhoncus scelerisque');
         $search_form = new Doku_Form('extension__manager_search');
-        $search_form->startFieldset($lang['btn_search']);
+
+        if (!$type) {
+            $search_form->startFieldset($lang['btn_search']);
+        }
         $search_form->addHidden('page','extension');
         $search_form->addHidden('tab','search');
-    //    $search_form->addHidden('fn','search');
         $search_form->addHidden('type',$type);
         $search_form->addElement(form_makeTextField('q',hsc($value),'','extensionplugin__searchtext'));
         $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'], array('fame' => 'fn[search]')));
-        $search_form->addElement('<p>');
-        $search_form->addElement('Duis rutrum lacinia sem, eu ultrices libero fringilla eget. Nam pretium tristique ligula, sit amet consequat lacus ultricies at');
-        $search_form->addElement('</p>');
-        $search_form->addElement(sprintf($this->manager->getLang('repo_reload'),2)); // TODO move hardcoded value
-        $search_form->addElement(form_makeButton('submit', 'admin', $this->manager->getLang('btn_reload'), array('fame' => 'fn[repo_reload]')));
-        $search_form->endFieldset();
+        if (!$type) {
+            $search_form->addElement('<p>');
+            $search_form->addElement($this->manager->getLang('search_intro'));
+            $search_form->addElement('</p>');
+            $search_form->endFieldset();
+        }
         $search_form->printForm();
-   //     $this->reload_repo_link();
     }
 
     function html_taglink($tag, $class='') {
@@ -119,8 +122,7 @@ abstract class pm_base_tab {
                         'sectok'=>getSecurityToken()
                         );
 
-        echo '<div class="repo_reload">'.sprintf($this->manager->getLang('repo_reload'),2); // TODO move hardcoded value
-        echo html_btn('reload', $ID, '', $params, 'post', '', 'Reload');
+        echo html_btn('reload', $ID, '', $params, 'post', '', $this->manager->getLang('btn_reload'));
         echo '</div>';
     }
 

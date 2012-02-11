@@ -7,5 +7,5 @@
  */
  
 // for the configuration manager
-$lang['allow_download']     = 'Allow download, upgrade and deletion of plugin & templates (excluding protected)';
+$lang['allow_download']     = 'Allow download, upgrade and deletion of plugin & templates (unless protected)';
 

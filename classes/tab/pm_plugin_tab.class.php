@@ -57,10 +57,9 @@ class pm_plugin_tab extends pm_base_tab {
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_plugin'),count($this->manager->plugin_list),count($this->plugins['enabled'])+count($this->protected_plugins['enabled']));
 	    ptln('<h3>'.$summary.'</h3>');
+        $this->html_search($this->manager->tab);
         $this->html_download_disabled();
         ptln('</div><!-- panelHeader -->');
-
-        $this->html_search($this->manager->tab);
 
         ptln('<div class="panelContent">');
         $this->html_extensionlist();
