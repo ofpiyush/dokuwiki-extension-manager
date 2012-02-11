@@ -86,7 +86,7 @@ class pm_repository_lib {
         }
         // create tag cloud
         arsort($tags);
-        $tags = array_slice($tags, 0, 30, true);
+        $tags = array_slice($tags, 0, 50, true);
         $max  = 0;
         $min  = 0;
         foreach ($tags as $cnt) {

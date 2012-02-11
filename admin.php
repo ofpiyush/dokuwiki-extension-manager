@@ -119,7 +119,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      */
     var $dokuwiki_version = null;
 
-    var $dokuwiki = array('2011-11-10' => 'Angua',
+    var $dokuwiki = array('2012-01-25' => 'Angua',
                           '2011-05-25' => 'Rincewind',
                           '2010-11-07' => 'Anteater',
                           '2009-12-25' => 'Lemming');
@@ -243,7 +243,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         }
 
         ptln('<div id="extension__manager">');
-        print $this->locale_xhtml('extension_intro');   // TODO: maybe move intro to lang.php (faster)
+        print $this->locale_xhtml('extension_intro');
         ptln('<div class="panel">');
         $this->handler->html();
         ptln('</div><!-- panel -->');

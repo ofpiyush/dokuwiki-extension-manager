@@ -53,11 +53,12 @@
     width: 200px;
 }
 #extension__manager .tagcloud {
-    width: 50%;
+    width: 55%;
     float: left;
 }
 #extension__manager fieldset {
     margin-top: 0.5em;
+    width: auto;
 }
 #extension__manager fieldset p{
     margin: 0.5em;
@@ -106,11 +107,30 @@
     vertical-align: top;
     padding: 0.3em 0.5em 0.2em 0.2em;
 }
+#extension__manager .plugin.enabled td.legend {
+    background: transparent url(images/plugin_enabled.png) no-repeat 2px 2px;
+}
+#extension__manager .plugin.disabled td.legend {
+    background: transparent url(images/plugin_disabled.png) no-repeat 2px 2px;
+}
+#extension__manager .plugin td.legend {
+    background: transparent url(images/plugin_repo.png) no-repeat 2px 2px;
+}
+#extension__manager .template.enabled td.legend {
+    background: transparent url(images/template.png) no-repeat 2px 2px;
+}
+#extension__manager .template.disabled td.legend {
+    background: transparent url(images/template.png) no-repeat 2px 2px;
+}
+#extension__manager .template td.legend {
+    background: transparent url(images/template.png) no-repeat 2px 2px;
+}
 #extension__manager .legend img {
     margin: 2px;
     float: left;
 }
 #extension__manager .legend label {
+    margin-left: 52px;
     font-size: 120%;
     font-weight: bold;
 }
@@ -127,10 +147,10 @@
 #extension__manager .showinfo .legend  input.button {
     background: transparent url(images/up.png) no-repeat 0 0;
 }
-#extension__manager .legend div.status.maybe {background-color: #fc1;}
-#extension__manager .legend div.status.probably  {background-color: yellow;}
-#extension__manager .legend div.status.compatible {background-color: #bfb;}
-#extension__manager .legend div.status {
+#extension__manager div.status.maybe {background-color: #fc1;}
+#extension__manager div.status.probably  {background-color: yellow;}
+#extension__manager div.status.compatible {background-color: #bfb;}
+#extension__manager div.status {
     padding: 0em 0.3em;
     margin: 0em 0.3em;
     font-size: 80%;

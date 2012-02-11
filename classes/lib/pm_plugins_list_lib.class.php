@@ -212,11 +212,6 @@ class pm_plugins_list_lib {
     function make_legend($info) {
         global $lang;
 
-        if ($info->is_template) {
-            $return .= '<img alt="" width="48" src="lib/plugins/extension/images/template.png" />';
-        } else {
-            $return .= '<img alt="" width="48" src="lib/plugins/extension/images/plugin.png" />';
-        }
         $return .= '<label for="'.$this->form_id.'_'.hsc($info->html_id).'">'.hsc($info->displayname).'</label>';
         $return .= ' by '.$this->make_author($info);
 
