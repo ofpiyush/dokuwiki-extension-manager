@@ -213,10 +213,8 @@ class pm_search_tab extends pm_base_tab {
      * Looks up the term in the repository cache according to filters set
      */
     protected function lookup() {
-        $repo = array_merge($this->filtered_repo, $this->local_extensions());
-        foreach ($repo as $single) {
+        foreach ($this->filtered_repo as $single) {
             if (!$this->check($single)) continue;
-
             // search
             $matches = array_filter($single,array($this,'search'));
             if(count($matches)) {
