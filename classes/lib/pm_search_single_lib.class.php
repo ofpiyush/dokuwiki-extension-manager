@@ -17,6 +17,10 @@ class pm_search_single_lib extends pm_base_single_lib {
         return false;
     }
 
+    function can_reinstall() {
+        return false;
+    }
+
     function can_select() {
         if(empty($this->downloadurl)) return false;
         if(!$this->is_writable) return false;

@@ -10,12 +10,6 @@
 if(!defined('DOKU_INC')) die();
 
 if(!defined('DOKU_TPLLIB')) define('DOKU_TPLLIB',DOKU_INC.'lib/tpl/');
-//ini_set('display_errors','on');
-//error_reporting(E_STRICT);
-
-// todo
-// - allow a plugin to contain extras to be copied to the current template (extra/tpl/)
-// - to images (lib/images/) [ not needed, should go in lib/plugin/images/ ]
 
 /**
  * All DokuWiki plugins to extend the admin function

@@ -22,7 +22,7 @@ $lang['summary_plugin']         = 'You have %d plugins installed, %d enabled';
 $lang['summary_template']       = 'You have %d templates installed';
 $lang['summary_search']         = 'DokuWiki repository contains a total of %d extensions!';
 // search box
-$lang['search_intro']           = 'Tip! You can use &lt;property&gt;:&lt;value&gt; in your query, for example <strong>author:andi</strong> or <strong>type:admin</strong>. <strong>@plugins</strong> will restrict results, showing plugins only.';
+$lang['search_intro']           = 'Tip! You can use &lt;property&gt;:&lt;value&gt; in your query, for example <strong>author:Gohr</strong> or <strong>type:admin</strong>, and <strong>@plugins</strong> will restrict results, showing plugins only.';
 $lang['btn_reload']             = 'Refresh repository';
 
 // download url box
@@ -30,12 +30,12 @@ $lang['urldownload_text']       = 'Install by URL';
 $lang['url']                    = 'URL';
 
 // plugin tab headings
-$lang['header_plugin_installed']  = 'Installed Plugins';
-$lang['header_plugin_protected']  = 'Protected Plugins';
+$lang['header_plugin_installed']  = 'Installed plugins';
+$lang['header_plugin_protected']  = 'Protected plugins';
 $lang['text_plugin_protected']    = 'These plugins are protected and can not be disabled and/or deleted from the plugin and template manager.';
 
 // template tab headings
-$lang['header_template_installed']= 'Installed Templates';
+$lang['header_template_installed']= 'Installed templates';
 
 // search tab headings
 $lang['header_search_results']  = 'Search results for "%s"';
