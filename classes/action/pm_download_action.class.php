@@ -104,11 +104,7 @@ class pm_download_action extends pm_base_action {
         }
 
         // download & decompress
-        if (strpos($url, 'c:') === 0) {
-            if (!@copy($url, "$tmp/".basename($url))) {
-                $error = 'Failed to copy file '.$url.' -> '.$tmp;
-            }
-        } elseif (!$file = io_download($url, "$tmp/", true, $file)) {
+        if (!$file = io_download($url, "$tmp/", true, $file)) {
             $error = sprintf($this->manager->getLang('error_download'),$url);
         }
 
