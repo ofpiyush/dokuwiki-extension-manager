@@ -86,6 +86,16 @@ class pm_info_lib {
         $return->is_writable  = $is_writable;
         $return->repokey = $repokey;
         $return->repo = $this->find_repo_entry($return);
+
+        // determine if there is reason to use repo data, check dokulink/saved repokey/used download url
+        if (preg_match('/www.dokuwiki.org\/(\w+:[a-zA-Z\d_-]+)/', $return->info['url'], $match)) {
+            if (str_replace('plugin:','',$match[1]) == $repokey) {
+                $same_dokulink = true;
+            }
+        }
+        if ($is_installed && !$return->log['repokey'] && $return->repo['downloadurl'] != $return->log['downloadurl'] && !$same_dokulink) {
+            $return->repo = null;
+        }
         return $return;
     }
 

@@ -185,12 +185,12 @@ class pm_search_tab extends pm_base_tab {
         $plugins = array_map(array($this,'_info_pluginlist'),$this->manager->plugin_list);
         $list = array_merge($plugins,$templates);
         foreach ($list as $info) {
-            if ($info->log['repokey']) {
+            if ($info->repo) {
                 // only use repo if we are sure that this plugin is connected to repo
                 $retval[$info->repokey] = $info->repo;
                 $retval[$info->repokey]['id'] = $info->cmdkey;
             } else {
-                $retval[$info->repokey] = array('id' => $info->cmdkey,
+                $retval['L'.$info->repokey] = array('id' => $info->cmdkey,
                                                 'name' => $info->name,
                                                 'author' => $info->author,
                                                 'description' => $info->desc,

@@ -130,11 +130,11 @@ abstract class pm_base_single_lib {
             // if its necessary, the method will cache it itself
             return $this->{'get_'.$key}();
 
-        } elseif(isset($this->info[$key])) {
-            $return = $this->info[$key];
-
         } elseif(isset($this->repo[$key])) {
             $return = $this->repo[$key];
+
+        } elseif(isset($this->info[$key])) {
+            $return = $this->info[$key];
 
         } elseif(isset($this->log[$key])) {
             $return = $this->log[$key];
@@ -178,9 +178,10 @@ abstract class pm_base_single_lib {
     /**
      * return description from *.info.txt (if no repo info was found)
      */
-    protected function get_description() {
-        if(!empty($this->info['desc'])) return $this->info['desc'];
-        return $this->repo['description'];
+    protected function default_description() {
+        $this->description ="";
+        if(!empty($this->desc)) $this->description = $this->desc;
+        return $this->description;
     }
 
     /**
