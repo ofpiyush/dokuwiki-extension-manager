@@ -38,7 +38,8 @@ $lang['text_plugin_protected']    = 'These plugins are protected and can not be 
 $lang['header_template_installed']= 'Installed templates';
 
 // search tab headings
-$lang['header_search_results']  = 'Search results for "%s"';
+$lang['header_searchinstalled'] = 'Installed extensions matching query';
+$lang['header_search_results']  = 'Results for "%s" from repository';
 $lang['not_found']              = 'The term "%s" was not found';
 $lang['no_result']              = 'Please try with a simpler query or <a href="%s" title="%s" />browse all plugins</a>';
 $lang['browse']                 = 'Browse all plugins';

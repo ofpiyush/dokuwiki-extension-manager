@@ -13,6 +13,7 @@ class pm_search_tab extends pm_base_tab {
     var $extra = NULL;
     var $filters = array();
     var $search_result = array();
+    var $search_result_type = 'template';
     var $filtered_repo = NULL;
     var $actions_list = array();
 
@@ -105,18 +106,34 @@ class pm_search_tab extends pm_base_tab {
 
     function html_extensionlist() {
         if(is_array($this->search_result) && count($this->search_result)) {
-            $type = (!empty($this->extra['type']) && $this->extra['type'] == "Template" )? 'template': 'plugin' ;
-            $list = new pm_plugins_list_lib($this->manager,'extensionplugin__searchresult',$this->actions_list,$this->possible_errors,$type);
-            $list->add_header('search_results',sprintf($this->manager->getLang('header_search_results'),hsc($this->query)));
-            $list->start_form();
-            foreach($this->search_result as $result) {
-                foreach($result as $info) {
-                    $info = $this->_info_list($info['id']);
-                    $list->add_row($info);
+
+            if ($this->search_result['installed']) {
+                $list = new pm_plugins_list_lib($this->manager,'extensionplugin__searchinstalled',$this->actions_list,$this->possible_errors,$this->search_result_type);
+                $list->add_header('installed_extensions',$this->manager->getLang('header_searchinstalled'));
+                $list->start_form();
+                foreach($this->search_result['installed'] as $result) {
+                    foreach($result as $info) {
+                        $info = $this->_info_list($info['id']);
+                        $list->add_row($info);
+                    }
                 }
+                $list->end_form();
+                $list->render();
             }
-            $list->end_form(array_keys($this->actions_list));
-            $list->render();
+
+            if ($this->search_result['repo']) {
+                $list = new pm_plugins_list_lib($this->manager,'extensionplugin__searchresult',$this->actions_list,$this->possible_errors,$this->search_result_type);
+                $list->add_header('search_results',sprintf($this->manager->getLang('header_search_results'),hsc($this->query)));
+                $list->start_form();
+                foreach($this->search_result['repo'] as $result) {
+                    foreach($result as $info) {
+                        $info = $this->_info_list($info['id']);
+                        $list->add_row($info);
+                    }
+                }
+                $list->end_form(array_keys($this->actions_list));
+                $list->render();
+            }
 
         } elseif(!is_null($this->query)) {
             $no_result = new pm_plugins_list_lib($this->manager,'extensionplugin__noresult');
@@ -220,22 +237,24 @@ class pm_search_tab extends pm_base_tab {
             if(count($matches)) {
                 $weight = count(array_intersect_key($this->filters,$matches));
                 if($weight) {
-                // TODO
                     // increase weight for id (repokey) match
-                    // if (stripos($single['id'],$this->term)!==false) {
-                        // $weight += 8;
-                        // if ($single['id'] == $this->term) $weight += 8;
-                    // }
-                    // increase weight for name match
-                    // if(stripos($single['name'],$this->term)!==false) {
-                        // $weight += 6;
-                        // if ($single['name'] == $this->term) $weight += 6;
-                    // }
-                    $this->search_result[$weight][$single['id']] = $single;
+                    foreach ($this->term as  $term) {
+                        if (stripos($single['id'],$term)!==false) {
+                            $weight += 5;
+                            if ($single['id'] == $term) $weight += 10;
+                        }
+                    }
+
+                    $group = (strpos($single['id'],'/') !== false ? 'installed' : 'repo');
+                    $this->search_result[$group][$weight][$single['id']] = $single;
+                    if (substr($single['id'],0,9) != 'template:') $this->search_result_type = 'plugin';
                 }
             }
         }
-        return krsort($this->search_result);
+        foreach ($this->search_result as &$group) {
+            krsort($group);
+        }
+        return;
     }
 
     /**
