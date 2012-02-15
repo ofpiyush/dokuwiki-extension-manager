@@ -57,9 +57,9 @@ $lang['btn_reinstall']          = 'Re-install';
 $lang['btn_disdown']            = 'Download as Disabled';
 $lang['btn_dependown']          = 'Download with dependencies';
 $lang['btn_enable']             = 'Save';
-$lang['select_all']             = 'Select All';
-$lang['select_none']            = 'Select None';
-//$lang['please_choose']          = '-Please Choose-'; not necessary if using buttons
+$lang['select']                 = 'Select:';
+$lang['select_all']             = 'All';
+$lang['select_none']            = 'None';
 $lang['bundled']                = 'bundled';
 $lang['manual_install']         = 'manual install';
 

@@ -90,14 +90,15 @@ class pm_plugins_list_lib {
     /**
      * Add closing tags
      */
-    function end_form($actions = array()) {
+    function end_form($actions = null) {
         if($this->intable) $this->form .= '</table>';
         $cmdButtons = '';
-        if($this->rowadded) {
+        if($this->rowadded && is_array($actions)) {
             $actions_shown = array_filter($this->actions_shown);
             if(!empty($actions_shown)) {
-                $cmdButtons .= '<div class="checks"><span class="checkall">['.$this->manager->getLang('select_all').']</span>'.
-                               '  <span class="checknone">['.$this->manager->getLang('select_none').']</span></div>';
+                $cmdButtons .= '<div class="checks">'.$this->manager->getLang('select').
+                               ' <span class="checkall">'.$this->manager->getLang('select_all').'</span> |'.
+                               ' <span class="checknone">'.$this->manager->getLang('select_none').'</span></div>';
             }
             $cmdButtons .= '<div class="bottom">';
             foreach($this->actions as $value => $text) {

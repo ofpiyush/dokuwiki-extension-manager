@@ -3,6 +3,7 @@ var extension_manager = {
         if (!('info' in extension_manager.getUrlVars())) {
             jQuery('#extensionplugin__searchtext').focus();
         }
+        jQuery('#extension__manager .checks').show();
         extension_manager.setCheckState('#extension__manager .checknone',false);
 	    extension_manager.setCheckState('#extension__manager .checkall',true);
 	    extension_manager.confirmDelete('#extension__manager .actions .delete');

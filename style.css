@@ -75,17 +75,14 @@
 /*
  * multiselect controls
  */
-#extension__manager .checkall,
-#extension__manager .checknone {
+#extension__manager .checks {
+    margin-left: 1em;
     display: none;
 }
 #extension__manager .checkall:hover,
 #extension__manager .checknone:hover {
     text-decoration: underline;
     cursor: pointer;
-}
-#extension__manager .checks {
-    margin-left: 1em;
 }
 #extension__manager input.button {
     margin-left: 0.2em;
