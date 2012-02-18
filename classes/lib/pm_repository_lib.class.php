@@ -82,6 +82,7 @@ class pm_repository_lib {
             // add missing sort field
             $single['sort'] = str_replace('template:','',$single['id']);
 
+            // calculate max popularity
             if ($single['popularity'] > $maxpop) $maxpop = $single['popularity'];
 
             // collect tags for cloud
@@ -105,6 +106,14 @@ class pm_repository_lib {
         }
         $this->cloud_weight($tags,$min,$max,5);
         ksort($tags);
+
+        foreach($repo as $single) {
+            if ($single['relations']['depends']['id']) {
+                foreach((array)$single['relations']['depends']['id'] as $depends) {
+                    $repo[$depends]['needed_by'][] = $single['id'];
+                }
+            }
+        }
 
         return array('data' => $repo, 'cloud' => $tags, 'maxpop' => $maxpop);
     }

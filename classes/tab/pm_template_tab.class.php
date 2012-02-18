@@ -32,7 +32,7 @@ class pm_template_tab extends pm_base_tab {
             'reinstall' =>$this->manager->getLang('btn_reinstall'),
         );
         $this->possible_errors = array(
-            'missing_dependency' => $this->manager->getLang('depends'),
+            'needed_by' => $this->manager->getLang('needed_by'),
             'not_writable' => $this->manager->getLang('not_writable'),
             'bundled' => $this->manager->getLang('bundled_source'),
             'gitmanaged' => $this->manager->getLang('gitmanaged'),

@@ -227,6 +227,11 @@ class pm_plugins_list_lib {
      * Notice area
      */
     function make_noticearea($info) {
+        if($info->missing_dependency()) {
+            $return .= '<div class="message error">'.
+                            sprintf($this->manager->getLang('missing_dependency'),implode(', ',array_map(array($this,'make_extensionsearchlink'),$info->missing_dependency))).
+                        '</div>';
+        }
         if($info->wrong_folder()) {
             $return .= '<div class="message error">'.
                             sprintf($this->manager->getLang('wrong_folder'),hsc($info->id),hsc($info->base)).
@@ -337,6 +342,19 @@ class pm_plugins_list_lib {
         }
         $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         return $return;
+    }
+
+    function make_extensionsearchlink($id) {
+        global $ID;
+
+        $params = array(
+            'do'=>'admin',
+            'page'=>'extension',
+            'tab'=>'search',
+            'q'=>'id:'.$id,
+        );
+        $url = wl($ID,$params);
+        return '<a href="'.$url.'" class="searchlink" title="'.hsc($id).'">'.hsc(ucfirst($id)).'</a>';
     }
 
     function make_linklist($links) {

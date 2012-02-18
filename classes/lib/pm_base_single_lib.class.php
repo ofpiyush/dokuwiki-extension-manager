@@ -294,14 +294,33 @@ abstract class pm_base_single_lib {
     }
 
     function missing_dependency() {
-        if(!empty($this->relations['depends']['id'])) {
+        if($this->is_installed && !empty($this->relations['depends']['id'])) {
             foreach((array) $this->relations['depends']['id'] as $depends) {
                 $key = (stripos($depends,'template:')===0) ? 'template' : 'plugin';
-                if(!in_array(str_replace('template:','',$depends),$this->manager->{$key.'_list'}))
+                $dependency = str_replace('template:','',$depends);
+                if(!in_array($dependency,$this->manager->{$key.'_list'}) || ($key == 'plugin' && plugin_isdisabled($dependency))) {
                     $missing[] = $depends;
+                }
             }
             if(!empty($missing)) {
                 $this->missing_dependency = $missing;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function needed_by() {
+        if(!empty($this->needed_by)) {
+            foreach((array) $this->needed_by as $user) {
+                $key = (stripos($user,'template:')===0) ? 'template' : 'plugin';
+                $dependency = str_replace('template:','',$user);
+                if(in_array($dependency,$this->manager->{$key.'_list'}) && ($key == 'template' || !plugin_isdisabled($dependency))) {
+                    $users[] = $user;
+                }
+            }
+            if(!empty($users)) {
+                $this->needed_by = $users;
                 return true;
             }
         }
