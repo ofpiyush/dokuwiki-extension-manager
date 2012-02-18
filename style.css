@@ -76,7 +76,6 @@
  * multiselect controls
  */
 #extension__manager .checks {
-    margin-left: 1em;
     display: none;
 }
 #extension__manager .checkall:hover,
