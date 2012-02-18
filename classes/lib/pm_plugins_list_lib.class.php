@@ -62,7 +62,6 @@ class pm_plugins_list_lib {
             $this->start_row($info,$this->make_class($info));
             $this->populate_column('selection',$this->make_checkbox($info,$checkbox));
             $this->populate_column('legend',$this->make_legend($info));
-            $this->populate_column('version',$this->make_version($info));
             if($this->type == 'template') {
                 $this->populate_column('screenshot',$this->make_screenshot($info));
             }
@@ -170,38 +169,13 @@ class pm_plugins_list_lib {
         return "<em>".$this->manager->getLang('unknown')."</em>";
     }
 
-    function make_version($info) {
-        $return .= '<dl>';
-        if ($info->is_installed) {
-            if ($info->date) {
-                $return .= '<dt>'.$this->manager->getLang('installed_version').'</dt>';
-                $return .= '<dd>';
-                $return .= hsc($info->date);
-                $return .= '</dd>';
-            } else {
-                $return .= '<dt>'.$this->manager->getLang('install_date').'</dt>';
-                $return .= '<dd>';
-                $return .= ($info->install_date ? hsc($info->install_date) : $this->manager->getLang('unknown'));
-                $return .= '</dd>';
-            }
-        }
-        if (!$info->is_installed || $info->update_available) {
-            $return .= '<dt>'.$this->manager->getLang('available_version').'</dt>';
-            $return .= '<dd>';
-            $return .= ($info->lastupdate ? hsc($info->lastupdate) : $this->manager->getLang('unknown'));
-            $return .= '</dd>';
-        }
-        $return .= '</dl>';
-        return $return;
-    }
-
     function make_screenshot($info) {
         $return = '';
         if(!empty($info->screenshoturl)) {
             if($info->screenshoturl[0] == ':')
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
             $return .= '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'">'.
-                    '<img alt="'.hsc($info->displayname).'" width="80" src="'.hsc($info->screenshoturl).'" />'.
+                    '<img alt="'.hsc($info->displayname).'" width="120" src="'.hsc($info->screenshoturl).'" />'.
                     '</a>';
         }
         return $return;
@@ -231,8 +205,8 @@ class pm_plugins_list_lib {
             $return .=  hsc($info->description).' ';
         }
         $return .= '</p>';
-        $return .= '<div class="clearer"></div>';
 
+        $return .= '<span>';
         $return .= $this->make_homepagelink($info);
         if ($info->bugtracker) {
             $return .= ' &bull; <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="urlextern">'.$this->manager->getLang('bugs_features').'</a>';
@@ -243,6 +217,7 @@ class pm_plugins_list_lib {
                 $return .= $this->manager->handler->html_taglink($tag);
             }
         }
+        $return .= '</span>';
         $return .= $this->make_info($info);
         $return .= $this->make_noticearea($info);
         return $return;
@@ -297,7 +272,25 @@ class pm_plugins_list_lib {
             $return .= '</dd>';
         }
 
-// TODO installed, updated
+        if ($info->is_installed) {
+            if ($info->date) {
+                $return .= '<dt>'.$this->manager->getLang('installed_version').'</dt>';
+                $return .= '<dd>';
+                $return .= hsc($info->date);
+                $return .= '</dd>';
+            } else {
+                $return .= '<dt>'.$this->manager->getLang('install_date').'</dt>';
+                $return .= '<dd>';
+                $return .= ($info->install_date ? hsc($info->install_date) : $this->manager->getLang('unknown'));
+                $return .= '</dd>';
+            }
+        }
+        if (!$info->is_installed || $info->update_available) {
+            $return .= '<dt>'.$this->manager->getLang('available_version').'</dt>';
+            $return .= '<dd>';
+            $return .= ($info->lastupdate ? hsc($info->lastupdate) : $this->manager->getLang('unknown'));
+            $return .= '</dd>';
+        }
 
         if(!empty($info->install_date)) {
             $return .= '<dt>'.$this->manager->getLang('installed').'</dt>';
@@ -306,7 +299,7 @@ class pm_plugins_list_lib {
             $return .= '</dd>';
         }
 
-        $return .= '<dt>'.$this->manager->getLang('components').'</dt>';
+        $return .= '<dt>'.$this->manager->getLang('provides').'</dt>';
         $return .= '<dd>';
         $return .= (!empty($info->type) ? hsc($info->type) : $default);
         $return .= '</dd>';
@@ -365,7 +358,6 @@ class pm_plugins_list_lib {
     }
 
     function make_actions($info) {
-
         foreach($this->actions as $act => $text) {
             if($info->{"can_".$act}()) {
                 $this->actions_shown[$act] = true;
@@ -373,17 +365,24 @@ class pm_plugins_list_lib {
             }
         }
 
+        if (!$info->is_installed || $info->update_available) {
+            $return .= ' '.$this->manager->getLang('available_version').' ';
+            $return .= ($info->lastupdate ? hsc($info->lastupdate) : $this->manager->getLang('unknown'));
+        }
+
+        $return .= '<p>';
         if(!empty($this->possible_errors)) {
             foreach($this->possible_errors as $error => $text) {
                 if($info->$error()) {
                     if(is_array($info->$error)) {
-                        $return .= "<br />(<em>".$text." ".hsc(implode(', ',$info->$error))."</em>)";
+                        $return .= "(<em>".$text." ".hsc(implode(', ',$info->$error))."</em>)";
                     } else {
-                        $return .= "<br />(<em>".$text."</em>)";
+                        $return .= "(<em>".$text."</em>)";
                     }
                 }
             }
         }
+        $return .= '</p>';
         return $return;
     }
 

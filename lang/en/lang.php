@@ -76,8 +76,8 @@ $lang['source']                 = 'Download URL:';
 $lang['unknown']                = '<em>unknown</em>';
 $lang['installed_version']      = 'Installed version:';
 $lang['install_date']           = 'Your last update:';
-$lang['available_version']      = 'Available version:';
-$lang['compatible']             = 'Compatible:';
+$lang['available_version']      = 'Version:';
+$lang['compatible']             = 'Compatible with:';
 $lang['depends']                = 'Depends on:';
 $lang['similar']                = 'Similar to:';
 $lang['conflicts']              = 'Conflicts with:';
@@ -128,7 +128,7 @@ $lang['helper']                 = 'Helper';
 
 // info titles
 $lang['plugin']                 = 'Plugin';
-$lang['components']             = 'Components:';
+$lang['provides']               = 'Provides:';
 $lang['noinfo']                 = 'This plugin returned no information, it may be invalid.';
 $lang['name']                   = 'Name:';
 $lang['date']                   = 'Date:';
