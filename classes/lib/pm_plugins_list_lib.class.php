@@ -217,7 +217,8 @@ class pm_plugins_list_lib {
         $return .= ' by '.$this->make_author($info);
 
         if ($info->popularity && !$info->is_bundled) {
-            list($progressCount,$progressWidth) = explode(',',$info->popularity,2);
+            $progressCount = $info->popularity;
+            $progressWidth = round(100*$progressCount/$this->manager->repo['maxpop']);
             $return .= '<div class="progress" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
         }
         $compatible = $info->compatible_status($this->manager->dokuwiki_version['date']);

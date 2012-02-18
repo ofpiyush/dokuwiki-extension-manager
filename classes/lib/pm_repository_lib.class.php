@@ -1,4 +1,11 @@
 <?php
+/**
+ * Plugin repository library, including local cache
+ *
+ * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author     Piyush Mishra <me@piyushmishra.com>
+ */
+
 class pm_repository_lib {
     private $repo = null;
     var $manager = null;
@@ -64,6 +71,7 @@ class pm_repository_lib {
      * Create pre-calculated tag cloud
      */
     function add_repo_index(&$data) {
+        $maxpop = 1;
         foreach($data as $single) {
             // simplify filtering of entries that shouldn't show up in search
             $show = true;
@@ -73,6 +81,8 @@ class pm_repository_lib {
 
             // add missing sort field
             $single['sort'] = str_replace('template:','',$single['id']);
+
+            if ($single['popularity'] > $maxpop) $maxpop = $single['popularity'];
 
             // collect tags for cloud
             if (is_array($single['tags']['tag'])) {
@@ -96,7 +106,7 @@ class pm_repository_lib {
         $this->cloud_weight($tags,$min,$max,5);
         ksort($tags);
 
-        return array('data' => $repo, 'cloud' => $tags);
+        return array('data' => $repo, 'cloud' => $tags, 'maxpop' => $maxpop);
     }
 
     /**
