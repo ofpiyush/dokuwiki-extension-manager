@@ -123,7 +123,6 @@ abstract class pm_base_tab {
                         );
 
         echo html_btn('reload', $ID, '', $params, 'post', '', $this->manager->getLang('btn_reload'));
-        echo '</div>';
     }
 
     protected function _info_list($index) {
