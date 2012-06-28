@@ -9,13 +9,13 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
-if(!defined('DOKU_TPLLIB')) define('DOKU_TPLLIB',DOKU_INC.'lib/tpl/');
-
 /**
  * All DokuWiki plugins to extend the admin function
  * need to inherit from this class
  */
 class admin_plugin_extension extends DokuWiki_Admin_Plugin {
+
+    var $hlp = null;
 
     /**
      * Array of extensions sent by POST method
@@ -33,37 +33,6 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * one from admin_plugin_extension::$nav_tabs
      */
     var $tab = 'plugin';
-
-    /**
-     * Instance of pm_log_lib library (contains read-write functions for manager.dat)
-     */
-    var $log = null;
-
-    /**
-     * Copy of the repository array
-     */
-    var $repo = array();
-
-    /**
-     * Instance of the pm_info_lib library (creates single info objects)
-     */
-    var $info = null;
-
-    /**
-     * array list of bundled plugins
-     */
-    var $_bundled = array('acl','plugin','config','info','usermanager','revert','popularity','safefnrecode','template:default');
-
-    /**
-     * plugins that are an integral part of dokuwiki, this is only valid for pre-"Angua" releases
-     * now this information is stored in 'conf/plugins.required.php'
-     */
-    var $legacy_protected = array('acl','plugin','config','usermanager');
-
-    /**
-     * plugins that are protected from being managed with the extension manager
-     */
-    var $protected = array();
 
     /**
      * Instance of the tab from admin_plugin_extension::$tab
@@ -86,63 +55,9 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      */
     var $nav_tabs = array('plugin', 'template', 'search');
 
-    /**
-     * array list of installed plugin foldernames
-     * saved after the trigger 'PLUGIN_PLUGINMANAGER_PLUGINLIST'
-     */
-    var $plugin_list = array();
-
-    /**
-     * bool indicating whether directory DOKU_PLUGIN is writable or not
-     */
-    var $pluginfolder_writable = false;
-
-    /**
-     * array list of installed template foldernames
-     * saved after the trigger 'PLUGIN_PLUGINMANAGER_TEMPLATELIST'
-     */
-    var $template_list = array();
-
-    /**
-     * bool indicating whether directory DOKU_TPLLIB is writable or not
-     */
-    var $templatefolder_writable = false;
-
-    /**
-     * string current DokuWiki version
-     */
-    var $dokuwiki_version = null;
-
-    var $dokuwiki = array('2012-01-25' => 'Angua',
-                          '2011-05-25' => 'Rincewind',
-                          '2010-11-07' => 'Anteater',
-                          '2009-12-25' => 'Lemming');
-
     function __construct() {
-        spl_autoload_register(array($this,'autoload'));
-
-        if (function_exists('plugin_getcascade')) {
-            $cascade = plugin_getcascade();
-            if(!empty($cascade['protected'])) {
-                $this->protected = array_keys($cascade['protected']);
-            }
-        } else {
-            // support for using extension manager with pre-"Angua" (okt2011) releases
-            $this->protected = $this->legacy_protected;
-        }
-        $this->pluginfolder_writable = is_writable(DOKU_PLUGIN);
-        $this->templatefolder_writable = is_writable(DOKU_TPLLIB);
-
-        $ver = getVersionData();
-        if (preg_match('/\d+[-]\d+[-]\d+/',$ver['date'],$date)) {
-            reset($this->dokuwiki);
-            if ($ver['type'] == 'Git' && $date[0] > key($this->dokuwiki)) {
-                $date[0] = key($this->dokuwiki);
-            }
-            $name = $this->dokuwiki[$date[0]];
-            if (!$name) $name = $date[0];
-            $this->dokuwiki_version = array('date' => $date[0], 'name' => $name);
-        }
+        $this->hlp =& plugin_load('helper', 'extension');
+        if(!$this->hlp) msg('Loading the extension manager helper failed.',-1);
     }
 
     /**
@@ -156,8 +71,8 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * handle user request
      */
     function handle() {
-        $this->_get_plugin_list();
-        $this->_get_template_list();
+        $this->hlp->init();
+
         if(isset($_REQUEST['info']))
             $this->showinfo = $_REQUEST['info'];
         //Setup the selected tab
@@ -166,10 +81,6 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         } else {
             $this->tab = 'plugin';
         }
-        $this->log = new pm_log_lib($this);
-        $repo = new pm_repository_lib($this);
-        $this->repo = $repo->get();
-        $this->info = new pm_info_lib($this);
         //setup and carry out the action requested
         $this->setup_action();
         $this->handler = $this->instantiate($this->tab,'tab');
@@ -231,7 +142,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     function html() {
 
         if (is_null($this->handler)) {
-            $this->_get_plugin_list();
+            $this->hlp->get_plugin_list();
             $this->handler = new pm_plugin_tab($this);
             $this->handler->process();
         }
@@ -254,83 +165,4 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         return $toc;
     }
 
-    /**
-     * Autoloader for the plugin manager
-     * @param string classname to load
-     */
-    function autoload($class) {
-        if(stripos($class,'pm_')===0) {
-            $folder = @end(explode('_',$class));
-            $path = DOKU_PLUGIN.'extension/classes/'.$folder.'/'.$class.".class.php";
-            if(@file_exists($path)) {
-                require_once($path);
-                return true;
-            }
-        }
-        return;
-    }
-
-    /**
-     * Get plugin list
-     * @return array list of plugins, including disabled ones
-     */
-    private function _get_plugin_list() {
-        if (empty($this->plugin_list)) {
-            $list = plugin_list('',true);     // all plugins, including disabled ones
-            trigger_event('PLUGIN_PLUGINMANAGER_PLUGINLIST',$list);
-            $this->plugin_list = $list;
-        }
-        return $this->plugin_list;
-    }
-
-    /**
-     * Get template list
-     * @return array list of templates, including disabled ones
-     */
-    private function _get_template_list() {
-        if(empty($this->template_list)) {
-            $tpl_dir = DOKU_TPLLIB;
-            $list = array();
-            if($dh = @opendir($tpl_dir)) {
-                while(false !== ($template = readdir($dh))) {
-                    if($template[0] == '.') continue;
-                    if(is_dir($tpl_dir.$template)) {
-                        //FIXME No absolute check to determine if it is a template or any other directory
-                        $list[] = $template;
-                    }
-                }
-            }
-            trigger_event('PLUGIN_PLUGINMANAGER_TEMPLATELIST',$list);
-            $this->template_list = $list;
-        }
-        return $this->template_list;
-    }
-
-    /**
-     * return a list (name & type) of all the component plugins that make up this plugin
-     *
-     */
-    function get_plugin_components($plugin) {
-        global $plugin_types;
-        static $plugins;
-        if(empty($plugins[$plugin])) {
-            $components = array();
-            $path = DOKU_PLUGIN.plugin_directory($plugin).'/';
-
-            foreach ($plugin_types as $type) {
-                if (@file_exists($path.$type.'.php')) { $components[] = array('name'=>$plugin, 'type'=>$type); continue; }
-
-                if ($dh = @opendir($path.$type.'/')) {
-                    while (false !== ($cp = readdir($dh))) {
-                        if ($cp == '.' || $cp == '..' || strtolower(substr($cp,-4)) != '.php') continue;
-
-                        $components[] = array('name'=>$plugin.'_'.substr($cp, 0, -4), 'type'=>$type);
-                    }
-                    closedir($dh);
-                }
-            }
-            $plugins[$plugin] = $components;
-        }
-        return $plugins[$plugin];
-    }
 }

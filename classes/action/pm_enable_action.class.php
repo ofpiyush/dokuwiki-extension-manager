@@ -21,7 +21,7 @@ class pm_enable_action extends pm_base_action {
     }
 
     function enable($cmdkey) {
-        $info = $this->manager->info->get($cmdkey);
+        $info = $this->helper->info->get($cmdkey);
         if(!$info->can_enable()) return false;
 
         if($info->is_template) {

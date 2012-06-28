@@ -20,10 +20,11 @@ $lang['tab_search']             = 'Search & Install';
 $lang['updates_available']      = '%d update(s) available';
 $lang['summary_plugin']         = 'You have %d plugins installed, %d enabled';
 $lang['summary_template']       = 'You have %d templates installed';
-$lang['summary_search']         = 'DokuWiki repository contains a total of %d extensions!';
+$lang['summary_search']         = 'DokuWiki repository contains a total of %d extensions';
 // search box
 $lang['search_intro']           = 'Tip! You can use &lt;property&gt;:&lt;value&gt; in your query, for example <strong>author:Gohr</strong> or <strong>type:admin</strong>, and <strong>@plugins</strong> will restrict results, showing plugins only.';
 $lang['btn_reload']             = 'Refresh repository';
+$lang['matching_extensions']    = 'Matching extensions';
 
 // download url box
 $lang['urldownload_text']       = 'Install by URL';
@@ -45,24 +46,20 @@ $lang['no_result']              = 'Please try with a simpler query or <a href="%
 $lang['browse']                 = 'Browse all plugins';
 
 // extension list
-$lang['tpl_search']             = 'Search for a new Template';
-$lang['btn_info']               = 'Info';
+$lang['btn_info']               = 'Show more info';
 $lang['btn_update']             = 'Update';
 $lang['btn_delete']             = 'Delete';
-$lang['enable']                 = 'Enable';
-//$lang['btn_go']                 = "Go"; not necessary if using buttons
+$lang['btn_enable']             = 'Enable';
 $lang['btn_disable']            = 'Disable';
 $lang['btn_settings']           = 'Settings';
 $lang['btn_download']           = 'Download';
 $lang['btn_reinstall']          = 'Re-install';
 $lang['btn_disdown']            = 'Download as Disabled';
 $lang['btn_dependown']          = 'Download with dependencies';
-$lang['btn_enable']             = 'Save';
+
 $lang['select']                 = 'Select:';
 $lang['select_all']             = 'All';
 $lang['select_none']            = 'None';
-$lang['bundled']                = 'bundled';
-$lang['manual_install']         = 'manual install';
 
 $lang['status_compatible']      = 'Compatible with this DokuWiki release';
 $lang['status_probably']        = 'Probably compatible with this DokuWiki release (works with earlier releases)';
@@ -70,6 +67,8 @@ $lang['status_maybe']           = 'Compatible with later DokuWiki releases (upgr
 
 $lang['homepage_link']          = 'Docs';
 $lang['bugs_features']          = 'Bugs';
+$lang['author_hint']            = 'Search extensions by this author';
+$lang['tag_hint']               = 'Search extensions with this tag';
 $lang['installed']              = 'Installed:';
 $lang['lastupdate']             = 'Last updated:';
 $lang['source']                 = 'Download URL:';
@@ -82,6 +81,8 @@ $lang['depends']                = 'Depends on:';
 $lang['similar']                = 'Similar to:';
 $lang['conflicts']              = 'Conflicts with:';
 $lang['donate']                 = 'Donate';
+$lang['bundled']                = 'bundled';
+$lang['manual_install']         = 'manual install';
 
 $lang['msg_tpl_deleted']        = 'Template %s deleted';
 $lang['msg_tpl_notdeleted']     = 'Template %s could not be deleted';
@@ -137,18 +138,17 @@ $lang['desc']                   = 'Description:';
 $lang['author']                 = 'Author:';
 $lang['www']                    = 'Web:';
 $lang['tags']                   = 'Tags';
+
 // error messages
 $lang['needed_by']              = 'Needed by:';
 $lang['not_writable']           = 'DokuWiki can not write to the folder';
-$lang['repocache_error']        = 'www.dokuwiki.org extension repository unavailable';
-$lang['repoxmlformat_error']    = 'Repository XML unformatted';
 $lang['missing_dependency']     = '<strong>Missing or disabled dependency:</strong> %s';
 $lang['security_issue']         = '<strong>Security Issue:</strong> %s';
 $lang['security_warning']       = '<strong>Security Warning:</strong> %s';
 $lang['update_available']       = '<strong>Update:</strong> New version %s is available.';
 $lang['wrong_folder']           = '<strong>Plugin installed incorrectly:</strong> Rename plugin directory "%s" to "%s".';
 $lang['url_change']             = '<strong>URL changed:</strong> Download URL has changed since last download. Check if the new URL is valid before updating the extension.<br />New: %s<br />Old: %s';
-$lang['gitmanaged']             = 'Git source control';
+$lang['gitmanaged']             = 'Extension installed with git';
 $lang['bundled_source']         = 'Bundled with DokuWiki source';
 $lang['no_url']                 = 'No download URL';
 $lang['no_manager']             = 'Could not find manager.dat file';

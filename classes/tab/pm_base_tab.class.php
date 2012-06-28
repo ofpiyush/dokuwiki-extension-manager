@@ -9,11 +9,13 @@
 abstract class pm_base_tab {
 
     var $manager = NULL;
+    var $helper = NULL;
     var $lang = array();
     var $downloaded = array();
 
-    function __construct(admin_plugin_extension $manager) {
+    function __construct($manager) {
         $this->manager = $manager;
+        $this->helper = $manager->hlp;
         $this->check_writable();
     }
 
@@ -80,16 +82,17 @@ abstract class pm_base_tab {
     protected function html_search($type, $value = '') {
         global $lang;
 
-        $search_form = new Doku_Form('extension__manager_search');
+        $search_form = new Doku_Form(array('id'=>'extension__manager_search','class'=>'search'));
 
         if (!$type) {
             $search_form->startFieldset($lang['btn_search']);
         }
         $search_form->addHidden('page','extension');
         $search_form->addHidden('tab','search');
-        $search_form->addHidden('type',$type);
         $search_form->addElement(form_makeTextField('q',hsc($value),'','extensionplugin__searchtext'));
         $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'], array('fame' => 'fn[search]')));
+        $search_form->addHidden('type',$type);
+        $search_form->addElement('<div id="extensionplugin__searchresult" class="ajax_qsearch JSpopup" ></div>');
         if (!$type) {
             $search_form->addElement('<p>');
             $search_form->addElement($this->manager->getLang('search_intro'));
@@ -109,7 +112,7 @@ abstract class pm_base_tab {
             'q'=>'tag:'.$tag,
         );
         $url = wl($ID,$params);
-        return '<a href="'.$url.'" class="taglink '.$class.'" title="'.'List all plugins with this tag'.' : '.$tag.'">'.$tag.'</a> ';
+        return '<a href="'.$url.'" class="taglink '.$class.'" title="'.$this->manager->getLang('tag_hint').'">'.$tag.'</a> ';
     }
 
     function reload_repo_link() {
@@ -126,7 +129,7 @@ abstract class pm_base_tab {
     }
 
     protected function _info_list($index) {
-        return $this->manager->info->get($index,$this->manager->tab);
+        return $this->helper->info->get($index,$this->manager->tab);
     }
 
     //sorting based on name

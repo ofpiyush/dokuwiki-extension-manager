@@ -18,9 +18,9 @@ class pm_search_tab extends pm_base_tab {
     var $actions_list = array();
 
     function process() {
-        $this->clean_repo();
+        $this->filtered_repo = $this->helper->get_filtered_repo();
         $this->actions_list = array(
-            'enable'=>$this->manager->getLang('enable'),
+            'enable'=>$this->manager->getLang('btn_enable'),
             'disable'=>$this->manager->getLang('btn_disable'),
             'update'=>$this->manager->getLang('btn_update'),
             'reinstall' =>$this->manager->getLang('btn_reinstall'),
@@ -70,7 +70,7 @@ class pm_search_tab extends pm_base_tab {
 
         if($this->term !== null || $this->extra !== null ) {
             if($this->term === null) $this->term = array();
-            if($this->manager->repo)
+            if($this->helper->repo)
                 $this->lookup();
         }
     }
@@ -81,8 +81,8 @@ class pm_search_tab extends pm_base_tab {
     function html() {
         $this->html_menu();
         ptln('<div class="panelHeader">');
-        if ($this->manager->repo) {
-            $summary = sprintf($this->manager->getLang('summary_search'),count($this->manager->repo['data']));
+        if ($this->helper->repo) {
+            $summary = sprintf($this->manager->getLang('summary_search'),count($this->helper->repo['data']));
             ptln('<h3>'.$summary.'</h3>');
         } else {
             echo '<div class="message error">'.$this->manager->getLang('repocache_error').'</div>';
@@ -156,10 +156,10 @@ class pm_search_tab extends pm_base_tab {
     }
 
     function check_writable() {
-        if(!$this->manager->templatefolder_writable) {
+        if(!$this->helper->templatefolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_TPLLIB,-1);
         }
-        if(!$this->manager->pluginfolder_writable) {
+        if(!$this->helper->pluginfolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
     }
@@ -170,7 +170,7 @@ class pm_search_tab extends pm_base_tab {
     function tagcloud(){
         global $ID;
 
-        $tags = $this->manager->repo['cloud'];
+        $tags = $this->helper->repo['cloud'];
         if (count($tags) > 0) {
             echo '<div class="cloud">'.NL;
             foreach($tags as $tag => $size){
@@ -178,52 +178,6 @@ class pm_search_tab extends pm_base_tab {
             }
             echo '</div>'.NL;
         }
-    }
-
-    /**
-     * Filter BEFORE the repo is searched on, removes obsolete plugins, security issues etc
-     */
-    protected function clean_repo() {
-        if ($this->manager->repo) {
-            $this->filtered_repo = array_filter($this->manager->repo['data'],create_function('$info','return $info["show"];'));
-            $this->filtered_repo = array_merge($this->filtered_repo, $this->local_extensions());
-        } else {
-            $this->filtered_repo = $this->local_extensions();
-        }
-        uasort($this->filtered_repo, function($a,$b){return strcasecmp($a['sort'],$b['sort']);});
-    }
-
-    /**
-     * Create dummy repo entries for local extensions
-     */
-    function local_extensions() {
-        $retval = array();
-        $templates = array_map(array($this,'_info_templatelist') ,$this->manager->template_list);
-        $plugins = array_map(array($this,'_info_pluginlist'),$this->manager->plugin_list);
-        $list = array_merge($plugins,$templates);
-        foreach ($list as $info) {
-            if ($info->repo) {
-                // only use repo if we are sure that this plugin is connected to repo
-                $retval[$info->repokey] = $info->repo;
-                $retval[$info->repokey]['id'] = $info->cmdkey;
-            } else {
-                $retval['L'.$info->repokey] = array('id' => $info->cmdkey,
-                                                'name' => $info->name,
-                                                'author' => $info->author,
-                                                'description' => $info->desc,
-                                                'sort' => str_replace('template:','',$info->repokey)
-                                                );
-            }
-        }
-        return $retval;
-    }
-
-    function _info_pluginlist($index) {
-        return $this->manager->info->get($index,'plugin');
-    }
-
-    function _info_templatelist($index) {
-        return $this->manager->info->get($index,'template');
     }
 
     /**

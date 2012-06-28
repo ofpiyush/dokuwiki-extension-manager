@@ -18,7 +18,7 @@ class pm_disable_action extends pm_base_action {
     }
 
     function disable($cmdkey) {
-        $info = $this->manager->info->get($cmdkey);
+        $info = $this->helper->info->get($cmdkey);
         if(!$info->can_disable()) return false;
         if($info->is_template) return false;
 

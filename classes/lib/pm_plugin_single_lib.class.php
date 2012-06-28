@@ -9,8 +9,8 @@
 
 class pm_plugin_single_lib extends pm_base_single_lib {
 
-    function __construct(admin_plugin_extension $manager,$id,$is_template) {
-        parent::__construct($manager,$id,$is_template);
+    function __construct(helper_plugin_extension $helper,$id,$is_template) {
+        parent::__construct($helper,$id,$is_template);
 
         $this->is_enabled = !plugin_isdisabled($id);
     }
@@ -35,7 +35,7 @@ class pm_plugin_single_lib extends pm_base_single_lib {
      * return list of component types supplied by this plugin
      */
     function default_type() {
-        $components = $this->manager->get_plugin_components($this->id);
+        $components = $this->helper->get_plugin_components($this->id);
         $return = "";
         if(!empty($components)) {
             $types = array_map(function($a){return ucfirst($a['type']);}, $components);

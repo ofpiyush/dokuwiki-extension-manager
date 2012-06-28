@@ -21,7 +21,7 @@ class pm_download_action extends pm_base_action {
 
         } elseif (is_array($this->selection)) {
             foreach ($this->selection as $cmdkey) {
-                $info = $this->manager->info->get($cmdkey);
+                $info = $this->helper->info->get($cmdkey);
                 $this->download_single($info);
             }
         }
@@ -161,7 +161,7 @@ class pm_download_action extends pm_base_action {
                     // copy action
                     if ($this->dircopy($item['tmp'], $target)) {
                         $this->downloaded[$item['type']][] = $item['base'];
-                        $this->manager->log->write($target, $instruction, array('url' => $url, 'repokey' => $info->repokey));
+                        $this->helper->log->write($target, $instruction, array('url' => $url, 'repokey' => $info->repokey));
                         $this->manager->tab = $item['type'];
                     } else {
                         $error = sprintf($this->manager->getLang('error_copy')."\n", $item['base']);

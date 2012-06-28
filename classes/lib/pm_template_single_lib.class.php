@@ -9,8 +9,8 @@
 
 class pm_template_single_lib extends pm_base_single_lib {
 
-    function __construct(admin_plugin_extension $manager,$id,$is_template) {
-        parent::__construct($manager,$id,$is_template);
+    function __construct(helper_plugin_extension $helper,$id,$is_template) {
+        parent::__construct($helper,$id,$is_template);
 
         global $conf;
         $this->is_enabled = ($id == $conf['template']);

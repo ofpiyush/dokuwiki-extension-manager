@@ -10,9 +10,11 @@ abstract class pm_base_action {
 
     var $selection = null;
     var $manager = null;
+    var $helper = null;
 
     final function __construct(admin_plugin_extension $manager) {
         $this->selection = $manager->selection;
+        $this->helper = $manager->hlp;
         $this->manager = $manager;
         $this->act();
     }
@@ -73,7 +75,7 @@ abstract class pm_base_action {
         $message = vsprintf($this->manager->getLang($key), $args);
 
         // repokey used to avoid repetition of urls in log file when action download (url)
-        $this->manager->log->trace(str_replace('template:','',$info->repokey), strip_tags($message));
+        $this->helper->log->trace(str_replace('template:','',$info->repokey), strip_tags($message));
         msg($message,$lvl);
     }
 

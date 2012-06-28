@@ -14,7 +14,7 @@ class pm_plugin_tab extends pm_base_tab {
 
     function process() {
         $this->actions_list = array(
-            'enable'=>$this->manager->getLang('enable'),
+            'enable'=>$this->manager->getLang('btn_enable'),
             'disable'=>$this->manager->getLang('btn_disable'),
             'delete'=>$this->manager->getLang('btn_delete'),
             'update'=>$this->manager->getLang('btn_update'),
@@ -27,7 +27,7 @@ class pm_plugin_tab extends pm_base_tab {
             'gitmanaged' => $this->manager->getLang('gitmanaged'),
             'missing_dlurl' => $this->manager->getLang('no_url'),
         );
-        $list = array_map(array($this,'_info_list'),$this->manager->plugin_list);
+        $list = array_map(array($this,'_info_list'),$this->helper->plugin_list);
         $this->updates_available = count(array_filter($list, create_function('$info','return $info->update_available;')));
         usort($list,array($this,'_sort'));
         $protected = array_filter($list,array($this,'_is_protected'));
@@ -55,7 +55,7 @@ class pm_plugin_tab extends pm_base_tab {
     function html() {
         $this->html_menu();
         ptln('<div class="panelHeader">');
-        $summary = sprintf($this->manager->getLang('summary_plugin'),count($this->manager->plugin_list),count($this->plugins['enabled'])+count($this->protected_plugins['enabled']));
+        $summary = sprintf($this->manager->getLang('summary_plugin'),count($this->helper->plugin_list),count($this->plugins['enabled'])+count($this->protected_plugins['enabled']));
 	    ptln('<h3>'.$summary.'</h3>');
         $this->html_search($this->manager->tab);
         $this->html_download_disabled();
@@ -96,7 +96,7 @@ class pm_plugin_tab extends pm_base_tab {
     }
 
     function check_writable() {
-        if(!$this->manager->pluginfolder_writable) {
+        if(!$this->helper->pluginfolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_PLUGIN,-1);
         }
     }

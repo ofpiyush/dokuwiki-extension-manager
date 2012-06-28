@@ -23,14 +23,14 @@ class pm_delete_action extends pm_base_action {
      * @return bool if the directory delete was successful or not
      */
     function delete($cmdkey) {
-        $info = $this->manager->info->get($cmdkey);
+        $info = $this->helper->info->get($cmdkey);
         if(!$info->can_delete()) return false;
 
         $path = $info->install_directory();
         $path = substr($path, 0, -1); // remove trailing slash
         if ($this->dir_delete($path)) {
             $list = $this->manager->tab.'_list';
-            $this->manager->$list = array_diff($this->manager->$list,array($info->id));
+            $this->helper->$list = array_diff($this->helper->$list,array($info->id));
             $this->report(1,$info,'deleted');
             return true;
 

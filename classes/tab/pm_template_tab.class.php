@@ -16,7 +16,7 @@ class pm_template_tab extends pm_base_tab {
 
     function process() {
         global $conf;
-        $list = $this->manager->template_list;
+        $list = $this->helper->template_list;
         $this->templates['enabled'][0] = $this->_info_list($conf['template']);
         $disabled = array_diff($list,array($conf['template']));
         $this->templates['disabled'] = array_map(array($this,'_info_list'),$disabled);
@@ -26,7 +26,7 @@ class pm_template_tab extends pm_base_tab {
 
         usort($this->templates['disabled'],array($this,'_sort'));
         $this->actions_list = array(
-            'enable'=>$this->manager->getLang('enable'),
+            'enable'=>$this->manager->getLang('btn_enable'),
             'delete'=>$this->manager->getLang('btn_delete'),
             'update'=>$this->manager->getLang('btn_update'),
             'reinstall' =>$this->manager->getLang('btn_reinstall'),
@@ -46,7 +46,7 @@ class pm_template_tab extends pm_base_tab {
     function html() {
         $this->html_menu();
         ptln('<div class="panelHeader">');
-        $summary = sprintf($this->manager->getLang('summary_template'),count($this->manager->template_list));
+        $summary = sprintf($this->manager->getLang('summary_template'),count($this->helper->template_list));
 	    ptln('<h3>'.$summary.'</h3>');
         $this->html_search($this->manager->tab);
         $this->html_download_disabled();
@@ -74,7 +74,7 @@ class pm_template_tab extends pm_base_tab {
     }
 
     function check_writable() {
-        if(!$this->manager->templatefolder_writable) {
+        if(!$this->helper->templatefolder_writable) {
             msg($this->manager->getLang('not_writable')." ".DOKU_TPLLIB,-1);
         }
     }

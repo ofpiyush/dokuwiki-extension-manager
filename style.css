@@ -14,7 +14,6 @@
     padding: 10px 10px 8px;
     text-align: left;
     min-height: 20px;
-    overflow: hidden;
 }
 #extension__manager .panelHeader h3 {
     float: left;
@@ -55,6 +54,10 @@
 #extension__manager .tagcloud {
     width: 55%;
     float: left;
+    margin: 0 0.5em 1em 0;
+}
+#extension__manager .tagcloud  a.taglink {
+    background-color: inherit;
 }
 #extension__manager fieldset {
     margin-top: 0.5em;
@@ -84,16 +87,19 @@
     cursor: pointer;
 }
 #extension__manager input.button {
-    margin-left: 0.2em;
+    margin-left: 0.3em;
 }
 /*
  * extensions table
  */
 #extension__manager table {
     width: 100%;
+    border-collapse: collapse;
+    border: thin solid __border__;
 }
 #extension__manager table td {
     vertical-align: middle;
+    border: thin solid __border__;
     border-style: solid none;
 }
 #extension__manager .selection {
@@ -178,6 +184,7 @@
 }
 #extension__manager .actions {
     background-color: __background_alt__;
+    padding-left: 0.5em;
     font-size: 95%;
     width: 25%;
 }
@@ -213,6 +220,15 @@
 	padding: 16px 32px 0 0;
     position: relative;
     top: -24px;
+}
+#extension__manager div#info__popup {
+    z-index: 20;
+    overflow: hidden;
+    opacity: 0.95;
+    border: 1px solid __border__;
+    background-color: __border__; /*background_other__;*/
+    text-align: left;
+    padding: 0.2em;
 }
 /*
  * extensions table, messages

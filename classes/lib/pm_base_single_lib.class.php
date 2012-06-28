@@ -104,17 +104,17 @@ abstract class pm_base_single_lib {
      */
     var $log = array();
 
-    function __construct(admin_plugin_extension $manager,$id,$is_template) {
-        $this->manager = $manager;
+    function __construct(helper_plugin_extension $helper,$id,$is_template) {
+        $this->helper = $helper;
         $this->id = $id;
         $this->is_template = $is_template;
 
         if($is_template) {
-            $this->is_bundled = in_array('template:'.$id,$manager->_bundled);
+            $this->is_bundled = in_array('template:'.$id,$helper->_bundled);
             // no protected templates
         } else {
-            $this->is_bundled = in_array($id,$manager->_bundled);
-            $this->is_protected = in_array($id,$manager->protected);
+            $this->is_bundled = in_array($id,$helper->_bundled);
+            $this->is_protected = in_array($id,$helper->protected);
         }
     }
 
@@ -207,7 +207,7 @@ abstract class pm_base_single_lib {
         } elseif(!empty($this->installed)) {
             $time = $this->installed;
         }
-        $this->install_date = ($time ? date('Y-m-d',strtotime($time)) : $this->manager->getLang('manual_install'));
+        $this->install_date = ($time ? date('Y-m-d',strtotime($time)) : $this->helper->manager->getLang('manual_install'));
         return $this->install_date;
     }
 
@@ -225,7 +225,7 @@ abstract class pm_base_single_lib {
         if($this->is_bundled) return true;
         if($this->is_protected) return true;
         if($this->is_gitmanaged) return true;
-        if (!$this->manager->getConf('allow_download')) return true;
+        if (!$this->helper->manager->getConf('allow_download')) return true;
 
         $this->no_fileactions_allowed = false;
         return false;
@@ -298,7 +298,7 @@ abstract class pm_base_single_lib {
             foreach((array) $this->relations['depends']['id'] as $depends) {
                 $key = (stripos($depends,'template:')===0) ? 'template' : 'plugin';
                 $dependency = str_replace('template:','',$depends);
-                if(!in_array($dependency,$this->manager->{$key.'_list'}) || ($key == 'plugin' && plugin_isdisabled($dependency))) {
+                if(!in_array($dependency,$this->helper->{$key.'_list'}) || ($key == 'plugin' && plugin_isdisabled($dependency))) {
                     $missing[] = $depends;
                 }
             }
@@ -315,7 +315,7 @@ abstract class pm_base_single_lib {
             foreach((array) $this->needed_by as $user) {
                 $key = (stripos($user,'template:')===0) ? 'template' : 'plugin';
                 $dependency = str_replace('template:','',$user);
-                if(in_array($dependency,$this->manager->{$key.'_list'}) && ($key == 'template' || !plugin_isdisabled($dependency))) {
+                if(in_array($dependency,$this->helper->{$key.'_list'}) && ($key == 'template' || !plugin_isdisabled($dependency))) {
                     $users[] = $user;
                 }
             }
@@ -346,7 +346,7 @@ abstract class pm_base_single_lib {
     function has_conflicts() {
         if(!empty($this->relations['conflicts']['id'])) {
             $key = ($this->is_template) ? 'template' : 'plugin';
-            $installed_conflicts = array_intersect($this->manager->{$key.'_list'},(array)$this->relations['conflicts']['id']);
+            $installed_conflicts = array_intersect($this->helper->{$key.'_list'},(array)$this->relations['conflicts']['id']);
             if(!empty($installed_conflicts)) {
                 $this->has_conflicts = $installed_conflicts;    
                 return true;
@@ -380,11 +380,5 @@ abstract class pm_base_single_lib {
         if ($current > $this->compatible['release'][0]) return 'probably';
         return 'maybe';
     }
-
-    function showinfo() {
-        if($this->manager->showinfo == $this->repokey) return true;
-        return false;
-    }
-
 
 }

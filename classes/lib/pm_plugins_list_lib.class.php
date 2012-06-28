@@ -15,16 +15,19 @@ class pm_plugins_list_lib {
     protected $type = "plugin";
     protected $form_id = null;
     protected $manager = null;
+    protected $helper = null;
     protected $columns = array();
     protected $intable = false;
     protected $actions_shown = array();
+    protected $showinfo = false;
 
     /**
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct(admin_plugin_extension $manager,$form_id,$actions = array(),$possible_errors=array(),$type ="plugin") {
+    function __construct($manager,$form_id,$actions = array(),$possible_errors=array(),$type ="plugin") {
         $this->manager = $manager;
+        $this->helper = $manager->hlp;
         $this->type = $type;
         $this->possible_errors = $possible_errors;
         $this->form_id = $form_id;
@@ -58,6 +61,7 @@ class pm_plugins_list_lib {
      */
     function add_row($info) {
         if($this->intable) {
+            $this->showinfo = ($this->manager->showinfo == $info->repokey);
             $this->rowadded = true;
             $this->start_row($info,$this->make_class($info));
             $this->populate_column('selection',$this->make_checkbox($info,$checkbox));
@@ -153,18 +157,24 @@ class pm_plugins_list_lib {
             $class.= ($info->is_enabled) ? ' enabled':' disabled';
         }
         if(!$info->can_select()) $class.= ' notselect';
-        if($info->is_protected)
-            $class.=  ' protected';
-        if($info->showinfo()) $class.= ' showinfo';
+        if($info->is_protected) $class.=  ' protected';
+        if($this->showinfo) $class.= ' showinfo';
         return $class;
     }
 
     function make_author($info) {
+        global $ID;
+
         if(!empty($info->author)) {
-            if(!empty($info->email)) {
-                return '<a href="mailto:'.hsc($info->email).'">'.hsc($info->author).'</a>';
-            }
-            return hsc($info->author);
+
+            $params = array(
+                'do'=>'admin',
+                'page'=>'extension',
+                'tab'=>'search',
+                'q'=>'author:'.$info->author
+            );
+            $url = wl($ID,$params);
+            return '<a href="'.$url.'" class="searchlink" title="'.$this->manager->getLang('author_hint').'" >'.hsc($info->author).'</a>';
         }
         return "<em>".$this->manager->getLang('unknown')."</em>";
     }
@@ -192,12 +202,12 @@ class pm_plugins_list_lib {
 
         if ($info->popularity && !$info->is_bundled) {
             $progressCount = $info->popularity;
-            $progressWidth = round(100*$progressCount/$this->manager->repo['maxpop']);
+            $progressWidth = round(100*$progressCount/$this->helper->repo['maxpop']);
             $return .= '<div class="progress" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
         }
-        $compatible = $info->compatible_status($this->manager->dokuwiki_version['date']);
+        $compatible = $info->compatible_status($this->helper->dokuwiki_version['date']);
         if ($compatible) {
-            $return .= '<div class="status '.$compatible.'" title="'.$this->manager->getLang('status_'.$compatible).'">'.$this->manager->dokuwiki_version['name'].'</div>';
+            $return .= '<div class="status '.$compatible.'" title="'.$this->manager->getLang('status_'.$compatible).'">'.$this->helper->dokuwiki_version['name'].'</div>';
         }
 
         $return .= '<p>';
@@ -205,21 +215,30 @@ class pm_plugins_list_lib {
             $return .=  hsc($info->description).' ';
         }
         $return .= '</p>';
+        $return .= $this->make_linkbar($info);
 
-        $return .= '<span>';
+        if($this->showinfo) {
+            $return .= $this->make_info($info);
+        }
+        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
+
+        $return .= $this->make_noticearea($info);
+        return $return;
+    }
+
+    function make_linkbar($info) {
+        $return .= '<span class="linkbar">';
         $return .= $this->make_homepagelink($info);
         if ($info->bugtracker) {
-            $return .= ' &bull; <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="urlextern">'.$this->manager->getLang('bugs_features').'</a>';
+            $return .= ' <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="interwiki iw_dokubug">'.$this->manager->getLang('bugs_features').'</a>';
         }
         if(!empty($info->tags) && is_array($info->tags['tag'])) {
-            $return .= ' &bull; '.$this->manager->getLang('tags').' ';
+            $return .= ' '.$this->manager->getLang('tags').' ';
             foreach ($info->tags['tag'] as $tag) {
                 $return .= $this->manager->handler->html_taglink($tag);
             }
         }
         $return .= '</span>';
-        $return .= $this->make_info($info);
-        $return .= $this->make_noticearea($info);
         return $return;
     }
 
@@ -229,7 +248,7 @@ class pm_plugins_list_lib {
     function make_noticearea($info) {
         if($info->missing_dependency()) {
             $return .= '<div class="message error">'.
-                            sprintf($this->manager->getLang('missing_dependency'),implode(', ',array_map(array($this,'make_extensionsearchlink'),$info->missing_dependency))).
+                            sprintf($this->manager->getLang('missing_dependency'),implode(', ',array_map(array($this->helper,'make_extensionsearchlink'),$info->missing_dependency))).
                         '</div>';
         }
         if($info->wrong_folder()) {
@@ -264,9 +283,6 @@ class pm_plugins_list_lib {
      * Plugin/template details
      */
     function make_info($info) {
-        if(!$info->showinfo()) {
-            return $this->make_action('info',$info,$this->manager->getLang('btn_info'));
-        }
         $default = $this->manager->getLang('unknown');
         $return .= '<dl class="details">';
 
@@ -340,21 +356,7 @@ class pm_plugins_list_lib {
         if ($info->donationurl) {
             $return .= '<a href="'.hsc($info->donationurl).'" class="donate" title="'.$this->manager->getLang('donate').'"></a>';
         }
-        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
         return $return;
-    }
-
-    function make_extensionsearchlink($id) {
-        global $ID;
-
-        $params = array(
-            'do'=>'admin',
-            'page'=>'extension',
-            'tab'=>'search',
-            'q'=>'id:'.$id,
-        );
-        $url = wl($ID,$params);
-        return '<a href="'.$url.'" class="searchlink" title="'.hsc($id).'">'.hsc(ucfirst($id)).'</a>';
     }
 
     function make_linklist($links) {
@@ -407,8 +409,10 @@ class pm_plugins_list_lib {
     function make_action($action,$info,$text) {
         switch ($action) {
             case 'info':
-                if ($info->showinfo()) {
-                    return '<input class="button" name="fn['.$action.'][-'.$info->cmdkey.']" type="submit" value="'.$text.'" />';
+                if ($this->showinfo) {
+                    return '<input class="button info" name="fn['.$action.'][-'.$info->cmdkey.']" type="submit" value="'.$text.'" />';
+                } else {
+                    return '<input class="button info" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" title="'.$this->manager->getLang('btn_info').'" />';
                 }
             case 'enable':
             case 'disable':

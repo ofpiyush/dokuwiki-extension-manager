@@ -8,15 +8,13 @@
 
 class pm_repository_lib {
     private $repo = null;
-    var $manager = null;
     var $repo_cache = NULL;
     var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
 
-    function __construct(admin_plugin_extension $manager) {
+    function __construct() {
         $this->repo_cache = new cache('plugin_manager', '.sa');
         $this->check_load();
         $this->repo = $this->fetch();
-        $this->manager = $manager;
     }
     /**
      * checks to see if a valid cache exists, if it doesn't, makes one...
@@ -63,7 +61,7 @@ class pm_repository_lib {
         }
         if($error) {
             $this->repo_cache->storeCache(serialize(null));
-            msg($this->manager->getLang('repocache_error'), -1);
+            msg('www.dokuwiki.org extension repository unavailable', -1);
         }
     }
 
@@ -168,7 +166,7 @@ class pm_repository_lib {
         xml_parse_into_struct($parser,$string, $struct);
         xml_parser_free($parser);
         if(!is_array($struct))
-            throw new Exception($this->manager->getLang('repoxml_error'));
+            throw new Exception('Repository XML unformatted');
         $xml = array();
         $levels = array();
         $current = &$xml;

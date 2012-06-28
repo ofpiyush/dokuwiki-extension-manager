@@ -8,8 +8,8 @@
 
 class pm_info_lib {
 
-    function __construct(admin_plugin_extension $manager) {
-        $this->manager = $manager;
+    function __construct(helper_plugin_extension $helper) {
+        $this->helper = $helper;
     }
 
     /**
@@ -33,16 +33,16 @@ class pm_info_lib {
             if(stripos($repokey,'template:')===0) {
                 $id = substr($repokey,9);
                 $is_template = true;
-                $is_writable = $this->manager->templatefolder_writable;
-                if ($folder && in_array($folder,$this->manager->template_list)) {
+                $is_writable = $this->helper->templatefolder_writable;
+                if ($folder && in_array($folder,$this->helper->template_list)) {
                     $id = $folder;
                     $is_installed = true;
                     $type = 'template';
                 }
             } else {
                 $is_template = false;
-                $is_writable = $this->manager->pluginfolder_writable;
-                if ($folder && in_array($folder,$this->manager->plugin_list)) {
+                $is_writable = $this->helper->pluginfolder_writable;
+                if ($folder && in_array($folder,$this->helper->plugin_list)) {
                     $id = $folder;
                     $is_installed = true;
                     $type = 'plugin';
@@ -56,7 +56,7 @@ class pm_info_lib {
         }
 
         $classname = "pm_".$type."_single_lib";
-        $return = new $classname($this->manager,$id,$is_template);
+        $return = new $classname($this->helper,$id,$is_template);
         $return->is_installed = $is_installed;
 
         // don't assume extentions installed in correct directory (try read info.txt before repo searching)
@@ -74,7 +74,7 @@ class pm_info_lib {
             if(!empty($return->info['base'])) {
                 $repokey = (($is_template) ? 'template:' : '').$return->info['base'];
             }
-            $return->log = $this->manager->log->read($path);
+            $return->log = $this->helper->log->read($path);
 
             // installed plugins may have repokey stored from last download to handle case of 'code3' plugin in lib/code/.. 
             if (!empty($return->log['repokey'])) {
@@ -110,14 +110,14 @@ class pm_info_lib {
     }
 
     function find_repo_entry($return) {
-        if(!empty($this->manager->repo['data'][$return->repokey])) {
-            return $this->manager->repo['data'][$return->repokey];
+        if(!empty($this->helper->repo['data'][$return->repokey])) {
+            return $this->helper->repo['data'][$return->repokey];
         }
         return false;
     }
 
     function read_plugin_getInfo($index) {
-        $components = $this->manager->get_plugin_components($index);
+        $components = $this->helper->get_plugin_components($index);
         if(!empty($components)) {
             $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
             if(is_object($obj) && method_exists($obj,'getInfo') ) {
