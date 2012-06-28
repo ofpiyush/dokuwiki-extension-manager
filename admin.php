@@ -71,7 +71,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * handle user request
      */
     function handle() {
-        $this->hlp->init();
+        $this->hlp->init($this);
 
         if(isset($_REQUEST['info']))
             $this->showinfo = $_REQUEST['info'];

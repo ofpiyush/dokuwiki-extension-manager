@@ -31,7 +31,7 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
         if($event->data != 'plugin_extension') return;
         $event->preventDefault();
         $event->stopPropagation();
-        $this->hlp->init();
+        $this->hlp->init($this);
         
         if ($_POST['fn']) {
             $this->extension_details();
