@@ -108,49 +108,63 @@
 }
 #extension__manager .legend {
     vertical-align: top;
-    padding: 0.3em 0.5em 0.2em 0.2em;
+    padding: 0.3em 0.5em 0.4em 132px;
 }
-#extension__manager .plugin.enabled td.legend {
-    background: transparent url(images/plugin_enabled.png) no-repeat 2px 2px;
+#extension__manager .legend div{
+    position: relative;
 }
-#extension__manager .plugin.disabled td.legend {
-    background: transparent url(images/plugin_disabled.png) no-repeat 2px 2px;
+#extension__manager .enabled div.screenshot span {
+    background: transparent url(images/enabled.png) no-repeat 2px 2px;
 }
-#extension__manager .plugin td.legend {
-    background: transparent url(images/plugin_repo.png) no-repeat 2px 2px;
+#extension__manager .disabled div.screenshot span {
+    background: transparent url(images/disabled.png) no-repeat 2px 2px;
 }
-#extension__manager .template.enabled td.legend {
-    background: transparent url(images/template.png) no-repeat 2px 2px;
-}
-#extension__manager .template.disabled td.legend {
-    background: transparent url(images/template.png) no-repeat 2px 2px;
-}
-#extension__manager .template td.legend {
-    background: transparent url(images/template.png) no-repeat 2px 2px;
-}
-#extension__manager .legend img {
-    margin: 2px;
+#extension__manager .legend div.screenshot {
+    margin-left: -132px;
+    max-width: 120px;
     float: left;
 }
+#extension__manager .legend div.screenshot span {
+    position: absolute;
+    left: 0px;
+}
+#extension__manager .legend h2 {
+    width: 100%;
+    float: right;
+    margin: 0.2em 0em;
+    font-size: 100%;
+    font-weight: normal;
+    border: none;
+}
+#extension__manager .legend a.searchlink {
+//    color: __text_alt__ !important;
+}
 #extension__manager .legend label {
-    margin-left: 52px;
     font-size: 120%;
     font-weight: bold;
-}
+    vertical-align: baseline;
+ }
 #extension__manager .legend p {
-    margin: 0.2em 0em 0.2em 52px;
+    margin: 0 0 0.7em 0;
 }
-#extension__manager .legend span {
-    margin-left: 52px;
+#extension__manager .legend span.linkbar {
+    margin-left: 0.3em;
+    line-height: 1.7em;
+    font-size: 85%;
+}
+#extension__manager .legend span.linkbar a.urlextern+a.taglink,
+#extension__manager .legend span.linkbar a.interwiki+a.taglink {
+    margin-left: 0.4em;
 }
 #extension__manager .legend  input.button {
     background: transparent url(images/down.png) no-repeat 0 0;
+    box-shadow: none;
     border-width: 0;
     height: 14px;
     text-indent: -99999px;
     float: right;
 }
-#extension__manager .showinfo .legend  input.button {
+#extension__manager .legend  input.button.close {
     background: transparent url(images/up.png) no-repeat 0 0;
 }
 #extension__manager div.status.maybe {background-color: #fc1;}
@@ -162,25 +176,23 @@
     font-size: 80%;
     float: right;
 }
-#extension__manager .legend div.progress {
+#extension__manager .legend div.popularity {
     background-color: __background__;
     border: 1px solid silver;
     height: .4em;
     margin: 0 auto;
     padding: 1px;
     width: 5.5em;
-    float: right;
+    position: absolute;
+    right: 0;
+    top: 0.2em;
 }
-#extension__manager .legend div.progress div {
+#extension__manager .legend div.popularity div {
     background-color: __border__;
     height: 100%;
 }
-#extension__manager .legend div.progress div span {
+#extension__manager .legend div.popularity div span {
     display: none;/* @todo: hide accessibly */
-}
-#extension__manager .screenshot {
-    padding: 4px;
-    text-align: center;
 }
 #extension__manager .actions {
     background-color: __background_alt__;
@@ -197,9 +209,9 @@
  * extensions table, detailed info box
  */
 #extension__manager dl.details {
-    margin: 0.2em 0em;
-    border: 1px dashed gray;
+    margin: 0.4em 0 0 0;
     font-size: 85%;
+    border-top: 1px solid __background_alt__;
 }
 #extension__manager dl.details dt {
 	clear: left;
@@ -207,12 +219,16 @@
 	width: 150px;
 	margin: 0;
     text-align: right;
-    font-weight: bold;
+    font-weight: normal;
 	padding: 0.2em 5px 0 0;
 }
 #extension__manager dl.details dd {
 	margin-left: 150px;
+    font-weight: bold;
 	padding: 0.2em 0 0 5px;
+}
+#extension__manager dl.details dd a {
+    font-weight: normal;
 }
 #extension__manager a.donate {
     background: transparent url(images/donate.png) no-repeat 0 0;
@@ -234,11 +250,10 @@
  * extensions table, messages
  */
 #extension__manager div.message {
-    background-position: 0.6em 0.1em;
+    background-position: 0.2em 0.2em;
     padding: 0.1em 1em 0.2em 3em;
-    margin-top: 0.2em;
-    margin-left: 52px;
-    border-radius: 1em;
+    margin: 0.4em 0 0 0;
+    border-radius: 5px;
 }
 #extension__manager div.notify {
     border: 1px solid #DDDD00;

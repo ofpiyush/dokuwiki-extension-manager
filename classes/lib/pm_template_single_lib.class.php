@@ -32,4 +32,8 @@ class pm_template_single_lib extends pm_base_single_lib {
         return 'Template';
     }
 
+    function default_screenshoturl() {
+        $this->screenshoturl = "lib/plugins/extension/images/template.png";
+        return $this->screenshoturl;
+    }
 }

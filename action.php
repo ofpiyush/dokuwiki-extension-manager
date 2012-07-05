@@ -70,11 +70,8 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
         preg_match('/(?<=\[info\]\[).+[^\]]/',$fn,$repokey);
 
         $info = $this->hlp->info->get($repokey[0]);
-        echo '<h3>'.hsc($info->displayname).'</h3>';
-
         $this->handler = new pm_plugin_tab($this);
         $list = new pm_plugins_list_lib($this,'extensionplugin__pluginsinfo');
-        echo $list->make_linkbar($info);
         echo $list->make_info($info);
     }
 

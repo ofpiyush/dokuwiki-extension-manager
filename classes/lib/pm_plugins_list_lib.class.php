@@ -66,9 +66,6 @@ class pm_plugins_list_lib {
             $this->start_row($info,$this->make_class($info));
             $this->populate_column('selection',$this->make_checkbox($info,$checkbox));
             $this->populate_column('legend',$this->make_legend($info));
-            if($this->type == 'template') {
-                $this->populate_column('screenshot',$this->make_screenshot($info));
-            }
             $this->populate_column('actions',$this->make_actions($info));
             $this->end_row();
         }
@@ -114,9 +111,11 @@ class pm_plugins_list_lib {
         $this->form .= '</form>';
         $this->form .= '</div>';
     }
+
     function render() {
         echo $this->form;
     }
+
     private function start_row($info,$class) {
         $this->form .= '<tr id="extensionplugin__'.hsc($info->html_id).'" class="'.$class.'">';
     }
@@ -133,14 +132,10 @@ class pm_plugins_list_lib {
     function make_homepagelink($info) {
         if(!empty($info->dokulink)) {
             $info->url = "http://www.dokuwiki.org/".$info->dokulink;
-            return $this->make_link($info,"interwiki iw_doku");
         }
 
         if(!empty($info->url)) {
-            if(preg_match('|^http(s)?://(www.)?dokuwiki.org/(.*)?$|i', $info->url))
-                return $this->make_link($info,"interwiki iw_doku");
-            else
-                return $this->make_link($info,"urlextern");
+            return $this->make_link($info,"urlextern");
         }
         return '';
     }
@@ -180,7 +175,7 @@ class pm_plugins_list_lib {
     }
 
     function make_screenshot($info) {
-        $return = '';
+        $return = '<div class="screenshot" >';
         if(!empty($info->screenshoturl)) {
             if($info->screenshoturl[0] == ':')
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
@@ -188,7 +183,8 @@ class pm_plugins_list_lib {
                     '<img alt="'.hsc($info->displayname).'" width="120" src="'.hsc($info->screenshoturl).'" />'.
                     '</a>';
         }
-        return $return;
+        $return .= '<span>xxxx</span>';
+        return $return.'</div>';
     }
 
     /**
@@ -197,32 +193,38 @@ class pm_plugins_list_lib {
     function make_legend($info) {
         global $lang;
 
+        $return .= '<div>';
+        $return .= '<h2>';
         $return .= '<label for="'.$this->form_id.'_'.hsc($info->html_id).'">'.hsc($info->displayname).'</label>';
         $return .= ' by '.$this->make_author($info);
+        $return .= '</h2>';
+
+        $return .= $this->make_screenshot($info);
 
         if ($info->popularity && !$info->is_bundled) {
             $progressCount = $info->popularity;
             $progressWidth = round(100*$progressCount/$this->helper->repo['maxpop']);
-            $return .= '<div class="progress" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
+            $return .= '<div class="popularity" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
         }
-        $compatible = $info->compatible_status($this->helper->dokuwiki_version['date']);
-        if ($compatible) {
-            $return .= '<div class="status '.$compatible.'" title="'.$this->manager->getLang('status_'.$compatible).'">'.$this->helper->dokuwiki_version['name'].'</div>';
-        }
+// TODO: add better compatible indication
+//        $compatible = $info->compatible_status($this->helper->dokuwiki_version['date']);
+//        if ($compatible) {
+//            $return .= '<div class="status '.$compatible.'" title="'.$this->manager->getLang('status_'.$compatible).'">'.$this->helper->dokuwiki_version['name'].'</div>';
+//        }
 
         $return .= '<p>';
         if(!empty($info->description)) {
             $return .=  hsc($info->description).' ';
         }
         $return .= '</p>';
-        $return .= $this->make_linkbar($info);
 
-        if($this->showinfo) {
+        $return .= $this->make_linkbar($info);
+        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
+        if ($this->showinfo) {
             $return .= $this->make_info($info);
         }
-        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
-
         $return .= $this->make_noticearea($info);
+        $return .= '</div>';
         return $return;
     }
 
@@ -233,7 +235,6 @@ class pm_plugins_list_lib {
             $return .= ' <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="interwiki iw_dokubug">'.$this->manager->getLang('bugs_features').'</a>';
         }
         if(!empty($info->tags) && is_array($info->tags['tag'])) {
-            $return .= ' '.$this->manager->getLang('tags').' ';
             foreach ($info->tags['tag'] as $tag) {
                 $return .= $this->manager->handler->html_taglink($tag);
             }
@@ -241,7 +242,6 @@ class pm_plugins_list_lib {
         $return .= '</span>';
         return $return;
     }
-
     /**
      * Notice area
      */
@@ -351,11 +351,11 @@ class pm_plugins_list_lib {
             $return .= $this->make_linklist((array)$info->relations['conflicts']['id']);
             $return .= '</dd>';
         }
+// TODO: add donate button
+//        if ($info->donationurl) {
+//            $return .= '<a href="'.hsc($info->donationurl).'" class="donate" title="'.$this->manager->getLang('donate').'"></a>';
+//        }
         $return .= '</dl>';
-
-        if ($info->donationurl) {
-            $return .= '<a href="'.hsc($info->donationurl).'" class="donate" title="'.$this->manager->getLang('donate').'"></a>';
-        }
         return $return;
     }
 
@@ -369,12 +369,10 @@ class pm_plugins_list_lib {
     }
 
     function make_checkbox($info) {
-        $checked =" ";
-        if(!$info->can_select()) {
-            $checked .= 'disabled="disabled"';
-        }
+        if(!$info->can_select()) return '';
+
         return '<input id="'.$this->form_id.'_'.hsc($info->html_id).'" type="checkbox"'.
-               ' name="checked[]" value="'.$info->cmdkey.'" '.$checked.' /><br />';
+               ' name="checked[]" value="'.$info->cmdkey.'" /><br />';
     }
 
     function make_actions($info) {
@@ -410,7 +408,7 @@ class pm_plugins_list_lib {
         switch ($action) {
             case 'info':
                 if ($this->showinfo) {
-                    return '<input class="button info" name="fn['.$action.'][-'.$info->cmdkey.']" type="submit" value="'.$text.'" />';
+                    return '<input class="button info close" name="fn['.$action.'][-'.$info->cmdkey.']" type="submit" value="'.$text.'" />';
                 } else {
                     return '<input class="button info" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" title="'.$this->manager->getLang('btn_info').'" />';
                 }

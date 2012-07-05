@@ -137,7 +137,6 @@ $lang['type']                   = 'Type:';
 $lang['desc']                   = 'Description:';
 $lang['author']                 = 'Author:';
 $lang['www']                    = 'Web:';
-$lang['tags']                   = 'Tags';
 
 // error messages
 $lang['needed_by']              = 'Needed by:';
