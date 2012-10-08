@@ -11,7 +11,6 @@ var extension_manager = {
 
 
         // hover info
-        jQuery('#extension__manager span.linkbar').hide();
         jQuery('#extension__manager input.info').mouseenter(function () {
             if (jQuery(this).hasClass('info_active')) return;
             jQuery(this).addClass('info_active');

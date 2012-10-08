@@ -183,7 +183,7 @@ class pm_plugins_list_lib {
                     '<img alt="'.hsc($info->displayname).'" width="120" src="'.hsc($info->screenshoturl).'" />'.
                     '</a>';
         }
-        $return .= '<span>xxxx</span>';
+        $return .= '<span></span>';
         return $return.'</div>';
     }
 
@@ -389,7 +389,7 @@ class pm_plugins_list_lib {
         }
 
         $return .= '<p>';
-        if(!empty($this->possible_errors)) {
+        if(false && !empty($this->possible_errors)) { // TODO: display errors in a better way
             foreach($this->possible_errors as $error => $text) {
                 if($info->$error()) {
                     if(is_array($info->$error)) {
