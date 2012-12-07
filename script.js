@@ -1,38 +1,11 @@
 var extension_manager = { 
 
-    $callerObj: null,
-
     init : function () {
         if (!('info' in extension_manager.getUrlVars())) {
             jQuery('#extensionplugin__searchtext').focus();
         }
-        // quick search
 
-
-
-        // hover info
-        jQuery('#extension__manager input.info').click(function (e) {
-            var $clicky = jQuery(this);
-            if($clicky.hasClass('close')){
-                $clicky.parent().find('dl.details').remove();
-                $clicky.removeClass('close');
-            }else{
-                var fn = $clicky.attr('name');
-                extension_manager.$callerObj = jQuery(this);
-                jQuery.post(
-                    DOKU_BASE + 'lib/exe/ajax.php',
-                    {
-                        call: 'plugin_extension',
-                        fn: fn
-                    },
-                    extension_manager.onInfoCompletion,
-                    'html'
-                );
-                $clicky.addClass('close');
-            }
-            e.preventDefault();
-            e.stopPropagation();
-        });
+        extension_manager.initInfoPanels();
 
 
         // check all/none buttons
@@ -42,6 +15,37 @@ var extension_manager = {
 	    extension_manager.confirmDelete('#extension__manager .actions .delete');
         extension_manager.confirmDelete('#extension__manager .bottom .button[name="fn[delete]"]');
     },
+
+
+    /**
+     * Adds open/close functionality for additional info
+     */
+    initInfoPanels: function(){
+        jQuery('#extension__manager input.info').click(function (e) {
+            var $clicky = jQuery(this);
+            if($clicky.hasClass('close')){
+                $clicky.parent().find('dl.details').remove();
+                $clicky.removeClass('close');
+            }else{
+                jQuery.post(
+                    DOKU_BASE + 'lib/exe/ajax.php',
+                    {
+                        call: 'plugin_extension',
+                        fn: $clicky.attr('name')
+                    },
+                    function(data) {
+                        if (data === '') return;
+                        jQuery(data).show().insertAfter($clicky);
+                    },
+                    'html'
+                );
+                $clicky.addClass('close');
+            }
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    },
+
     getUrlVars : function() {
         var vars = [], hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -52,21 +56,8 @@ var extension_manager = {
         }
         return vars;
     },
-    onInfoCompletion: function(data) {
-        var pos = extension_manager.$callerObj.position();
 
-        if (data === '') return;
-        if (jQuery('#info__popup').length > 0) {
-            extension_manager.clear_info_popup();
-        }
 
-        jQuery(data).show()
-                    .insertAfter(extension_manager.$callerObj);
-    },
-    clear_info_popup: function() {
-        jQuery('#info__popup + input.info').removeClass('info_active');
-        jQuery('#info__popup').remove();
-    },
     setCheckState : function (clickSelector,bool) {
         jQuery(clickSelector).show();
         jQuery(clickSelector).click(function () {
