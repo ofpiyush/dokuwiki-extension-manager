@@ -159,7 +159,7 @@
     margin-left: 0.4em;
 }
 #extension__manager .legend  input.button {
-    background: transparent url(images/down.png) no-repeat 0 0;
+    background: transparent url(images/up.png) no-repeat 0 0;
     box-shadow: none;
     border-width: 0;
     height: 14px;
@@ -167,7 +167,7 @@
     float: right;
 }
 #extension__manager .legend  input.button.close {
-    background: transparent url(images/up.png) no-repeat 0 0;
+    background: transparent url(images/down.png) no-repeat 0 0;
 }
 #extension__manager div.status.maybe {background-color: #fc1;}
 #extension__manager div.status.probably  {background-color: yellow;}
