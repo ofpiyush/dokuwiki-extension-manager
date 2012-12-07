@@ -242,6 +242,7 @@ class pm_plugins_list_lib {
         $return .= '</span>';
         return $return;
     }
+
     /**
      * Notice area
      */
@@ -280,16 +281,38 @@ class pm_plugins_list_lib {
     }
 
     /**
+     * Create a link from the given URL
+     *
+     * Shortens the URL for display
+     *
+     * @param string $url
+     *
+     * @return string  HTML link
+     */
+    function shortlink($url){
+        $link = parse_url($url);
+
+        $base = $link['host'];
+        if($link['port']) $base .= $base.':'.$link['port'];
+        $long = $link['path'];
+        if($long['query']) $long .= $link['query'];
+
+        $name = shorten($base, $long, 55);
+
+        return '<a href="'.hsc($url).'" class="urlextern">'.hsc($name).'</a>';
+    }
+
+    /**
      * Plugin/template details
      */
     function make_info($info) {
         $default = $this->manager->getLang('unknown');
-        $return .= '<dl class="details">';
+        $return = '<dl class="details">';
 
         if (!$info->is_bundled) {
             $return .= '<dt>'.$this->manager->getLang('source').'</dt>';
             $return .= '<dd>';
-            $return .= (!empty($info->downloadurl) ? hsc($info->downloadurl) : $default);
+            $return .= (!empty($info->downloadurl) ? $this->shortlink($info->downloadurl) : $default);
             $return .= '</dd>';
         }
 
