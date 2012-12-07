@@ -11,21 +11,30 @@ var extension_manager = {
 
 
         // hover info
-        jQuery('#extension__manager input.info').mouseenter(function () {
-            if (jQuery(this).hasClass('info_active')) return;
-            jQuery(this).addClass('info_active');
-            var fn = jQuery(this).attr('name');
-            extension_manager.$callerObj = jQuery(this);
-            jQuery.post(
-                DOKU_BASE + 'lib/exe/ajax.php',
-                {
-                    call: 'plugin_extension',
-                    fn: fn
-                },
-                extension_manager.onInfoCompletion,
-                'html'
-            );
+        jQuery('#extension__manager input.info').click(function (e) {
+            var $clicky = jQuery(this);
+            if($clicky.hasClass('close')){
+                $clicky.parent().find('dl.details').remove();
+                $clicky.removeClass('close');
+            }else{
+                var fn = $clicky.attr('name');
+                extension_manager.$callerObj = jQuery(this);
+                jQuery.post(
+                    DOKU_BASE + 'lib/exe/ajax.php',
+                    {
+                        call: 'plugin_extension',
+                        fn: fn
+                    },
+                    extension_manager.onInfoCompletion,
+                    'html'
+                );
+                $clicky.addClass('close');
+            }
+            e.preventDefault();
+            e.stopPropagation();
         });
+
+
         // check all/none buttons
         jQuery('#extension__manager .checks').show();
         extension_manager.setCheckState('#extension__manager .checknone',false);
@@ -51,19 +60,8 @@ var extension_manager = {
             extension_manager.clear_info_popup();
         }
 
-        jQuery(document.createElement('div'))
-                        .html(data)
-                        .attr('id','info__popup')
-                        .css({
-                            'position':    'absolute',
-                            'top':         (pos.top +16)+'px',
-                            'left':        (pos.left-260)+'px'
-                            })
-                        .show()
-                        .insertBefore(extension_manager.$callerObj)
-                        .click(function() {
-                            extension_manager.clear_info_popup();
-                        });
+        jQuery(data).show()
+                    .insertAfter(extension_manager.$callerObj);
     },
     clear_info_popup: function() {
         jQuery('#info__popup + input.info').removeClass('info_active');
@@ -205,12 +203,12 @@ var extension_manager_qsearch = {
                     // replace middle with ellipsis
                     start = Math.floor( nsL + ((nsR-nsL)/2) );
                     length = 1;
-                    replace = '…';
+                    replace = 'ï¿½';
                 }
                 this.innerText = substr_replace(this.innerText,
                                                 replace, start, length);
 
-                eli = this.innerText.indexOf('…');
+                eli = this.innerText.indexOf('ï¿½');
                 nsL = this.innerText.indexOf('(');
                 nsR = this.innerText.indexOf(')');
             }
