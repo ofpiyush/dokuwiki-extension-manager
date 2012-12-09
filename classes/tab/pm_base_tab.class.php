@@ -1,18 +1,34 @@
 <?php
 /**
- * Base render class
+ * Base class for rendering the tab results
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Piyush Mishra <me@piyushmishra.com>
  */
-
 abstract class pm_base_tab {
 
+    /** @var action_plugin_extension|admin_plugin_extension $manager*/
     public $manager = null;
+
+    /** @var helper_plugin_extension $helper*/
     public $helper = null;
+
+    /** @var array $lang */
     public $lang = array();
+
+    /** @var array $downloaded */
     public $downloaded = array();
 
+    /** @var bool $updates_available */
+    protected $updates_available = false;
+
+    /**
+     * Constructor
+     *
+     * Initializes the member variables based on the passed Plugin object
+     *
+     * @param admin_plugin_extension|action_plugin_extension $manager
+     */
     function __construct($manager) {
         $this->manager = $manager;
         $this->helper  = $manager->hlp;
@@ -42,7 +58,7 @@ abstract class pm_base_tab {
                 $this->html_updates_available();
                 echo '</strong></li>';
             } else {
-                ptln('<li><a '.$class.' href="'.wl($ID, array('do' => 'admin', 'page' => 'extension', 'tab' => $tab)).'">'.$text.'</a></li>');
+                ptln('<li><a href="'.wl($ID, array('do' => 'admin', 'page' => 'extension', 'tab' => $tab)).'">'.$text.'</a></li>');
             }
         }
         ptln('</ul>');
