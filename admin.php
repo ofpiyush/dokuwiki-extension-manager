@@ -10,18 +10,17 @@
 if(!defined('DOKU_INC')) die();
 
 /**
- * All DokuWiki plugins to extend the admin function
- * need to inherit from this class
+ * The extension manager admin interface.
+ *
+ * Most functionality is provided by special manager classes that take this instance and
+ * work on its public members
  */
 class admin_plugin_extension extends DokuWiki_Admin_Plugin {
-
     /** @var helper_plugin_extension */
     public $hlp = null;
 
-    /**
-     * Array of extensions sent by POST method
-     */
-    public $selection = NULL;
+    /** @var array $selection extensions sent by POST method */
+    public $selection = null;
 
     /**
      * The action to be carried out
@@ -32,18 +31,22 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * The current tab which is being shown
      * one from admin_plugin_extension::$nav_tabs
+     *
+     * @var string $tab
      */
     public $tab = 'plugin';
 
     /**
      * Instance of the tab from admin_plugin_extension::$tab
+     * @var pm_base_tab $handler
      */
-    public $handler = NULL;
+    public $handler = null;
 
     /**
      * If a plugin has info clicked, its "id"
      *
      * @see pm_base_single_lib::$id
+     * @var string $showinfo
      */
     public $showinfo = null;
 
@@ -60,7 +63,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * Constructor. Initializes the helper plugin
      */
-    function __construct() {
+    public function __construct() {
         $this->hlp =& plugin_load('helper', 'extension');
         if(!$this->hlp) msg('Loading the extension manager helper failed.', -1);
     }
@@ -68,14 +71,14 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * return sort order for position in admin menu
      */
-    function getMenuSort() {
+    public function getMenuSort() {
         return 20;
     }
 
     /**
      * handle user request
      */
-    function handle() {
+    public function handle() {
         $this->hlp->init();
 
         if(isset($_REQUEST['info']))
@@ -98,7 +101,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * stores name of action in admin_plugin_extension::$cmd and the
      * instance of action in admin_plugin_extension::$action
      */
-    function setup_action() {
+    protected function setup_action() {
         $fn = $_REQUEST['fn'];
         if(is_array($fn)) {
             $this->cmd = key($fn);
@@ -126,7 +129,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * @param string $type (classes/<foldername>) of the class
      * @return mixed object/null
      */
-    function instantiate($name, $type) {
+    public function instantiate($name, $type) {
         $class = 'pm_'.$name."_".$type;
         if(class_exists($class))
             return new $class($this);
@@ -138,7 +141,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      *
      * @return bool if the requested action should be carried out or not
      */
-    function valid_request() {
+    public function valid_request() {
         //if command is empty, we need to make it
         if(empty($this->cmd)) return false;
         if(in_array($this->cmd, $this->valid_actions) && checkSecurityToken()) return true;
@@ -148,7 +151,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * output appropriate html
      */
-    function html() {
+    public function html() {
         ptln('<div id="extension__manager">');
         print $this->locale_xhtml('extension_intro');
         ptln('<div class="panel">');
@@ -162,7 +165,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      *
      * @return array
      */
-    function getTOC() {
+    public function getTOC() {
         if($this->tab != 'plugin') return array();
 
         $toc   = array();
