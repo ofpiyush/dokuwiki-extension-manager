@@ -41,6 +41,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
     /**
      * If a plugin has info clicked, its "id"
+     *
      * @see pm_base_single_lib::$id
      */
     var $showinfo = null;
@@ -48,7 +49,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * list of valid actions(classes/action/*.class.php)
      */
-    var $valid_actions = array('delete','enable','update','disable','reinstall','info','search','download','download_disabled','repo_reload');
+    var $valid_actions = array('delete', 'enable', 'update', 'disable', 'reinstall', 'info', 'search', 'download', 'download_disabled', 'repo_reload');
 
     /**
      * array of navigation tab ids
@@ -57,7 +58,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
     function __construct() {
         $this->hlp =& plugin_load('helper', 'extension');
-        if(!$this->hlp) msg('Loading the extension manager helper failed.',-1);
+        if(!$this->hlp) msg('Loading the extension manager helper failed.', -1);
     }
 
     /**
@@ -76,29 +77,29 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         if(isset($_REQUEST['info']))
             $this->showinfo = $_REQUEST['info'];
         //Setup the selected tab
-        if(!empty($_REQUEST['tab']) && in_array($_REQUEST['tab'],$this->nav_tabs)) {
+        if(!empty($_REQUEST['tab']) && in_array($_REQUEST['tab'], $this->nav_tabs)) {
             $this->tab = $_REQUEST['tab'];
         } else {
             $this->tab = 'plugin';
         }
         //setup and carry out the action requested
         $this->setup_action();
-        $this->handler = $this->instantiate($this->tab,'tab');
+        $this->handler = $this->instantiate($this->tab, 'tab');
         if(is_null($this->handler)) $this->handler = new pm_plugin_tab($this);
         $this->handler->process();
     }
 
     /**
      * Determines which action has been requested and executes the action
-     * stores name of action in admin_plugin_extension::$cmd and the 
-     * instance of action in admin_plugin_extension::$action 
+     * stores name of action in admin_plugin_extension::$cmd and the
+     * instance of action in admin_plugin_extension::$action
      */
     function setup_action() {
         $fn = $_REQUEST['fn'];
-        if (is_array($fn)) {
+        if(is_array($fn)) {
             $this->cmd = key($fn);
             $extension = current($fn);
-            if (is_array($extension)) {
+            if(is_array($extension)) {
                 $this->selection = array_keys($extension);
             }
         } else {
@@ -108,8 +109,8 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
             $this->selection = $_REQUEST['checked'];
         }
         // verify $_REQUEST vars and check for security token
-        if ($this->valid_request()) {
-            $this->action = $this->instantiate($this->cmd,'action');
+        if($this->valid_request()) {
+            $this->action = $this->instantiate($this->cmd, 'action');
         }
     }
 
@@ -118,7 +119,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * @param string type (classes/<foldername>) of the class
      * @return mixed object/null
      */
-    function instantiate($name,$type) {
+    function instantiate($name, $type) {
         $class = 'pm_'.$name."_".$type;
         if(class_exists($class))
             return new $class($this);
@@ -127,6 +128,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
     /**
      * validate the request
+     *
      * @return bool if the requested action should be carried out or not
      */
     function valid_request() {
@@ -141,7 +143,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      */
     function html() {
 
-        if (is_null($this->handler)) {
+        if(is_null($this->handler)) {
             $this->hlp->get_plugin_list();
             $this->handler = new pm_plugin_tab($this);
             $this->handler->process();
@@ -156,9 +158,9 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     }
 
     function getTOC() {
-        if ($this->tab != 'plugin') return array();
+        if($this->tab != 'plugin') return array();
 
-        $toc = array();
+        $toc   = array();
         $toc[] = html_mktocitem('extension_manager', $this->getLang('menu'), 1);
         $toc[] = html_mktocitem('installed_plugins', $this->getLang('header_plugin_installed'), 2);
         $toc[] = html_mktocitem('protected_plugins', $this->getLang('header_plugin_protected'), 2);
