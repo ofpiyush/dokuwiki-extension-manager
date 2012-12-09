@@ -1,0 +1,4 @@
+enabled.png - free to use, (c) Aha-soft, http://www.iconfinder.com/icondetails/32520/24/check_nok_ok_icon
+disabled.png - free to use, (c) Aha-soft, http://www.iconfinder.com/icondetails/32518/24/no_icon
+plugin.png - public domain, (c) nicubunu, http://openclipart.org/detail/15093/blue-jigsaw-piece-07-by-nicubunu
+template.png - public domain, (c) mathec, http://openclipart.org/detail/166596/palette-by-mathec
