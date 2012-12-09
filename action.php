@@ -1,20 +1,29 @@
 <?php
+// must be run within Dokuwiki
+if(!defined('DOKU_INC')) die();
+
 /**
  * AJAX handler for extension details query
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * @author     H�kan Sandell <sandell.hakan@gmail.com>
+ * @author     Håkan Sandell <sandell.hakan@gmail.com>
  */
-
-// must be run within Dokuwiki
-if(!defined('DOKU_INC'))
-    die();
-
 class action_plugin_extension extends DokuWiki_Action_Plugin {
 
+    /** @var helper_plugin_extension $hlp */
     public $hlp = null;
+
+    /** @var pm_plugin_tab $handler */
     public $handler = null;
 
+    /** @var string $query temporary query holder */
+    protected $query = '';
+
+    /**
+     * Constructor.
+     *
+     * Intitializes the helper class
+     */
     function __construct() {
         $this->hlp =& plugin_load('helper', 'extension');
         if(!$this->hlp) msg('Loading the extension manager helper failed.', -1);
@@ -27,11 +36,17 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call', array());
     }
 
-    function handle_ajax_call(&$event, $params) {
+    /**
+     * Dispatch AJAX call to correct sub function
+     *
+     * @param Doku_Event $event
+     * @param array      $params
+     */
+    public function handle_ajax_call(&$event, $params) {
         if($event->data != 'plugin_extension') return;
         $event->preventDefault();
         $event->stopPropagation();
-        $this->hlp->init($this);
+        $this->hlp->init();
 
         if($_POST['fn']) {
             $this->extension_details();
@@ -43,8 +58,8 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
     /**
      * Search for extension id's containing query, used for quicksearch
      */
-    function search_extension() {
-        $this->query = hsc($_POST['q']);
+    protected function search_extension() {
+        $this->query = hsc($_POST['q']); //todo is it correct to escape this here?
         $repo        = $this->hlp->get_filtered_repo($_POST['type']);
         $hits        = array_filter($repo, array($this, 'search_check'));
 
@@ -57,7 +72,15 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
         echo '</ul>';
     }
 
-    function search_check($info) {
+    /**
+     * Callback for array_filter
+     *
+     * Used to filter quick results
+     *
+     * @param $info
+     * @return bool
+     */
+    protected function search_check($info) {
         return stripos($info["id"], $this->query) !== false;
     }
 
@@ -65,7 +88,7 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
      * Return rendered details about one extension
      * fn[] should look like '[info][repokey]'
      */
-    function extension_details() {
+    protected function extension_details() {
         $fn = $_POST['fn'];
         preg_match('/(?<=\[info\]\[).+[^\]]/', $fn, $repokey);
 
