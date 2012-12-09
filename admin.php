@@ -114,7 +114,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         }
         // verify $_REQUEST publics and check for security token
         if($this->valid_request()) {
-            $this->action = $this->instantiate($this->cmd, 'action');
+            $this->instantiate($this->cmd, 'action');
         }
     }
 
