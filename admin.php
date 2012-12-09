@@ -15,47 +15,51 @@ if(!defined('DOKU_INC')) die();
  */
 class admin_plugin_extension extends DokuWiki_Admin_Plugin {
 
-    var $hlp = null;
+    /** @var helper_plugin_extension */
+    public $hlp = null;
 
     /**
      * Array of extensions sent by POST method
      */
-    var $selection = NULL;
+    public $selection = NULL;
 
     /**
      * The action to be carried out
      * one from either admin_plugin_extension::$functions or admin_plugin_extension::$commands
      */
-    var $cmd = 'display';
+    public $cmd = 'display';
 
     /**
      * The current tab which is being shown
      * one from admin_plugin_extension::$nav_tabs
      */
-    var $tab = 'plugin';
+    public $tab = 'plugin';
 
     /**
      * Instance of the tab from admin_plugin_extension::$tab
      */
-    var $handler = NULL;
+    public $handler = NULL;
 
     /**
      * If a plugin has info clicked, its "id"
      *
      * @see pm_base_single_lib::$id
      */
-    var $showinfo = null;
+    public $showinfo = null;
 
     /**
      * list of valid actions(classes/action/*.class.php)
      */
-    var $valid_actions = array('delete', 'enable', 'update', 'disable', 'reinstall', 'info', 'search', 'download', 'download_disabled', 'repo_reload');
+    public $valid_actions = array('delete', 'enable', 'update', 'disable', 'reinstall', 'info', 'search', 'download', 'download_disabled', 'repo_reload');
 
     /**
      * array of navigation tab ids
      */
-    var $nav_tabs = array('plugin', 'template', 'search');
+    public $nav_tabs = array('plugin', 'template', 'search');
 
+    /**
+     * Constructor. Initializes the helper plugin
+     */
     function __construct() {
         $this->hlp =& plugin_load('helper', 'extension');
         if(!$this->hlp) msg('Loading the extension manager helper failed.', -1);
@@ -108,15 +112,18 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         if(!empty($_REQUEST['checked'])) {
             $this->selection = $_REQUEST['checked'];
         }
-        // verify $_REQUEST vars and check for security token
+        // verify $_REQUEST publics and check for security token
         if($this->valid_request()) {
             $this->action = $this->instantiate($this->cmd, 'action');
         }
     }
 
     /**
-     * @param string name of the class to be instantiated
-     * @param string type (classes/<foldername>) of the class
+     * Initializes one of the manager classes
+     *
+     * @todo this should be superseeded by the autoloader
+     * @param string $name name of the class to be instantiated
+     * @param string $type (classes/<foldername>) of the class
      * @return mixed object/null
      */
     function instantiate($name, $type) {
@@ -157,6 +164,11 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         ptln('</div><!-- #extension__manager -->');
     }
 
+    /**
+     * Create the table of contents
+     *
+     * @return array
+     */
     function getTOC() {
         if($this->tab != 'plugin') return array();
 
