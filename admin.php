@@ -76,7 +76,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * handle user request
      */
     function handle() {
-        $this->hlp->init($this);
+        $this->hlp->init();
 
         if(isset($_REQUEST['info']))
             $this->showinfo = $_REQUEST['info'];
@@ -149,13 +149,6 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
      * output appropriate html
      */
     function html() {
-
-        if(is_null($this->handler)) {
-            $this->hlp->get_plugin_list();
-            $this->handler = new pm_plugin_tab($this);
-            $this->handler->process();
-        }
-
         ptln('<div id="extension__manager">');
         print $this->locale_xhtml('extension_intro');
         ptln('<div class="panel">');
