@@ -212,7 +212,7 @@ abstract class pm_base_single_lib {
         } elseif(!empty($this->installed)) {
             $time = $this->installed;
         }
-        $this->install_date = ($time ? date('Y-m-d',strtotime($time)) : $this->helper->manager->getLang('manual_install'));
+        $this->install_date = ($time ? date('Y-m-d',strtotime($time)) : $this->helper->getLang('manual_install'));
         return $this->install_date;
     }
 
@@ -230,7 +230,7 @@ abstract class pm_base_single_lib {
         if($this->is_bundled) return true;
         if($this->is_protected) return true;
         if($this->is_gitmanaged) return true;
-        if (!$this->helper->manager->getConf('allow_download')) return true;
+        if (!$this->helper->getConf('allow_download')) return true;
 
         $this->no_fileactions_allowed = false;
         return false;

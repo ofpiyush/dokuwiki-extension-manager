@@ -13,11 +13,6 @@ if(!defined('DOKU_TPLLIB')) define('DOKU_TPLLIB', DOKU_INC.'lib/tpl/');
 class helper_plugin_extension extends DokuWiki_Plugin {
 
     /**
-     * Instance of plugin class using the helper, to access getLang/getConf
-     */
-    var $manager = null;
-
-    /**
      * Instance of pm_log_lib library (contains read-write functions for manager.dat)
      */
     var $log = null;
@@ -82,12 +77,18 @@ class helper_plugin_extension extends DokuWiki_Plugin {
         '2009-12-25' => 'Lemming'
     );
 
+    /**
+     * Constructor. Registers autoloader
+     */
     function __construct() {
         spl_autoload_register(array($this, 'autoload'));
     }
 
-    function init($manager) {
-        $this->manager = $manager;
+    /**
+     * Initializes the member variables
+     * @todo shouldn't this be in the constructor?
+     */
+    function init() {
 
         if(function_exists('plugin_getcascade')) {
             $cascade = plugin_getcascade();
