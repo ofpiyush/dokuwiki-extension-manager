@@ -7,70 +7,69 @@
  */
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
-
 if(!defined('DOKU_TPLLIB')) define('DOKU_TPLLIB', DOKU_INC.'lib/tpl/');
 
 class helper_plugin_extension extends DokuWiki_Plugin {
 
     /**
-     * Instance of pm_log_lib library (contains read-write functions for manager.dat)
+     * @var pm_log_lib read-write functions for manager.dat
      */
-    var $log = null;
+    public $log = null;
 
     /**
      * Copy of the repository array
      */
-    var $repo = array();
+    public $repo = array();
 
     /**
-     * Instance of the pm_info_lib library (creates single info objects)
+     * @var pm_info_lib single info object creator
      */
-    var $info = null;
+    public $info = null;
 
     /**
      * array list of bundled plugins
      */
-    var $_bundled = array('acl', 'plugin', 'config', 'info', 'usermanager', 'revert', 'popularity', 'safefnrecode', 'template:default');
+    public $_bundled = array('acl', 'plugin', 'config', 'info', 'usermanager', 'revert', 'popularity', 'safefnrecode', 'template:default');
 
     /**
      * plugins that are an integral part of dokuwiki, this is only valid for pre-"Angua" releases
      * now this information is stored in 'conf/plugins.required.php'
      */
-    var $legacy_protected = array('acl', 'plugin', 'config', 'usermanager');
+    public $legacy_protected = array('acl', 'plugin', 'config', 'usermanager');
 
     /**
      * plugins that are protected from being managed with the extension manager
      */
-    var $protected = array();
+    public $protected = array();
 
     /**
      * array list of installed plugin foldernames
      * saved after the trigger 'PLUGIN_PLUGINMANAGER_PLUGINLIST'
      */
-    var $plugin_list = array();
+    public $plugin_list = array();
 
     /**
      * bool indicating whether directory DOKU_PLUGIN is writable or not
      */
-    var $pluginfolder_writable = false;
+    public $pluginfolder_writable = false;
 
     /**
      * array list of installed template foldernames
      * saved after the trigger 'PLUGIN_PLUGINMANAGER_TEMPLATELIST'
      */
-    var $template_list = array();
+    public $template_list = array();
 
     /**
      * bool indicating whether directory DOKU_TPLLIB is writable or not
      */
-    var $templatefolder_writable = false;
+    public $templatefolder_writable = false;
 
     /**
      * string current DokuWiki version
      */
-    var $dokuwiki_version = null;
+    public $dokuwiki_version = null;
 
-    var $dokuwiki = array(
+    public $dokuwiki = array(
         '2012-01-25' => 'Angua',
         '2011-05-25' => 'Rincewind',
         '2010-11-07' => 'Anteater',
@@ -80,15 +79,15 @@ class helper_plugin_extension extends DokuWiki_Plugin {
     /**
      * Constructor. Registers autoloader
      */
-    function __construct() {
+    public function __construct() {
         spl_autoload_register(array($this, 'autoload'));
     }
 
     /**
-     * Initializes the member variables
+     * Initializes the member publiciables
      * @todo shouldn't this be in the constructor?
      */
-    function init() {
+    public function init() {
 
         if(function_exists('plugin_getcascade')) {
             $cascade = plugin_getcascade();
@@ -125,9 +124,10 @@ class helper_plugin_extension extends DokuWiki_Plugin {
     /**
      * Autoloader for the plugin manager
      *
-     * @param string classname to load
+     * @param string $class classname to load
+     * @return bool
      */
-    function autoload($class) {
+    public function autoload($class) {
         if(stripos($class, 'pm_') === 0) {
             $folder = @end(explode('_', $class));
             $path   = DOKU_PLUGIN.'extension/classes/'.$folder.'/'.$class.".class.php";
@@ -136,7 +136,7 @@ class helper_plugin_extension extends DokuWiki_Plugin {
                 return true;
             }
         }
-        return;
+        return false;
     }
 
     /**
@@ -211,8 +211,7 @@ class helper_plugin_extension extends DokuWiki_Plugin {
     /**
      * Filter BEFORE the repo is searched on, removes obsolete plugins, security issues etc
      */
-    function get_filtered_repo() {
-        $retval = array();
+    public function get_filtered_repo() {
         if($this->repo) {
             $retval = array_filter($this->repo['data'], create_function('$info', 'return $info["show"];'));
             $retval = array_merge($retval, $this->local_extensions());
@@ -230,7 +229,7 @@ class helper_plugin_extension extends DokuWiki_Plugin {
     /**
      * Create dummy repo entries for local extensions
      */
-    function local_extensions() {
+    public function local_extensions() {
         $retval    = array();
         $templates = array_map(array($this, '_info_templatelist'), $this->template_list);
         $plugins   = array_map(array($this, '_info_pluginlist'), $this->plugin_list);
@@ -253,15 +252,21 @@ class helper_plugin_extension extends DokuWiki_Plugin {
         return $retval;
     }
 
-    function _info_pluginlist($index) {
+    protected function _info_pluginlist($index) {
         return $this->info->get($index, 'plugin');
     }
 
-    function _info_templatelist($index) {
+    protected function _info_templatelist($index) {
         return $this->info->get($index, 'template');
     }
 
-    function make_extensionsearchlink($id) {
+    /**
+     * Create full URL to search tab
+     *
+     * @param string $id An extension identifier
+     * @return string
+     */
+    public function make_extensionsearchlink($id) {
         global $ID;
 
         $params = array(
