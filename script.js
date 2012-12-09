@@ -1,31 +1,13 @@
 var extension_manager = { 
 
-    $callerObj: null,
-
     init : function () {
         if (!('info' in extension_manager.getUrlVars())) {
             jQuery('#extensionplugin__searchtext').focus();
         }
-        // quick search
+
+        extension_manager.initInfoPanels();
 
 
-
-        // hover info
-        jQuery('#extension__manager input.info').mouseenter(function () {
-            if (jQuery(this).hasClass('info_active')) return;
-            jQuery(this).addClass('info_active');
-            var fn = jQuery(this).attr('name');
-            extension_manager.$callerObj = jQuery(this);
-            jQuery.post(
-                DOKU_BASE + 'lib/exe/ajax.php',
-                {
-                    call: 'plugin_extension',
-                    fn: fn
-                },
-                extension_manager.onInfoCompletion,
-                'html'
-            );
-        });
         // check all/none buttons
         jQuery('#extension__manager .checks').show();
         extension_manager.setCheckState('#extension__manager .checknone',false);
@@ -33,6 +15,37 @@ var extension_manager = {
 	    extension_manager.confirmDelete('#extension__manager .actions .delete');
         extension_manager.confirmDelete('#extension__manager .bottom .button[name="fn[delete]"]');
     },
+
+
+    /**
+     * Adds open/close functionality for additional info
+     */
+    initInfoPanels: function(){
+        jQuery('#extension__manager input.info').click(function (e) {
+            var $clicky = jQuery(this);
+            if($clicky.hasClass('close')){
+                $clicky.parent().find('dl.details').remove();
+                $clicky.removeClass('close');
+            }else{
+                jQuery.post(
+                    DOKU_BASE + 'lib/exe/ajax.php',
+                    {
+                        call: 'plugin_extension',
+                        fn: $clicky.attr('name')
+                    },
+                    function(data) {
+                        if (data === '') return;
+                        jQuery(data).show().insertAfter($clicky);
+                    },
+                    'html'
+                );
+                $clicky.addClass('close');
+            }
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    },
+
     getUrlVars : function() {
         var vars = [], hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -43,32 +56,8 @@ var extension_manager = {
         }
         return vars;
     },
-    onInfoCompletion: function(data) {
-        var pos = extension_manager.$callerObj.position();
 
-        if (data === '') return;
-        if (jQuery('#info__popup').length > 0) {
-            extension_manager.clear_info_popup();
-        }
 
-        jQuery(document.createElement('div'))
-                        .html(data)
-                        .attr('id','info__popup')
-                        .css({
-                            'position':    'absolute',
-                            'top':         (pos.top +16)+'px',
-                            'left':        (pos.left-260)+'px'
-                            })
-                        .show()
-                        .insertBefore(extension_manager.$callerObj)
-                        .click(function() {
-                            extension_manager.clear_info_popup();
-                        });
-    },
-    clear_info_popup: function() {
-        jQuery('#info__popup + input.info').removeClass('info_active');
-        jQuery('#info__popup').remove();
-    },
     setCheckState : function (clickSelector,bool) {
         jQuery(clickSelector).show();
         jQuery(clickSelector).click(function () {
@@ -205,12 +194,12 @@ var extension_manager_qsearch = {
                     // replace middle with ellipsis
                     start = Math.floor( nsL + ((nsR-nsL)/2) );
                     length = 1;
-                    replace = '…';
+                    replace = 'ï¿½';
                 }
                 this.innerText = substr_replace(this.innerText,
                                                 replace, start, length);
 
-                eli = this.innerText.indexOf('…');
+                eli = this.innerText.indexOf('ï¿½');
                 nsL = this.innerText.indexOf('(');
                 nsR = this.innerText.indexOf(')');
             }
