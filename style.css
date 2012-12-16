@@ -253,20 +253,5 @@
     text-align: left;
     padding: 0.2em;
 }
-/*
- * extensions table, messages
- */
-#extension__manager div.message {
-    background-position: 0.2em 0.2em;
-    padding: 0.1em 1em 0.2em 3em;
-    margin: 0.4em 0 0 0;
-    border-radius: 5px;
-}
-#extension__manager div.notify {
-    border: 1px solid #DDDD00;
-}
-#extension__manager div.error {
-    border: 1px solid red;
-}
 
 /* end admin plugin styles */

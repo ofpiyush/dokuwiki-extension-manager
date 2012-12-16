@@ -83,7 +83,7 @@ class pm_plugins_list_lib {
         $this->form .= '<div class="no">';  // TODO why use div here, compare with inc/form.php
         foreach ($array as $key => $value) {
             $this->form .= '<input type="hidden" name="'.$key.'" value="'.$value.'" />';
-        }        
+        }
         $this->form .= '</div>';
     }
 
@@ -253,32 +253,32 @@ class pm_plugins_list_lib {
      */
     function make_noticearea($info) {
         if($info->missing_dependency()) {
-            $return .= '<div class="message error">'.
+            $return .= '<div class="msg error">'.
                             sprintf($this->manager->getLang('missing_dependency'),implode(', ',array_map(array($this->helper,'make_extensionsearchlink'),$info->missing_dependency))).
                         '</div>';
         }
         if($info->wrong_folder()) {
-            $return .= '<div class="message error">'.
+            $return .= '<div class="msg error">'.
                             sprintf($this->manager->getLang('wrong_folder'),hsc($info->id),hsc($info->base)).
                         '</div>';
         }
         if(!empty($info->securityissue)) {
-            $return .= '<div class="message error">'.
+            $return .= '<div class="msg error">'.
                             sprintf($this->manager->getLang('security_issue'),hsc($info->securityissue)).
                         '</div>';
         }
         if(!empty($info->securitywarning)) {
-            $return .= '<div class="message notify">'.
+            $return .= '<div class="msg notify">'.
                             sprintf($this->manager->getLang('security_warning'),hsc($info->securitywarning)).
                         '</div>';
         }
         if($info->update_available) {
-            $return .=  '<div class="message notify">'.
+            $return .=  '<div class="msg notify">'.
                             sprintf($this->manager->getLang('update_available'),hsc($info->lastupdate)).
                         '</div>';
         }
         if($info->url_changed()) {
-            $return .=  '<div class="message notify">'.
+            $return .=  '<div class="msg notify">'.
                             sprintf($this->manager->getLang('url_change'),hsc($info->repo['downloadurl']),hsc($info->log['downloadurl'])).
                         '</div>';
         }

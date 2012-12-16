@@ -74,7 +74,7 @@ abstract class pm_base_tab {
     protected function html_updates_available() {
         if(!$this->updates_available) return;
 
-        echo '<div class="message notify">';
+        echo '<div class="msg notify">';
         echo sprintf($this->manager->getLang('updates_available'), $this->updates_available);
         echo '</div>';
     }
