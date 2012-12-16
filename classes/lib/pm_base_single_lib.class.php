@@ -184,11 +184,6 @@ abstract class pm_base_single_lib {
         return $this->description;
     }
 
-    function default_screenshoturl() {
-        $this->screenshoturl = "lib/plugins/extension/images/plugin.png";
-        return $this->screenshoturl;
-    }
-
     /**
      * check if update available by comparing repository (lastupdate) with local info (date/install_date)
      */

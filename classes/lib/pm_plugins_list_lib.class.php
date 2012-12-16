@@ -175,16 +175,21 @@ class pm_plugins_list_lib {
     }
 
     function make_screenshot($info) {
-        $return = '<div class="screenshot" >';
         if(!empty($info->screenshoturl)) {
-            if($info->screenshoturl[0] == ':')
+            if($info->screenshoturl[0] == ':') {
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
-            $return .= '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'">'.
-                    '<img alt="'.hsc($info->displayname).'" width="120" src="'.hsc($info->screenshoturl).'" />'.
-                    '</a>';
+            }
+            $img = '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'">'.
+                   '<img alt="'.hsc($info->displayname).'" width="120" src="'.hsc($info->screenshoturl).'" />'.
+                   '</a>';
+
+        } elseif($info->is_template) {
+            $img = '<img alt="template" width="120" src="lib/plugins/extension/images/template.png" />';
+
+        } else {
+            $img = '<img alt="plugin" width="120" src="lib/plugins/extension/images/plugin.png" />';
         }
-        $return .= '<span></span>';
-        return $return.'</div>';
+        return '<div class="screenshot" >'.$img.'<span></span></div>';
     }
 
     /**
