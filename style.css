@@ -124,6 +124,7 @@
     background: transparent url(images/disabled.png) no-repeat 2px 2px;
 }
 #extension__manager .legend div.screenshot {
+    margin-top: 4px;
     margin-left: -132px;
     max-width: 120px;
     float: left;
