@@ -17,6 +17,8 @@ class pm_search_tab extends pm_base_tab {
     var $actions_list = array();
 
     function process() {
+        global $INPUT;
+
         $this->filtered_repo   = $this->helper->get_filtered_repo();
         $this->actions_list    = array(
             'enable'              => $this->manager->getLang('btn_enable'),
@@ -37,16 +39,17 @@ class pm_search_tab extends pm_base_tab {
         );
 
         // list of properties that are included in the search
-        $this->filters = array('id' => null, 'name' => null, 'description' => null, 'type' => null, 'tag' => null, 'author' => null);
+        $this->filters = array('id' => null, 'name' => null, 'description' => null, 'type' => null, 'tag' => null, 'author' => null, 'lastupdate' => null);
 
-        if(!empty($_REQUEST['q'])) {
-            $this->query = $_REQUEST['q'];
-        }
-        if(!empty($_REQUEST['type'])) {
-            $this->query .= ' @'.$_REQUEST['type'];
+        $this->query = $INPUT->str('q', null);
+        if($INPUT->has('type')) {
+            $this->query .= ' @'.$INPUT->str('type');
         }
 
-        if(preg_match_all('/(@plugins*|@templates*|\w+\s*:\s*\w+|".*?"|\w+)+/i', $this->query, $matches)) {
+        $tmpQuery = 'lastupdate:'.date('Y-m-d', time()-60*60*24*30);
+        if($this->query) $tmpQuery = $this->query;
+
+        if(preg_match_all('/(@plugins*|@templates*|\w+\s*:\s*[\w\-]+|".*?"|\w+)+/i', $tmpQuery, $matches)) {
             foreach($matches[0] as $match) {
                 if(stripos($match, '@plugin') !== false) {
                     $this->extra['is_template'] = false;
@@ -104,7 +107,8 @@ class pm_search_tab extends pm_base_tab {
     }
 
     function html_extensionlist() {
-        if(is_array($this->search_result) && count($this->search_result)) {
+        global $INPUT;
+        if(!is_null($this->query) && is_array($this->search_result) && count($this->search_result)) {
 
             if($this->search_result['installed']) {
                 $list = new pm_plugins_list_lib($this->manager, 'extensionplugin__searchinstalled', $this->actions_list, $this->possible_errors, $this->search_result_type);
@@ -137,11 +141,11 @@ class pm_search_tab extends pm_base_tab {
         } elseif(!is_null($this->query)) {
             $no_result = new pm_plugins_list_lib($this->manager, 'extensionplugin__noresult');
             $no_result->add_header('search_results', sprintf($this->manager->getLang('not_found'), hsc($this->query)));
-            $url = wl($ID, array('do' => 'admin', 'page' => 'plugin', 'tab' => 'search'));
+            $url = wl($ID, array('do' => 'admin', 'page' => 'extension', 'tab' => 'search', 'browseall' => 'true'));
             $no_result->add_p(sprintf($this->manager->getLang('no_result'), $url, $url));
             $no_result->render();
 
-        } else {
+        } elseif($INPUT->has('browseall')) {
             $full_list = new pm_plugins_list_lib($this->manager, 'extensionplugin__browselist', $this->actions_list, $this->possible_errors);
             $full_list->add_header('search_results', $this->manager->getLang('browse'));
             $full_list->start_form();
@@ -151,6 +155,21 @@ class pm_search_tab extends pm_base_tab {
             }
             $full_list->end_form(array_keys($this->actions_list));
             $full_list->render();
+
+        } else {
+            $list = new pm_plugins_list_lib($this->manager, 'extensionplugin__searchresult', $this->actions_list, $this->possible_errors, $this->search_result_type);
+            $list->add_header('search_results', $this->manager->getLang('header_recentlyupdated'));
+            $list->start_form();
+            if($this->search_result['repo']) {
+                foreach($this->search_result['repo'] as $result) {
+                    foreach($result as $info) {
+                        $info = $this->_info_list($info['id']);
+                        $list->add_row($info);
+                    }
+                }
+            }
+            $list->end_form(array_keys($this->actions_list));
+            $list->render();
         }
     }
 
@@ -238,6 +257,9 @@ class pm_search_tab extends pm_base_tab {
 
                 } elseif($key == 'tag') {
                     if(@in_array($value, (array) $plugin['tags']['tag']) === false) return false;
+
+                } elseif($key == 'lastupdate') {
+                    if(!$plugin[$key] || strtotime($plugin[$key]) < strtotime($value)) return false;
 
                 } elseif(!array_key_exists($key, $plugin) || stripos($plugin[$key], $value) === false) {
                     return false;
