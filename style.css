@@ -91,7 +91,7 @@
     cursor: pointer;
 }
 #extension__manager input.button {
-    margin-left: 0.3em;
+    margin: 0 .3em .3em 0;
 }
 /*
  * extensions table
@@ -206,6 +206,9 @@
     padding-left: 0.5em;
     font-size: 95%;
     width: 25%;
+}
+#extension__manager .actions .version {
+    display: block;
 }
 #extension__manager .actions p {
     margin: 0.2em 0em;

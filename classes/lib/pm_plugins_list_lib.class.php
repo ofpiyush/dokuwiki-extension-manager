@@ -417,12 +417,12 @@ class pm_plugins_list_lib {
         }
 
         if (!$info->is_installed) {
-            $return .= ' '.$this->manager->getLang('available_version').' ';
-            $return .= ($info->lastupdate ? hsc($info->lastupdate) : $this->manager->getLang('unknown'));
+            $return .= ' <span class="version">'.$this->manager->getLang('available_version').' ';
+            $return .= ($info->lastupdate ? hsc($info->lastupdate) : $this->manager->getLang('unknown')).'</span>';
         }
 
-        $return .= '<p>';
         if(false && !empty($this->possible_errors)) { // TODO: display errors in a better way
+            $return .= '<p>';
             foreach($this->possible_errors as $error => $text) {
                 if($info->$error()) {
                     if(is_array($info->$error)) {
@@ -432,8 +432,8 @@ class pm_plugins_list_lib {
                     }
                 }
             }
+            $return .= '</p>';
         }
-        $return .= '</p>';
         return $return;
     }
 
