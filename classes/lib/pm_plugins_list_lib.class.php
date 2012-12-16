@@ -310,9 +310,14 @@ class pm_plugins_list_lib {
         $return = '<dl class="details">';
 
         if (!$info->is_bundled) {
-            $return .= '<dt>'.$this->manager->getLang('source').'</dt>';
+            $return .= '<dt>'.$this->manager->getLang('downloadurl').'</dt>';
             $return .= '<dd>';
             $return .= (!empty($info->downloadurl) ? $this->shortlink($info->downloadurl) : $default);
+            $return .= '</dd>';
+
+            $return .= '<dt>'.$this->manager->getLang('repository').'</dt>';
+            $return .= '<dd>';
+            $return .= (!empty($info->sourcerepo) ? $this->shortlink($info->sourcerepo) : $default);
             $return .= '</dd>';
         }
 
