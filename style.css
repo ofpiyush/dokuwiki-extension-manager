@@ -59,6 +59,10 @@
 #extension__manager .tagcloud  a.taglink {
     background-color: inherit;
 }
+#extension__manager div.search {
+    width: 44%;
+    float: left;
+}
 #extension__manager fieldset {
     margin-top: 0.5em;
     width: auto;
