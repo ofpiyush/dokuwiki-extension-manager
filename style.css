@@ -222,6 +222,7 @@
     margin: 0.4em 0 0 0;
     font-size: 85%;
     border-top: 1px solid __background_alt__;
+    clear: both;
 }
 #extension__manager dl.details dt {
 	clear: left;
