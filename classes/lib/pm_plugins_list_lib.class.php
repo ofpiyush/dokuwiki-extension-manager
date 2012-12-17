@@ -184,10 +184,10 @@ class pm_plugins_list_lib {
                    '</a>';
 
         } elseif($info->is_template) {
-            $img = '<img alt="template" width="120" src="lib/plugins/extension/images/template.png" />';
+            $img = '<img alt="template" width="120" src="'.DOKU_BASE.'lib/plugins/extension/images/template.png" />';
 
         } else {
-            $img = '<img alt="plugin" width="120" src="lib/plugins/extension/images/plugin.png" />';
+            $img = '<img alt="plugin" width="120" src="'.DOKU_BASE.'lib/plugins/extension/images/plugin.png" />';
         }
         return '<div class="screenshot" >'.$img.'<span></span></div>';
     }
