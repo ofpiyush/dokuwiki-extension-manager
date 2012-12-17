@@ -300,7 +300,7 @@ class pm_plugins_list_lib {
         $base = $link['host'];
         if($link['port']) $base .= $base.':'.$link['port'];
         $long = $link['path'];
-        if($long['query']) $long .= $link['query'];
+        if($link['query']) $long .= $link['query'];
 
         $name = shorten($base, $long, 55);
 
