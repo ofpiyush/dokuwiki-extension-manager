@@ -179,8 +179,9 @@ class pm_plugins_list_lib {
             if($info->screenshoturl[0] == ':') {
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
             }
+            $url = ml($info->screenshoturl, array('cache'=>'recache'));
             $img = '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'">'.
-                   '<img alt="'.hsc($info->displayname).'" width="120" src="'.hsc($info->screenshoturl).'" />'.
+                   '<img alt="'.hsc($info->displayname).'" width="120" src="'.$url.'" />'.
                    '</a>';
 
         } elseif($info->is_template) {
