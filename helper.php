@@ -211,12 +211,18 @@ class helper_plugin_extension extends DokuWiki_Plugin {
     /**
      * Filter BEFORE the repo is searched on, removes obsolete plugins, security issues etc
      */
-    public function get_filtered_repo() {
+    public function get_filtered_repo($filter = null) {
         if($this->repo) {
             $retval = array_filter($this->repo['data'], create_function('$info', 'return $info["show"];'));
             $retval = array_merge($retval, $this->local_extensions());
         } else {
             $retval = $this->local_extensions();
+        }
+
+        if($filter == 'template') {
+            $retval = array_filter($retval, create_function('$info', 'return (strpos($info["id"], "template:") !== false);'));
+        } elseif($filter == 'plugin') {
+            $retval = array_filter($retval, create_function('$info', 'return (strpos($info["id"], "template:") === false);'));
         }
         uasort(
             $retval, function ($a, $b) {
