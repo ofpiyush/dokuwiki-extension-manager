@@ -25,6 +25,11 @@ class pm_download_action extends pm_base_action {
                 $this->download_single($info);
             }
         }
+
+        if($this->manager->getConf('download_as_disabled') && isset($this->downloaded['plugin']) && is_array($this->downloaded['plugin'])) {
+            array_filter($this->downloaded['plugin'],'plugin_disable');
+        }
+
         $this->refresh($this->manager->tab);
     }
 

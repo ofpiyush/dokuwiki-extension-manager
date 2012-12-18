@@ -252,10 +252,6 @@ abstract class pm_base_single_lib {
         return false;
     }
 
-    function can_download_disabled() {
-        return false;
-    }
-
     function can_download_dependency() {
         return false;
     }

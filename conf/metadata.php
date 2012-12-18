@@ -4,4 +4,5 @@
  */
 
 
-$meta['allow_download'] = array('onoff');
+$meta['allow_download']       = array('onoff');
+$meta['download_as_disabled'] = array('onoff');

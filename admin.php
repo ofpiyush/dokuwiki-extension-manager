@@ -53,7 +53,7 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
     /**
      * list of valid actions(classes/action/*.class.php)
      */
-    public $valid_actions = array('delete', 'enable', 'update', 'disable', 'reinstall', 'info', 'search', 'download', 'download_disabled', 'repo_reload');
+    public $valid_actions = array('delete', 'enable', 'update', 'disable', 'reinstall', 'info', 'search', 'download', 'repo_reload');
 
     /**
      * array of navigation tab ids

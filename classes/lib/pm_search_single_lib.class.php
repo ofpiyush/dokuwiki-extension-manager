@@ -29,12 +29,7 @@ class pm_search_single_lib extends pm_base_single_lib {
     }
 
     function can_download() {
-        if($this->is_template) return false;
         if($this->has_conflicts()) return false;
-        return $this->can_download_disabled();
-    }
-
-    function can_download_disabled() {
         if(empty($this->downloadurl)) return false;
         if($this->is_installed) return false;
         if($this->no_fileactions_allowed) return false;
@@ -42,7 +37,7 @@ class pm_search_single_lib extends pm_base_single_lib {
     }
 
     function can_download_dependency() {
-        if(!$this->can_download_disabled) return false;
+        if(!$this->can_download) return false;
         return $this->missing_dependency();
     }
 

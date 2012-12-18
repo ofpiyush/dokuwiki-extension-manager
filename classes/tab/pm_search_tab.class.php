@@ -26,7 +26,6 @@ class pm_search_tab extends pm_base_tab {
             'update'              => $this->manager->getLang('btn_update'),
             'reinstall'           => $this->manager->getLang('btn_reinstall'),
             'download'            => $this->manager->getLang('btn_download'),
-            // TODO 'download_disabled'=>$this->manager->getLang('btn_disdown'),
             'download_dependency' => $this->manager->getLang('btn_dependown'),
         );
         $this->possible_errors = array(
