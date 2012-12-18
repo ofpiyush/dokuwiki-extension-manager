@@ -2,7 +2,7 @@ var extension_manager = {
 
     init : function () {
         if (!('info' in extension_manager.getUrlVars())) {
-            jQuery('#extensionplugin__searchtext').focus();
+            jQuery('div.search #extensionplugin__searchtext').focus();
         }
 
         extension_manager.initInfoPanels();
