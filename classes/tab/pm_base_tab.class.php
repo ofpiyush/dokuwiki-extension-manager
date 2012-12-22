@@ -106,7 +106,7 @@ abstract class pm_base_tab {
         $search_form->addHidden('page', 'extension');
         $search_form->addHidden('tab', 'search');
         $search_form->addElement(form_makeTextField('q', hsc($value), '', 'extensionplugin__searchtext'));
-        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search'], array('fame' => 'fn[search]')));
+        $search_form->addElement(form_makeButton('submit', 'admin', $lang['btn_search']));
         $search_form->addHidden('type', $type);
         $search_form->addElement('<div id="extensionplugin__searchresult" class="ajax_qsearch JSpopup" ></div>');
         if(!$type) {
