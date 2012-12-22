@@ -47,7 +47,7 @@ class pm_template_tab extends pm_base_tab {
         ptln('<h3>'.$summary.'</h3>');
         $this->html_search($this->manager->tab);
         $this->html_download_disabled();
-        ptln('</div><!-- panelHeader -->');
+        ptln('<div class="clearer"></div></div><!-- panelHeader -->');
 
         ptln('<div class="panelContent">');
         $this->html_extensionlist();

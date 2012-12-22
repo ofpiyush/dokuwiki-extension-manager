@@ -90,7 +90,7 @@ class pm_search_tab extends pm_base_tab {
         }
         $this->reload_repo_link();
         $this->html_download_disabled();
-        ptln('</div><!-- panelHeader -->');
+        ptln('<div class="clearer"></div></div><!-- panelHeader -->');
 
         ptln('<div class="tagcloud">');
         $this->tagcloud();
