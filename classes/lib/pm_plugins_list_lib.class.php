@@ -439,21 +439,26 @@ class pm_plugins_list_lib {
     }
 
     function make_action($action,$info,$text) {
+        $title = $revertAction = $extraClass = '';
+
         switch ($action) {
             case 'info':
+                $title = 'title="'.$this->manager->getLang('btn_info').'"';
                 if ($this->showinfo) {
-                    return '<input class="button info close" name="fn['.$action.'][-'.$info->cmdkey.']" type="submit" value="'.$text.'" />';
-                } else {
-                    return '<input class="button info" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" title="'.$this->manager->getLang('btn_info').'" />';
+                    $revertAction = '-';
+                    $extraClass   = 'close';
                 }
-            case 'enable':
-            case 'disable':
-            case 'delete':
-                return '<input class="button" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" />';
-
-            default:
-                return '<input class="button" name="fn['.$action.']['.$info->cmdkey.']" type="submit" value="'.$text.'" title="'.$info->downloadurl.'" />';
+                break;
+            case 'download':
+            case 'reinstall':
+                $title = 'title="'.$info->downloadurl.'"';
+                break;
         }
+
+        $classes = 'button '.$action.' '.$extraClass;
+        $name    = 'fn['.$action.']['.$revertAction.$info->cmdkey.']';
+
+        return '<input class="'.$classes.'" name="'.$name.'" type="submit" value="'.$text.'" '.$title.'" />';
     }
 
 }
