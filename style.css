@@ -11,9 +11,9 @@
 #extension__manager .panelHeader {
     background-color: __background_alt__;
     margin-bottom: 10px;
-    padding: 10px 10px 8px;
+    padding: 10px;
     text-align: left;
-    min-height: 20px;
+    overflow: hidden;
 }
 #extension__manager .panelHeader h3 {
     float: left;
@@ -39,7 +39,8 @@
     border-radius: 3px;
 }
 #extension__manager .panelHeader div.error{
-    margin-top: 5px;
+    margin-top: 0;
+    float: left;
 }
 /*
  * search & url download forms
@@ -90,7 +91,7 @@
     text-decoration: underline;
     cursor: pointer;
 }
-#extension__manager input.button {
+#extension__manager table input.button {
     margin: 0 .3em .3em 0;
 }
 /*
