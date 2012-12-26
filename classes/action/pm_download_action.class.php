@@ -16,7 +16,7 @@ class pm_download_action extends pm_base_action {
      * Initiate the plugin download
      */
     protected function act() {
-        if(array_key_exists('url',$_REQUEST)) {
+        if(array_key_exists('url', $_REQUEST)) {
             $this->url_download();
 
         } elseif(is_array($this->selection)) {
@@ -27,7 +27,7 @@ class pm_download_action extends pm_base_action {
         }
 
         if($this->manager->getConf('download_as_disabled') && isset($this->downloaded['plugin']) && is_array($this->downloaded['plugin'])) {
-            array_filter($this->downloaded['plugin'],'plugin_disable');
+            array_filter($this->downloaded['plugin'], 'plugin_disable');
         }
 
         $this->refresh($this->manager->tab);
@@ -40,7 +40,7 @@ class pm_download_action extends pm_base_action {
         $this->is_url_download = true;
         $obj                   = new stdClass();
         $obj->downloadurl      = $obj->id = $_REQUEST['url'];
-        $this->download($obj, $this->overwrite,'abc');
+        $this->download($obj, $this->overwrite, 'abc');
     }
 
     /**
@@ -73,8 +73,8 @@ class pm_download_action extends pm_base_action {
     /**
      * Report action succeeded (more than one extension)
      */
-    protected function msg_pkg_success($info,$components) {
-        $this->report(1, $info, 'download_pkg_success',$components);
+    protected function msg_pkg_success($info, $components) {
+        $this->report(1, $info, 'download_pkg_success', $components);
     }
 
     /**
@@ -109,11 +109,11 @@ class pm_download_action extends pm_base_action {
 
         // download & decompress
         if(!$file = io_download($url, "$tmp/", true, $file)) {
-            $error = sprintf($this->manager->getLang('error_download'),$url);
+            $error = sprintf($this->manager->getLang('error_download'), $url);
         }
 
         if(!$error && !$this->decompress("$tmp/$file", "$tmp/$default_base")) {
-            $error = sprintf($this->manager->getLang('error_decompress'),$file);
+            $error = sprintf($this->manager->getLang('error_decompress'), $file);
         }
 
         // search $tmp/$default_base for the folder(s) that has been created
@@ -121,7 +121,7 @@ class pm_download_action extends pm_base_action {
         if(!$error) {
             $result = array('old'=>array(), 'new'=>array());
 
-            if(!$this->find_folders($result,"$tmp/$default_base", $default_type)) {
+            if(!$this->find_folders($result, "$tmp/$default_base", $default_type)) {
                 $error = $this->manager->getLang('error_findfolder');
 
             } else {
@@ -183,9 +183,9 @@ class pm_download_action extends pm_base_action {
             return false;
         }
 
-        $downloaded = array_merge($this->downloaded['plugin'],$this->downloaded['template']);
+        $downloaded = array_merge($this->downloaded['plugin'], $this->downloaded['template']);
         if(count($downloaded) > 1) {
-            $this->msg_pkg_success($info, implode(',',$downloaded));
+            $this->msg_pkg_success($info, implode(',', $downloaded));
         } else {
             $this->msg_success($info);
         }
@@ -213,7 +213,7 @@ class pm_download_action extends pm_base_action {
      * @param string $dir - a subdirectory. do not set. used by recursion
      * @return bool - false on error
      */
-    private function find_folders(&$result,$base,$default_type,$dir='') {
+    private function find_folders(&$result, $base, $default_type, $dir='') {
         $this_dir = "$base$dir";
         $dh       = @opendir($this_dir);
         if(!$dh) return false;
@@ -236,7 +236,7 @@ class pm_download_action extends pm_base_action {
                     case 'template.info.txt':
                         $found_info_txt = true;
                         $info = array();
-                        $type = explode('.',$f,2);
+                        $type = explode('.', $f, 2);
                         $info['type'] = $type[0];
                         $info['tmp']  = $this_dir;
                         $conf = confToHash("$this_dir/$f");
@@ -281,7 +281,7 @@ class pm_download_action extends pm_base_action {
                 $info['tmp']     = "$base$found_dir";
                 $result['old'][] = $info;
             }
-            $this->find_folders($result,$base,$default_type,"$found_dir");
+            $this->find_folders($result, $base, $default_type, "$found_dir");
         }
         return true;
     }
@@ -299,7 +299,7 @@ class pm_download_action extends pm_base_action {
         if(substr($target, -1) == "/") $target = substr($target, 0, -1);
 
         $ext = $this->guess_archive($file);
-        if(in_array($ext, array('tar','bz','gz'))) {
+        if(in_array($ext, array('tar', 'bz', 'gz'))) {
             switch($ext) {
                 case 'bz':
                     $compress_type = TarLib::COMPRESS_BZIP;
@@ -353,14 +353,14 @@ class pm_download_action extends pm_base_action {
      * @returns false if the file can't be read, otherwise an "extension"
      */
     private function guess_archive($file) {
-        $fh = fopen($file,'rb');
+        $fh = fopen($file, 'rb');
         if(!$fh) return false;
-        $magic = fread($fh,5);
+        $magic = fread($fh, 5);
         fclose($fh);
 
-        if(strpos($magic,"\x42\x5a") === 0) return 'bz';
-        if(strpos($magic,"\x1f\x8b") === 0) return 'gz';
-        if(strpos($magic,"\x50\x4b\x03\x04") === 0) return 'zip';
+        if(strpos($magic, "\x42\x5a") === 0) return 'bz';
+        if(strpos($magic, "\x1f\x8b") === 0) return 'gz';
+        if(strpos($magic, "\x50\x4b\x03\x04") === 0) return 'zip';
         return 'tar';
     }
 
@@ -386,9 +386,9 @@ class pm_download_action extends pm_base_action {
         } else {
             $exists = @file_exists($dst);
 
-            if(!@copy($src,$dst)) return false;
+            if(!@copy($src, $dst)) return false;
             if(!$exists && !empty($conf['fperm'])) chmod($dst, $conf['fperm']);
-            @touch($dst,filemtime($src));
+            @touch($dst, filemtime($src));
         }
 
         return true;

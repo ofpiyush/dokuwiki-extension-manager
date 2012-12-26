@@ -24,8 +24,8 @@ class pm_reinstall_action extends pm_update_action {
     /**
      * Report action succeeded (more than one extension)
      */
-    protected function msg_pkg_success($info,$components) {
-        $this->report(1, $info, 'reinstall_pkg_success',$components);
+    protected function msg_pkg_success($info, $components) {
+        $this->report(1, $info, 'reinstall_pkg_success', $components);
     }
 
 }

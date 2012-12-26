@@ -44,7 +44,7 @@ abstract class pm_base_single_lib {
     /**
      * If the manager can write in the folder
      * @var bool
-     */ 
+     */
     var $is_writable = false;
 
     /**
@@ -104,17 +104,17 @@ abstract class pm_base_single_lib {
      */
     var $log = array();
 
-    function __construct(helper_plugin_extension $helper,$id,$is_template) {
-        $this->helper = $helper;
-        $this->id = $id;
+    function __construct(helper_plugin_extension $helper, $id, $is_template) {
+        $this->helper      = $helper;
+        $this->id          = $id;
         $this->is_template = $is_template;
 
         if($is_template) {
-            $this->is_bundled = in_array('template:'.$id,$helper->_bundled);
+            $this->is_bundled   = in_array('template:'.$id, $helper->_bundled);
             // no protected templates
         } else {
-            $this->is_bundled = in_array($id,$helper->_bundled);
-            $this->is_protected = in_array($id,$helper->protected);
+            $this->is_bundled   = in_array($id, $helper->_bundled);
+            $this->is_protected = in_array($id, $helper->protected);
         }
     }
 
@@ -125,7 +125,7 @@ abstract class pm_base_single_lib {
     function __get($key) {
         $return = false;
 
-        if(method_exists($this,'get_'.$key)) { 
+        if(method_exists($this, 'get_'.$key)) {
             // do not cache anything returned from a method
             // if its necessary, the method will cache it itself
             return $this->{'get_'.$key}();
@@ -139,7 +139,7 @@ abstract class pm_base_single_lib {
         } elseif(isset($this->log[$key])) {
             $return = $this->log[$key];
 
-        } elseif(method_exists($this,'default_'.$key)) {
+        } elseif(method_exists($this, 'default_'.$key)) {
             return $this->{'default_'.$key}();
         }
         $this->$key = $return;
@@ -162,7 +162,7 @@ abstract class pm_base_single_lib {
      * return repokey as valid HTML id
      */
     protected function get_html_id() {
-        $this->html_id = str_replace(':','_',$this->repokey);
+        $this->html_id = str_replace(':', '_', $this->repokey);
         return $this->html_id;
     }
 
@@ -170,7 +170,7 @@ abstract class pm_base_single_lib {
      * return same name as displayed by repo plugin at www.dokuwiki.org
      */
     protected function get_displayname() {
-        $name = str_replace('template:','',$this->repokey);
+        $name = str_replace('template:', '', $this->repokey);
         $this->displayname =  ucfirst($name).(($this->is_template) ? ' template' : ' plugin');
         return $this->displayname;
     }
@@ -207,7 +207,7 @@ abstract class pm_base_single_lib {
         } elseif(!empty($this->installed)) {
             $time = $this->installed;
         }
-        $this->install_date = ($time ? date('Y-m-d',strtotime($time)) : $this->helper->getLang('manual_install'));
+        $this->install_date = ($time ? date('Y-m-d', strtotime($time)) : $this->helper->getLang('manual_install'));
         return $this->install_date;
     }
 
@@ -292,9 +292,9 @@ abstract class pm_base_single_lib {
     function missing_dependency() {
         if($this->is_installed && !empty($this->relations['depends']['id'])) {
             foreach((array) $this->relations['depends']['id'] as $depends) {
-                $key = (stripos($depends,'template:')===0) ? 'template' : 'plugin';
-                $dependency = str_replace('template:','',$depends);
-                if(!in_array($dependency,$this->helper->{$key.'_list'}) || ($key == 'plugin' && plugin_isdisabled($dependency))) {
+                $key = (stripos($depends, 'template:')===0) ? 'template' : 'plugin';
+                $dependency = str_replace('template:', '', $depends);
+                if(!in_array($dependency, $this->helper->{$key.'_list'}) || ($key == 'plugin' && plugin_isdisabled($dependency))) {
                     $missing[] = $depends;
                 }
             }
@@ -309,9 +309,9 @@ abstract class pm_base_single_lib {
     function needed_by() {
         if(!empty($this->needed_by)) {
             foreach((array) $this->needed_by as $user) {
-                $key = (stripos($user,'template:')===0) ? 'template' : 'plugin';
-                $dependency = str_replace('template:','',$user);
-                if(in_array($dependency,$this->helper->{$key.'_list'}) && ($key == 'template' || !plugin_isdisabled($dependency))) {
+                $key = (stripos($user, 'template:')===0) ? 'template' : 'plugin';
+                $dependency = str_replace('template:', '', $user);
+                if(in_array($dependency, $this->helper->{$key.'_list'}) && ($key == 'template' || !plugin_isdisabled($dependency))) {
                     $users[] = $user;
                 }
             }
@@ -344,7 +344,7 @@ abstract class pm_base_single_lib {
             $key = ($this->is_template) ? 'template' : 'plugin';
             $installed_conflicts = array_intersect($this->helper->{$key.'_list'},(array)$this->relations['conflicts']['id']);
             if(!empty($installed_conflicts)) {
-                $this->has_conflicts = $installed_conflicts;    
+                $this->has_conflicts = $installed_conflicts;
                 return true;
             }
         }

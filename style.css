@@ -14,6 +14,7 @@
     padding: 10px;
     text-align: left;
 }
+
 #extension__manager .panelHeader h3 {
     float: left;
     font-weight: normal;
@@ -21,8 +22,9 @@
     padding: 0;
     margin: 0 0 3px;
 }
+
 #extension__manager ul.tabs div.message {
-    display:inline;
+    display: inline;
     margin: 0 0 0 0.5em;
 }
 
@@ -32,46 +34,56 @@
 #extension__manager h2 {
     margin-left: 0;
 }
+
 #extension__manager a.taglink {
     padding: 1px 4px;
-    background-color: #dedede;
+    background-color: #DEDEDE;
     border-radius: 3px;
 }
-#extension__manager .panelHeader div.error{
+
+#extension__manager .panelHeader div.error {
     margin-top: 0;
     float: left;
 }
+
 /*
  * search & url download forms
  */
 #extension__manager .panelHeader form {
     float: right;
 }
+
 #dw__url,
 #extensionplugin__searchtext {
     width: 200px;
 }
+
 #extension__manager .tagcloud {
     width: 55%;
     float: left;
     margin: 0 0.5em 1em 0;
 }
+
 #extension__manager .tagcloud  a.taglink {
     background-color: inherit;
 }
+
 #extension__manager div.search {
     width: 44%;
     float: left;
 }
+
 #extension__manager fieldset {
     margin-top: 0.5em;
     width: auto;
 }
-#extension__manager fieldset p{
+
+#extension__manager fieldset p {
     margin: 0.5em;
     text-align: justify;
-    font-size: 85%
+    font-size: 85%;
 }
+
 /* tag cloud */
 #extension__manager a.cl0 { font-size: 0.7em; }
 #extension__manager a.cl1 { font-size: 0.9em; }
@@ -79,20 +91,24 @@
 #extension__manager a.cl3 { font-size: 1.3em; }
 #extension__manager a.cl4 { font-size: 1.6em; }
 #extension__manager a.cl5 { font-size: 1.9em; }
+
 /*
  * multiselect controls
  */
 #extension__manager .checks {
     display: none;
 }
+
 #extension__manager .checkall:hover,
 #extension__manager .checknone:hover {
     text-decoration: underline;
     cursor: pointer;
 }
+
 #extension__manager table input.button {
     margin: 0 .3em .3em 0;
 }
+
 /*
  * extensions table
  */
@@ -101,40 +117,49 @@
     border-collapse: collapse;
     border: thin solid __border__;
 }
+
 #extension__manager table td {
     vertical-align: middle;
     border: thin solid __border__;
     border-style: solid none;
 }
+
 #extension__manager .selection {
     width: 5%;
     text-align: center;
 }
+
 #extension__manager .legend {
     vertical-align: top;
     padding: 0.3em 0.5em 0.4em 132px;
 }
-#extension__manager .legend div{
+
+#extension__manager .legend div {
     position: relative;
 }
+
 #extension__manager .enabled div.screenshot span {
     background: transparent url(images/enabled.png) no-repeat 2px 2px;
 }
+
 #extension__manager .disabled div.screenshot span {
     background: transparent url(images/disabled.png) no-repeat 2px 2px;
 }
+
 #extension__manager .legend div.screenshot {
     margin-top: 4px;
     margin-left: -132px;
     max-width: 120px;
     float: left;
 }
+
 #extension__manager .legend div.screenshot span {
     min-height: 48px;
     min-width: 48px;
     position: absolute;
     left: 0px;
 }
+
 #extension__manager .legend h2 {
     width: 100%;
     float: right;
@@ -143,25 +168,31 @@
     font-weight: normal;
     border: none;
 }
+
 #extension__manager .legend a.searchlink {
 //    color: __text_alt__ !important;
 }
+
 #extension__manager .legend label {
     font-size: 120%;
     font-weight: bold;
     vertical-align: baseline;
- }
+}
+
 #extension__manager .legend p {
     margin: 0 0 0.6em 0;
 }
+
 #extension__manager .legend span.linkbar {
     line-height: 1.7em;
     font-size: 85%;
 }
+
 #extension__manager .legend span.linkbar a.urlextern+a.taglink,
 #extension__manager .legend span.linkbar a.interwiki+a.taglink {
     margin-left: 0.4em;
 }
+
 #extension__manager .legend  input.button {
     background: transparent url(images/up.png) no-repeat 0 0;
     box-shadow: none;
@@ -170,18 +201,21 @@
     text-indent: -99999px;
     float: right;
 }
+
 #extension__manager .legend  input.button.close {
     background: transparent url(images/down.png) no-repeat 0 0;
 }
-#extension__manager div.status.maybe {background-color: #fc1;}
-#extension__manager div.status.probably  {background-color: yellow;}
-#extension__manager div.status.compatible {background-color: #bfb;}
+
+#extension__manager div.status.maybe {background-color: #FC1;}
+#extension__manager div.status.probably {background-color: yellow;}
+#extension__manager div.status.compatible {background-color: #BFB;}
 #extension__manager div.status {
     padding: 0em 0.3em;
     margin: 0em 0.3em;
     font-size: 80%;
     float: right;
 }
+
 #extension__manager .legend div.popularity {
     background-color: __background__;
     border: 1px solid silver;
@@ -193,22 +227,27 @@
     right: 0;
     top: 0.2em;
 }
+
 #extension__manager .legend div.popularity div {
     background-color: __border__;
     height: 100%;
 }
+
 #extension__manager .legend div.popularity div span {
     display: none;/* @todo: hide accessibly */
 }
+
 #extension__manager .actions {
     background-color: __background_alt__;
     padding-left: 0.5em;
     font-size: 95%;
     width: 25%;
 }
+
 #extension__manager .actions .version {
     display: block;
 }
+
 #extension__manager .actions p {
     margin: 0.2em 0em;
     text-align: center;
@@ -223,42 +262,49 @@
     border-top: 1px solid __background_alt__;
     clear: both;
 }
+
 #extension__manager dl.details dt {
-	clear: left;
-	float: left;
-	width: 150px;
-	margin: 0;
+    clear: left;
+    float: left;
+    width: 150px;
+    margin: 0;
     text-align: right;
     font-weight: normal;
-	padding: 0.2em 5px 0 0;
+    padding: 0.2em 5px 0 0;
 }
+
 #extension__manager dl.details dd {
-	margin-left: 150px;
+    margin-left: 150px;
     font-weight: bold;
-	padding: 0.2em 0 0 5px;
+    padding: 0.2em 0 0 5px;
 }
+
 #extension__manager dl.details dd a {
     font-weight: normal;
 }
+
 #extension__manager a.donate {
     background: transparent url(images/donate.png) no-repeat 0 0;
-	margin-left: 4px;
-	padding: 16px 32px 0 0;
+    margin-left: 4px;
+    padding: 16px 32px 0 0;
     position: relative;
     top: -24px;
 }
+
 #extension__manager div#info__popup {
     z-index: 20;
     overflow: hidden;
-    opacity: 0.95;
+    opacity: 0.9;
     border: 1px solid __border__;
     background-color: __border__; /*background_other__;*/
     text-align: left;
     padding: 0.2em;
 }
+
 #extension__manager div.msg {
     margin: 0.4em 0 0 0;
 }
+
 #extension__manager ul.tabs div.msg {
     display: inline;
     margin-left: 0.4em;

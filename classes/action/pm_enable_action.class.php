@@ -14,7 +14,7 @@ class pm_enable_action extends pm_base_action {
 
     protected function act() {
         if(is_array($this->selection)) {
-            array_walk($this->selection,array($this,'enable'));
+            array_walk($this->selection, array($this, 'enable'));
         }
         $this->refresh($this->manager->tab);
     }
@@ -30,10 +30,10 @@ class pm_enable_action extends pm_base_action {
         }
 
         if($this->$func($info->id)) {
-            $this->report(1,$info,'enabled');
+            $this->report(1, $info, 'enabled');
             return true;
         } else {
-            $this->report(-1,$info,'notenabled');
+            $this->report(-1, $info, 'notenabled');
             return false;
         }
     }

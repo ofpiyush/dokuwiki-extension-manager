@@ -26,7 +26,7 @@ abstract class pm_base_action {
     /**
      *  Refresh plugin list
      */
-    protected function refresh($tab = "plugin",$extra =false,$anchor = '') {
+    protected function refresh($tab = "plugin", $extra = false, $anchor = '') {
         global $config_cascade;
 
         // expire dokuwiki caches
@@ -34,10 +34,10 @@ abstract class pm_base_action {
         @touch(reset($config_cascade['main']['local']));
 
         global $ID;
-        $params =array('do'=>'admin','page'=>'extension','tab'=>$tab);
-        if(!empty($extra)) $params = array_merge($params,$extra);
+        $params = array('do' => 'admin', 'page' => 'extension', 'tab' => $tab);
+        if(!empty($extra)) $params = array_merge($params, $extra);
         if(!empty($anchor)) $anchor = "#".$anchor;
-        send_redirect(wl($ID,$params,true, '&').$anchor);
+        send_redirect(wl($ID, $params, true, '&').$anchor);
     }
 
     /**
@@ -74,8 +74,8 @@ abstract class pm_base_action {
         $message  = vsprintf($this->manager->getLang($key), $args);
 
         // repokey used to avoid repetition of urls in log file when action download (url)
-        $this->helper->log->trace(str_replace('template:','',$info->repokey), strip_tags($message));
-        msg($message,$lvl);
+        $this->helper->log->trace(str_replace('template:', '', $info->repokey), strip_tags($message));
+        msg($message, $lvl);
     }
 
 }

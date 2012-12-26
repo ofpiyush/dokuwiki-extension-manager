@@ -9,10 +9,10 @@ class pm_info_action extends pm_base_action {
 
     protected function act() {
         if(!empty($this->selection)) {
-            list($repokey,$folder) = explode('/',array_pop($this->selection),2);
+            list($repokey, $folder) = explode('/', array_pop($this->selection), 2);
 
-            if(substr($repokey,0,1) == '-') {
-                $repokey = substr($repokey,1);
+            if(substr($repokey, 0, 1) == '-') {
+                $repokey = substr($repokey, 1);
                 $extra = array('info'=>'');
             } else {
                 $extra = array('info'=>$repokey);
@@ -21,7 +21,7 @@ class pm_info_action extends pm_base_action {
             if(!empty($_REQUEST['q']))
                 $extra['q'] = $_REQUEST['q'];
 
-            $this->refresh($this->manager->tab,$extra,'extensionplugin__'.str_replace(':','_',$repokey));
+            $this->refresh($this->manager->tab, $extra, 'extensionplugin__'.str_replace(':', '_', $repokey));
         }
     }
 }

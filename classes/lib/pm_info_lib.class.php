@@ -18,53 +18,53 @@ class pm_info_lib {
      *                          'template' - index is template folder name from template_list, used in template tab
      *                          'search'   - index is repokey/folder (prefixed with 'template:' for tpl), used by all actions
      */
-    function get($index,$type = 'search') {
-        if(!in_array($type,array('plugin','template','search'))) {
+    function get($index, $type = 'search') {
+        if(!in_array($type, array('plugin', 'template', 'search'))) {
             $type = 'plugin';
         }
         $is_installed = false;
         $is_template = false;
         $is_writable = false;
-        list($repokey, $folder) = explode('/',$index,2);
+        list($repokey, $folder) = explode('/', $index, 2);
         $id = $repokey;
 
         if ($type == 'search') {
             // assume plugin repo id (templates are prefixed by 'template:')
-            if(stripos($repokey,'template:')===0) {
-                $id = substr($repokey,9);
+            if(stripos($repokey, 'template:')===0) {
+                $id = substr($repokey, 9);
                 $is_template = true;
                 $is_writable = $this->helper->templatefolder_writable;
-                if ($folder && in_array($folder,$this->helper->template_list)) {
-                    $id = $folder;
+                if ($folder && in_array($folder, $this->helper->template_list)) {
+                    $id           = $folder;
                     $is_installed = true;
-                    $type = 'template';
+                    $type         = 'template';
                 }
             } else {
                 $is_template = false;
                 $is_writable = $this->helper->pluginfolder_writable;
-                if ($folder && in_array($folder,$this->helper->plugin_list)) {
-                    $id = $folder;
+                if ($folder && in_array($folder, $this->helper->plugin_list)) {
+                    $id           = $folder;
                     $is_installed = true;
-                    $type = 'plugin';
+                    $type         = 'plugin';
                 }
             }
         } else {
             // assume this call was generated from installed plugins/templates list
             $is_installed = true;
-            $is_template = ($type == 'template');
-            $repokey = (($is_template) ? 'template:'.$index : $index);
+            $is_template  = ($type == 'template');
+            $repokey      = (($is_template) ? 'template:'.$index : $index);
         }
 
         $classname = "pm_".$type."_single_lib";
-        $return = new $classname($this->helper,$id,$is_template);
+        $return = new $classname($this->helper, $id, $is_template);
         $return->is_installed = $is_installed;
 
         // don't assume extentions installed in correct directory (try read info.txt before repo searching)
         if ($is_installed) {
-            $path = $return->install_directory();
-            $is_writable = is_writable($path);
+            $path         = $return->install_directory();
+            $is_writable  = is_writable($path);
 
-            $info_path = $path.$type.'.info.txt';
+            $info_path    = $path.$type.'.info.txt';
             $return->info = $this->read_info_txt($info_path);
 
             // only use getInfo fall-back for enabled plugins
@@ -76,7 +76,7 @@ class pm_info_lib {
             }
             $return->log = $this->helper->log->read($path);
 
-            // installed plugins may have repokey stored from last download to handle case of 'code3' plugin in lib/code/.. 
+            // installed plugins may have repokey stored from last download to handle case of 'code3' plugin in lib/code/..
             if (!empty($return->log['repokey'])) {
                 $repokey = $return->log['repokey'];
             }
@@ -89,7 +89,7 @@ class pm_info_lib {
 
         // determine if there is reason to use repo data, check dokulink/saved repokey/used download url
         if (preg_match('/www.dokuwiki.org\/(\w+:[a-zA-Z\d_-]+)/', $return->info['url'], $match)) {
-            if (str_replace('plugin:','',$match[1]) == $repokey) {
+            if (str_replace('plugin:', '', $match[1]) == $repokey) {
                 $same_dokulink = true;
             }
         }
@@ -119,8 +119,8 @@ class pm_info_lib {
     function read_plugin_getInfo($index) {
         $components = $this->helper->get_plugin_components($index);
         if(!empty($components)) {
-            $obj = plugin_load($components[0]['type'],$components[0]['name'],false,true);
-            if(is_object($obj) && method_exists($obj,'getInfo') ) {
+            $obj = plugin_load($components[0]['type'], $components[0]['name'], false, true);
+            if(is_object($obj) && method_exists($obj, 'getInfo') ) {
                 $obj_info = $obj->getInfo();
                 return  $this->clean_info($obj_info);
             }
@@ -138,7 +138,7 @@ class pm_info_lib {
             'desc'  => false,
             'url'   => false
             );
-        return array_intersect_key($raw_info,$info);
+        return array_intersect_key($raw_info, $info);
     }
 
 }

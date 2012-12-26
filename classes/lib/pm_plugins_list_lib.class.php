@@ -25,14 +25,14 @@ class pm_plugins_list_lib {
      * Plugins list constructor
      * Starts the form, table and sets up actions available to the user
      */
-    function __construct($manager,$form_id,$actions = array(),$possible_errors=array(),$type ="plugin") {
-        $this->manager = $manager;
-        $this->helper = $manager->hlp;
-        $this->type = $type;
+    function __construct($manager, $form_id, $actions = array(), $possible_errors = array(), $type = "plugin") {
+        $this->manager         = $manager;
+        $this->helper          = $manager->hlp;
+        $this->type            = $type;
         $this->possible_errors = $possible_errors;
-        $this->form_id = $form_id;
-        $this->actions = array_merge($this->actions,$actions);
-        $this->form = '<div class="common">';
+        $this->form_id         = $form_id;
+        $this->actions         = array_merge($this->actions, $actions);
+        $this->form            = '<div class="common">';
     }
 
     function start_form() {
@@ -63,15 +63,15 @@ class pm_plugins_list_lib {
         if($this->intable) {
             $this->showinfo = ($this->manager->showinfo == $info->repokey);
             $this->rowadded = true;
-            $this->start_row($info,$this->make_class($info));
-            $this->populate_column('selection',$this->make_checkbox($info,$checkbox));
-            $this->populate_column('legend',$this->make_legend($info));
-            $this->populate_column('actions',$this->make_actions($info));
+            $this->start_row($info, $this->make_class($info));
+            $this->populate_column('selection', $this->make_checkbox($info, $checkbox));
+            $this->populate_column('legend', $this->make_legend($info));
+            $this->populate_column('actions', $this->make_actions($info));
             $this->end_row();
         }
     }
 
-    function add_header($id,$header,$level=2) {
+    function add_header($id, $header, $level = 2) {
         $this->form .='<h'.$level.' id="'.$id.'">'.hsc($header).'</h'.$level.'>';
     }
 
@@ -102,7 +102,7 @@ class pm_plugins_list_lib {
                                ' <span class="checknone">'.$this->manager->getLang('select_none').'</span></span>';
             }
             foreach($this->actions as $value => $text) {
-                if(!in_array($value,$actions) || empty($actions_shown[$value])) continue;
+                if(!in_array($value, $actions) || empty($actions_shown[$value])) continue;
                 $cmdButtons .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
             }
             $cmdButtons .= '</div>';
@@ -116,10 +116,10 @@ class pm_plugins_list_lib {
         echo $this->form;
     }
 
-    private function start_row($info,$class) {
+    private function start_row($info, $class) {
         $this->form .= '<tr id="extensionplugin__'.hsc($info->html_id).'" class="'.$class.'">';
     }
-    private function populate_column($class,$html) {
+    private function populate_column($class, $html) {
         $this->form .= '<td class="'.$class.'">'.$html.'</td>';
     }
     private function end_row() {
@@ -135,7 +135,7 @@ class pm_plugins_list_lib {
         }
 
         if(!empty($info->url)) {
-            return $this->make_link($info,"urlextern");
+            return $this->make_link($info, 'urlextern');
         }
         return '';
     }
@@ -168,7 +168,7 @@ class pm_plugins_list_lib {
                 'tab'=>'search',
                 'q'=>'author:'.$info->author
             );
-            $url = wl($ID,$params);
+            $url = wl($ID, $params);
             return '<a href="'.$url.'" class="searchlink" title="'.$this->manager->getLang('author_hint').'" >'.hsc($info->author).'</a>';
         }
         return "<em>".$this->manager->getLang('unknown')."</em>";
@@ -225,7 +225,7 @@ class pm_plugins_list_lib {
         $return .= '</p>';
 
         $return .= $this->make_linkbar($info);
-        $return .= $this->make_action('info',$info,$this->manager->getLang('btn_info'));
+        $return .= $this->make_action('info', $info, $this->manager->getLang('btn_info'));
         if ($this->showinfo) {
             $return .= $this->make_info($info);
         }
@@ -255,32 +255,32 @@ class pm_plugins_list_lib {
     function make_noticearea($info) {
         if($info->missing_dependency()) {
             $return .= '<div class="msg error">'.
-                            sprintf($this->manager->getLang('missing_dependency'),implode(', ',array_map(array($this->helper,'make_extensionsearchlink'),$info->missing_dependency))).
+                            sprintf($this->manager->getLang('missing_dependency'), implode(', ', array_map(array($this->helper, 'make_extensionsearchlink'), $info->missing_dependency))).
                         '</div>';
         }
         if($info->wrong_folder()) {
             $return .= '<div class="msg error">'.
-                            sprintf($this->manager->getLang('wrong_folder'),hsc($info->id),hsc($info->base)).
+                            sprintf($this->manager->getLang('wrong_folder'), hsc($info->id), hsc($info->base)).
                         '</div>';
         }
         if(!empty($info->securityissue)) {
             $return .= '<div class="msg error">'.
-                            sprintf($this->manager->getLang('security_issue'),hsc($info->securityissue)).
+                            sprintf($this->manager->getLang('security_issue'), hsc($info->securityissue)).
                         '</div>';
         }
         if(!empty($info->securitywarning)) {
             $return .= '<div class="msg notify">'.
-                            sprintf($this->manager->getLang('security_warning'),hsc($info->securitywarning)).
+                            sprintf($this->manager->getLang('security_warning'), hsc($info->securitywarning)).
                         '</div>';
         }
         if($info->update_available) {
             $return .=  '<div class="msg notify">'.
-                            sprintf($this->manager->getLang('update_available'),hsc($info->lastupdate)).
+                            sprintf($this->manager->getLang('update_available'), hsc($info->lastupdate)).
                         '</div>';
         }
         if($info->url_changed()) {
             $return .=  '<div class="msg notify">'.
-                            sprintf($this->manager->getLang('url_change'),hsc($info->repo['downloadurl']),hsc($info->log['downloadurl'])).
+                            sprintf($this->manager->getLang('url_change'), hsc($info->repo['downloadurl']), hsc($info->log['downloadurl'])).
                         '</div>';
         }
         return $return;
@@ -396,7 +396,7 @@ class pm_plugins_list_lib {
     function make_linklist($links) {
         foreach ($links as $link) {
             $dokulink = hsc($link);
-            if (strpos($link,'template:') !== 0) $dokulink = 'plugin:'.$dokulink;
+            if (strpos($link, 'template:') !== 0) $dokulink = 'plugin:'.$dokulink;
             $return .= '<a href="http://www.dokuwiki.org/'.$dokulink.'" title="'.$dokulink.'" class="interwiki iw_doku">'.$link.'</a> ';
         }
         return $return;
@@ -413,7 +413,7 @@ class pm_plugins_list_lib {
         foreach($this->actions as $act => $text) {
             if($info->{"can_".$act}()) {
                 $this->actions_shown[$act] = true;
-                $return .= $this->make_action($act,$info,$text);
+                $return .= $this->make_action($act, $info, $text);
             }
         }
 
@@ -427,7 +427,7 @@ class pm_plugins_list_lib {
             foreach($this->possible_errors as $error => $text) {
                 if($info->$error()) {
                     if(is_array($info->$error)) {
-                        $return .= "(<em>".$text." ".hsc(implode(', ',$info->$error))."</em>)";
+                        $return .= "(<em>".$text." ".hsc(implode(', ', $info->$error))."</em>)";
                     } else {
                         $return .= "(<em>".$text."</em>)";
                     }
@@ -438,7 +438,7 @@ class pm_plugins_list_lib {
         return $return;
     }
 
-    function make_action($action,$info,$text) {
+    function make_action($action, $info, $text) {
         $title = $revertAction = $extraClass = '';
 
         switch ($action) {

@@ -4,10 +4,10 @@ class pm_log_lib {
     /**
      * Write a log entry to the given target directory
      */
-    function write($target, $cmd, $data,$date = true) {
-        $file = $target.'/manager.dat';
-        $out = "";
-        $write =false;
+    function write($target, $cmd, $data, $date = true) {
+        $file  = $target.'/manager.dat';
+        $out   = '';
+        $write = false;
         foreach ($data as $key => $value) {
             if (!empty($value)) {
                 $out .= "$key=$value".PHP_EOL;
@@ -31,14 +31,14 @@ class pm_log_lib {
         return $write;
     }
 
-    function read($path,$field = 'ALL') {
+    function read($path, $field = 'ALL') {
         $hash = md5($path);
 
         if (!isset($this->log[$hash])) {
             $file = @file($path.'manager.dat');
             if(empty($file)) return false;
             foreach($file as $line) {
-                list($key,$value) = explode('=',trim($line,PHP_EOL),2);
+                list($key, $value) = explode('=', trim($line, PHP_EOL), 2);
                 $key = trim($key);
                 $value = trim($value);
                 // backwards compatible with old plugin manager
@@ -60,7 +60,7 @@ class pm_log_lib {
      */
     function trace($extension, $msg) {
         $file = DOKU_PLUGIN.'extension/trace.log';
-        $out = sprintf("%s  %s  %-25s  %s \n",date('Y-m-d  H:i:s'), $_SERVER['REMOTE_USER'], $extension, $msg);
+        $out = sprintf("%s  %s  %-25s  %s \n", date('Y-m-d  H:i:s'), $_SERVER['REMOTE_USER'], $extension, $msg);
         if (!$fp = @fopen($file, 'a')) return false;
         $write = fwrite($fp, $out);
         fclose($fp);

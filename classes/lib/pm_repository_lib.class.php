@@ -7,9 +7,9 @@
  */
 
 class pm_repository_lib {
-    private $repo = null;
-    var $repo_cache = NULL;
-    var $repo_url = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
+    private $repo   = null;
+    var $repo_cache = null;
+    var $repo_url   = 'http://www.dokuwiki.org/lib/plugins/pluginrepo/repository.php?showall=yes&includetemplates=yes';
 
     function __construct() {
         $this->repo_cache = new cache('plugin_manager', '.sa');
@@ -78,7 +78,7 @@ class pm_repository_lib {
             $single['show'] = $show;
 
             // add missing sort field
-            $single['sort'] = str_replace('template:','',$single['id']);
+            $single['sort'] = str_replace('template:', '', $single['id']);
 
             // calculate max popularity
             if ($single['popularity'] > $maxpop) $maxpop = $single['popularity'];
@@ -86,7 +86,7 @@ class pm_repository_lib {
             // collect tags for cloud
             if (is_array($single['tags']['tag'])) {
                 foreach ($single['tags']['tag'] as $tag) {
-                    if ($show && substr($tag,0,1) != '!') $tags[$tag]++;
+                    if ($show && substr($tag, 0, 1) != '!') $tags[$tag]++;
                 }
             }
 
@@ -102,7 +102,7 @@ class pm_repository_lib {
             if(!$max) $max = $cnt;
             $min = $cnt;
         }
-        $this->cloud_weight($tags,$min,$max,5);
+        $this->cloud_weight($tags, $min, $max, 5);
         ksort($tags);
 
         foreach($repo as $single) {
@@ -119,7 +119,7 @@ class pm_repository_lib {
     /**
      * Assign weight group to each tag in supplied array, use $levels groups
      */
-    function cloud_weight(&$tags,$min,$max,$levels){
+    function cloud_weight(&$tags, $min, $max, $levels){
         // calculate tresholds
         $tresholds = array();
         for($i=0; $i<=$levels; $i++){
@@ -154,7 +154,7 @@ class pm_repository_lib {
         }
         return count($data)? $data : null;
     }
-    
+
     /**
      * Converts XML to arrays     // TODO may be should be kept under parseutils??
      */
@@ -163,7 +163,7 @@ class pm_repository_lib {
         xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, "UTF-8");
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
         xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
-        xml_parse_into_struct($parser,$string, $struct);
+        xml_parse_into_struct($parser, $string, $struct);
         xml_parser_free($parser);
         if(!is_array($struct))
             throw new Exception('Repository XML unformatted');
@@ -173,21 +173,21 @@ class pm_repository_lib {
         foreach($struct as $single) {
             $value = null;
             extract($single);
-            if(in_array($type,array('open','complete'))) {
+            if(in_array($type, array('open', 'complete'))) {
                 $levels[$level-1] = &$current;
                 if(!@array_key_exists($tag, $current)) {
                     $current[$tag] = $value;
                     $current = &$current[$tag];
                 }
                 else {
-                    if(is_array($current[$tag]) && array_key_exists(0,$current[$tag]))
+                    if(is_array($current[$tag]) && array_key_exists(0, $current[$tag]))
                         $current[$tag][] = $value;
                     else
-                        $current[$tag] = array($current[$tag],$value);
+                        $current[$tag] = array($current[$tag], $value);
                     $current = &$current[$tag][count($current[$tag])-1];
                 }
             }
-            if(in_array($type,array('close','complete'))) {
+            if(in_array($type, array('close', 'complete'))) {
                 $current = &$levels[$level-1];
             }
 

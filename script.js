@@ -1,4 +1,4 @@
-var extension_manager = { 
+var extension_manager = {
 
     init : function () {
         if (!('info' in extension_manager.getUrlVars())) {
@@ -7,12 +7,11 @@ var extension_manager = {
 
         extension_manager.initInfoPanels();
 
-
         // check all/none buttons
         jQuery('#extension__manager .checks').show();
         extension_manager.setCheckState('#extension__manager .checknone',false);
-	    extension_manager.setCheckState('#extension__manager .checkall',true);
-	    extension_manager.confirmDelete('#extension__manager .actions .delete');
+        extension_manager.setCheckState('#extension__manager .checkall',true);
+        extension_manager.confirmDelete('#extension__manager .actions .delete');
         extension_manager.confirmDelete('#extension__manager .bottom .button[name="fn[delete]"]');
     },
 
@@ -61,8 +60,8 @@ var extension_manager = {
     setCheckState : function (clickSelector,bool) {
         jQuery(clickSelector).show();
         jQuery(clickSelector).click(function () {
-		        jQuery(this).parents('form').find('input[type="checkbox"]').not('[disabled]').prop('checked',bool);
-	        });
+                jQuery(this).parents('form').find('input[type="checkbox"]').not('[disabled]').prop('checked',bool);
+            });
     },
     confirmDelete : function (delSelector) {
         jQuery(delSelector).click(function(e) {

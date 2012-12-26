@@ -9,7 +9,7 @@ class pm_delete_action extends pm_base_action {
 
     protected function act() {
         if(is_array($this->selection)) {
-            array_walk($this->selection,array($this,'delete'));
+            array_walk($this->selection, array($this, 'delete'));
         }
         $this->refresh($this->manager->tab);
     }
@@ -27,12 +27,12 @@ class pm_delete_action extends pm_base_action {
         $path = substr($path, 0, -1); // remove trailing slash
         if($this->dir_delete($path)) {
             $list = $this->manager->tab.'_list';
-            $this->helper->$list = array_diff($this->helper->$list,array($info->id));
-            $this->report(1,$info,'deleted');
+            $this->helper->$list = array_diff($this->helper->$list, array($info->id));
+            $this->report(1, $info, 'deleted');
             return true;
 
         } else {
-            $this->report(1,$info,'notdeleted');
+            $this->report(1, $info, 'notdeleted');
             return false;
         }
     }

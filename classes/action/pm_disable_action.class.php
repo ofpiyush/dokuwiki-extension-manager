@@ -9,7 +9,7 @@ class pm_disable_action extends pm_base_action {
 
     protected function act() {
         if(is_array($this->selection)) {
-            array_walk($this->selection,array($this,'disable'));
+            array_walk($this->selection, array($this, 'disable'));
         }
         $this->refresh($this->manager->tab);
     }
@@ -20,10 +20,10 @@ class pm_disable_action extends pm_base_action {
         if($info->is_template) return false;
 
         if(plugin_disable($info->id)) {
-            $this->report(1,$info,'disabled');
+            $this->report(1, $info, 'disabled');
             return true;
         } else {
-            $this->report(-1,$info,'notdisabled');
+            $this->report(-1, $info, 'notdisabled');
             return false;
         }
     }
