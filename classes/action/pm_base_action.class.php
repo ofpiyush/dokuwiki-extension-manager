@@ -5,14 +5,13 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Piyush Mishra <me@piyushmishra.com>
  */
-
 abstract class pm_base_action {
 
-    var $selection = null;
-    var $manager = null;
-    var $helper = null;
+    protected $selection = null;
+    protected $manager = null;
+    protected $helper = null;
 
-    final function __construct(admin_plugin_extension $manager) {
+    final public function __construct(admin_plugin_extension $manager) {
         $this->selection = $manager->selection;
         $this->helper = $manager->hlp;
         $this->manager = $manager;
@@ -22,12 +21,12 @@ abstract class pm_base_action {
     /**
      * takes the requested action. to be declared by the child classes
      */
-    abstract function act();
+    abstract protected function act();
 
     /**
      *  Refresh plugin list
      */
-    function refresh($tab = "plugin",$extra =false,$anchor = '') {
+    protected function refresh($tab = "plugin",$extra =false,$anchor = '') {
         global $config_cascade;
 
         // expire dokuwiki caches
@@ -44,7 +43,7 @@ abstract class pm_base_action {
     /**
      * delete, with recursive sub-directory support
      */
-    function dir_delete($path) {
+    protected function dir_delete($path) {
         if (!is_string($path) || $path == "") return false;
 
         if (is_dir($path) && !is_link($path)) {

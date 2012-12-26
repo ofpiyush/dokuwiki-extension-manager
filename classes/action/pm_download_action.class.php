@@ -8,14 +8,14 @@
 
 class pm_download_action extends pm_base_action {
 
-    var $is_url_download = false;
-    var $downloaded = null;
-    var $overwrite = true;
+    private $is_url_download = false;
+    private $downloaded      = null;
+    private $overwrite       = true;
 
     /**
      * Initiate the plugin download
      */
-    function act() {
+    protected function act() {
         if(array_key_exists('url',$_REQUEST)) {
             $this->url_download();
 
@@ -36,7 +36,7 @@ class pm_download_action extends pm_base_action {
     /**
      * Download using URL textbox
      */
-    function url_download() {
+    private function url_download() {
         $this->is_url_download = true;
         $obj = new stdClass();
         $obj->downloadurl = $obj->id = $_REQUEST['url'];
@@ -46,7 +46,7 @@ class pm_download_action extends pm_base_action {
     /**
      * Overridable function to do download action on one url from repository
      */
-    function download_single($info) {
+    protected function download_single($info) {
         if (!$info->{'can_'.$this->manager->cmd}()) return;
         $default_type = ($info->is_template) ? 'template' : 'plugin';
         $this->download($info, $this->overwrite, $info->id, $default_type);
@@ -55,7 +55,7 @@ class pm_download_action extends pm_base_action {
     /**
      * Report action failed
      */
-    function msg_failed($info, $error) {
+    protected function msg_failed($info, $error) {
         if ($this->is_url_download) {
             $this->report(-1, $info, 'url_failed', $error);
         } else {
@@ -66,21 +66,21 @@ class pm_download_action extends pm_base_action {
     /**
      * Report action succeeded
      */
-    function msg_success($info) {
+    protected function msg_success($info) {
         $this->report(1, $info, 'download_success');
     }
 
     /**
      * Report action succeeded (more than one extension)
      */
-    function msg_pkg_success($info,$components) {
+    protected function msg_pkg_success($info,$components) {
         $this->report(1, $info, 'download_pkg_success',$components);
     }
 
     /**
      * Process the downloaded file
      */
-    function download($info, $overwrite=false, $default_base = null, $default_type = null) {
+    protected function download($info, $overwrite=false, $default_base = null, $default_type = null) {
         $error = null;
         $this->downloaded['plugin'] = array();
         $this->downloaded['template'] = array();
@@ -214,7 +214,7 @@ class pm_download_action extends pm_base_action {
      * @param string $dir - a subdirectory. do not set. used by recursion
      * @return bool - false on error
      */
-    function find_folders(&$result,$base,$default_type,$dir=''){
+    private function find_folders(&$result,$base,$default_type,$dir=''){
         $this_dir = "$base$dir";
         $dh = @opendir($this_dir);
         if(!$dh) return false;
@@ -293,7 +293,7 @@ class pm_download_action extends pm_base_action {
      *
      * Determines the compression type from the file extension
      */
-    function decompress($file, $target) {
+    private function decompress($file, $target) {
         global $conf;
 
         // decompression library doesn't like target folders ending in "/"
@@ -353,7 +353,7 @@ class pm_download_action extends pm_base_action {
      * @author Andreas Gohr <andi@splitbrain.org>
      * @returns false if the file can't be read, otherwise an "extension"
      */
-    function guess_archive($file){
+    private function guess_archive($file){
         $fh = fopen($file,'rb');
         if(!$fh) return false;
         $magic = fread($fh,5);
@@ -368,7 +368,7 @@ class pm_download_action extends pm_base_action {
     /**
      * Copy with recursive sub-directory support
      */
-    function dircopy($src, $dst) {
+    private function dircopy($src, $dst) {
         global $conf;
 
         if (is_dir($src)) {
