@@ -8,13 +8,13 @@
 abstract class pm_base_action {
 
     protected $selection = null;
-    protected $manager = null;
-    protected $helper = null;
+    protected $manager   = null;
+    protected $helper    = null;
 
     final public function __construct(admin_plugin_extension $manager) {
         $this->selection = $manager->selection;
-        $this->helper = $manager->hlp;
-        $this->manager = $manager;
+        $this->helper    = $manager->hlp;
+        $this->manager   = $manager;
         $this->act();
     }
 
@@ -44,13 +44,13 @@ abstract class pm_base_action {
      * delete, with recursive sub-directory support
      */
     protected function dir_delete($path) {
-        if (!is_string($path) || $path == "") return false;
+        if(!is_string($path) || $path == "") return false;
 
-        if (is_dir($path) && !is_link($path)) {
-            if (!$dh = @opendir($path)) return false;
+        if(is_dir($path) && !is_link($path)) {
+            if(!$dh = @opendir($path)) return false;
 
             while ($f = readdir($dh)) {
-                if ($f == '..' || $f == '.') continue;
+                if($f == '..' || $f == '.') continue;
                 $this->dir_delete("$path/$f");
             }
 
@@ -68,10 +68,10 @@ abstract class pm_base_action {
      */
     protected function report($lvl, $info, $langkey) {
         $arg_list = func_get_args();
-        $args = array_merge( array('<em>'.$info->id.'</em>'), array_slice($arg_list, 3));
+        $args     = array_merge( array('<em>'.$info->id.'</em>'), array_slice($arg_list, 3));
 
-        $key = 'msg_'.($info->is_template ? 'tpl_':'').$langkey;
-        $message = vsprintf($this->manager->getLang($key), $args);
+        $key      = 'msg_'.($info->is_template ? 'tpl_':'').$langkey;
+        $message  = vsprintf($this->manager->getLang($key), $args);
 
         // repokey used to avoid repetition of urls in log file when action download (url)
         $this->helper->log->trace(str_replace('template:','',$info->repokey), strip_tags($message));

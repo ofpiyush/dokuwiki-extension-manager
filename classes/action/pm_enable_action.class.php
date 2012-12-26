@@ -5,7 +5,7 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Piyush Mishra <me@piyushmishra.com>
  */
-if (class_exists('admin_plugin_config')) {
+if(class_exists('admin_plugin_config')) {
     require_once(DOKU_PLUGIN.'config/settings/config.class.php');  // main configuration class and generic settings classes
     require_once(DOKU_PLUGIN.'config/settings/extra.class.php');   // settings classes specific to these settings
 }
@@ -29,7 +29,7 @@ class pm_enable_action extends pm_base_action {
             $func = 'plugin_enable';
         }
 
-        if ($this->$func($info->id)) {
+        if($this->$func($info->id)) {
             $this->report(1,$info,'enabled');
             return true;
         } else {
@@ -43,11 +43,11 @@ class pm_enable_action extends pm_base_action {
     }
 
     private function template_enable($template) {
-        if (!class_exists('admin_plugin_config')) return false;
+        if(!class_exists('admin_plugin_config')) return false;
 
         $config = new configuration(DOKU_PLUGIN.'config/settings/config.metadata.php');
 
-        if ($config->setting['template']->update($template)) {
+        if($config->setting['template']->update($template)) {
             return $config->save_settings('Extension manager');
         }
         return false;

@@ -19,7 +19,7 @@ class pm_download_action extends pm_base_action {
         if(array_key_exists('url',$_REQUEST)) {
             $this->url_download();
 
-        } elseif (is_array($this->selection)) {
+        } elseif(is_array($this->selection)) {
             foreach ($this->selection as $cmdkey) {
                 $info = $this->helper->info->get($cmdkey);
                 $this->download_single($info);
@@ -38,8 +38,8 @@ class pm_download_action extends pm_base_action {
      */
     private function url_download() {
         $this->is_url_download = true;
-        $obj = new stdClass();
-        $obj->downloadurl = $obj->id = $_REQUEST['url'];
+        $obj                   = new stdClass();
+        $obj->downloadurl      = $obj->id = $_REQUEST['url'];
         $this->download($obj, $this->overwrite,'abc');
     }
 
@@ -47,7 +47,7 @@ class pm_download_action extends pm_base_action {
      * Overridable function to do download action on one url from repository
      */
     protected function download_single($info) {
-        if (!$info->{'can_'.$this->manager->cmd}()) return;
+        if(!$info->{'can_'.$this->manager->cmd}()) return;
         $default_type = ($info->is_template) ? 'template' : 'plugin';
         $this->download($info, $this->overwrite, $info->id, $default_type);
     }
@@ -56,7 +56,7 @@ class pm_download_action extends pm_base_action {
      * Report action failed
      */
     protected function msg_failed($info, $error) {
-        if ($this->is_url_download) {
+        if($this->is_url_download) {
             $this->report(-1, $info, 'url_failed', $error);
         } else {
             $this->report(-1, $info, 'download_failed', $error);
@@ -81,70 +81,69 @@ class pm_download_action extends pm_base_action {
      * Process the downloaded file
      */
     protected function download($info, $overwrite=false, $default_base = null, $default_type = null) {
-        $error = null;
-        $this->downloaded['plugin'] = array();
-        $this->downloaded['template'] = array();
+        $error            = null;
+        $this->downloaded = array('plugin' => array(), 'template' => array());
 
         // check the url
-        $url = $info->downloadurl;
+        $url     = $info->downloadurl;
         $matches = array();
-        if (!preg_match("/[^\/]*$/", $url, $matches) || !$matches[0]) {
+        if(!preg_match("/[^\/]*$/", $url, $matches) || !$matches[0]) {
             $this->msg_failed($info, $this->manager->getLang('error_badurl'));
             return false;
         }
         $file = $matches[0];
 
         // create tmp directory for download & decompress
-        if (!($tmp = io_mktmpdir())) {
+        if(!($tmp = io_mktmpdir())) {
             $this->msg_failed($info, $this->manager->getLang('error_dircreate'));
             return false;
         }
 
         // add default base folder if specified to handle case where zip doesn't contain this
-        if ($default_base) {
-            if (!@mkdir("$tmp/$default_base")) {
+        if($default_base) {
+            if(!@mkdir("$tmp/$default_base")) {
                 $this->msg_failed($info, $this->manager->getLang('error_dircreate'));
                 return false;
             }
         }
 
         // download & decompress
-        if (!$file = io_download($url, "$tmp/", true, $file)) {
+        if(!$file = io_download($url, "$tmp/", true, $file)) {
             $error = sprintf($this->manager->getLang('error_download'),$url);
         }
 
-        if (!$error && !$this->decompress("$tmp/$file", "$tmp/$default_base")) {
+        if(!$error && !$this->decompress("$tmp/$file", "$tmp/$default_base")) {
             $error = sprintf($this->manager->getLang('error_decompress'),$file);
         }
 
         // search $tmp/$default_base for the folder(s) that has been created
         // move the folder(s) to lib/..
-        if (!$error) {
+        if(!$error) {
             $result = array('old'=>array(), 'new'=>array());
 
-            if(!$this->find_folders($result,"$tmp/$default_base", $default_type)){
+            if(!$this->find_folders($result,"$tmp/$default_base", $default_type)) {
                 $error = $this->manager->getLang('error_findfolder');
 
             } else {
                 // choose correct result array
-                if(count($result['new'])){
+                if(count($result['new'])) {
                     $install = $result['new'];
                 }else{
                     $install = $result['old'];
                 }
 
                 // now install all found items
-                foreach($install as $item){
+                foreach($install as $item) {
                     // where to install?
-                    if($item['type'] == 'template'){
+                    if($item['type'] == 'template') {
                         $target_base_dir = DOKU_TPLLIB;
                     }else{
                         $target_base_dir = DOKU_PLUGIN;
                     }
 
-                    if (!empty($item['base'])) {
+                    if(!empty($item['base'])) {
                         // use base set in info.txt
-                    } elseif ($item['type'] == 'template' && count($install) == 1) {
+                    } elseif($item['type'] == 'template' && count($install) == 1) {
                         // safe to rename base for templates
                         $item['base'] = $info->id;
                     } else {
@@ -156,7 +155,7 @@ class pm_download_action extends pm_base_action {
 
                     // check to make sure we aren't overwriting anything
                     $target = $target_base_dir.$item['base'];
-                    if (!$overwrite && @file_exists($target)) {
+                    if(!$overwrite && @file_exists($target)) {
                         // TODO remember our settings, ask the user to confirm overwrite
                         continue;
                     }
@@ -164,7 +163,7 @@ class pm_download_action extends pm_base_action {
                     $instruction = @file_exists($target) ? 'update' : 'install';
 
                     // copy action
-                    if ($this->dircopy($item['tmp'], $target)) {
+                    if($this->dircopy($item['tmp'], $target)) {
                         $this->downloaded[$item['type']][] = $item['base'];
                         $this->helper->log->write($target, $instruction, array('url' => $url, 'repokey' => $info->repokey));
                         $this->manager->tab = $item['type'];
@@ -177,15 +176,15 @@ class pm_download_action extends pm_base_action {
         }
 
         // cleanup
-        if ($tmp) $this->dir_delete($tmp);
+        if($tmp) $this->dir_delete($tmp);
 
-        if ($error) {
+        if($error) {
             $this->msg_failed($info, $error);
             return false;
         }
 
         $downloaded = array_merge($this->downloaded['plugin'],$this->downloaded['template']);
-        if (count($downloaded) > 1) {
+        if(count($downloaded) > 1) {
             $this->msg_pkg_success($info, implode(',',$downloaded));
         } else {
             $this->msg_success($info);
@@ -214,17 +213,17 @@ class pm_download_action extends pm_base_action {
      * @param string $dir - a subdirectory. do not set. used by recursion
      * @return bool - false on error
      */
-    private function find_folders(&$result,$base,$default_type,$dir=''){
+    private function find_folders(&$result,$base,$default_type,$dir='') {
         $this_dir = "$base$dir";
-        $dh = @opendir($this_dir);
+        $dh       = @opendir($this_dir);
         if(!$dh) return false;
 
-        $found_dirs = array();
-        $found_files = 0;
+        $found_dirs           = array();
+        $found_files          = 0;
         $found_template_parts = 0;
-        $found_info_txt = false;
+        $found_info_txt       = false;
         while (false !== ($f = readdir($dh))) {
-            if ($f == '.' || $f == '..') continue;
+            if($f == '.' || $f == '..') continue;
 
             if(is_dir("$this_dir/$f")) {
                 $found_dirs[] = "$dir/$f";
@@ -257,29 +256,29 @@ class pm_download_action extends pm_base_action {
         closedir($dh);
 
         // URL downloads default to 'plugin', try extra hard to indentify templates
-        if (!$default_type && $found_template_parts > 2 && !$found_info_txt) {
-            $info = array();
-            $info['type'] = 'template';
-            $info['tmp']  = $this_dir;
+        if(!$default_type && $found_template_parts > 2 && !$found_info_txt) {
+            $info            = array();
+            $info['type']    = 'template';
+            $info['tmp']     = $this_dir;
             $result['new'][] = $info;
         }
 
         // files in top level but no info.txt, assume this is zip missing a base directory
         // works for all downloads unless direct URL where $base will be the tmp directory ($info->id was empty)
-        if (!$dir && $found_files > 0 && !$found_info_txt && $default_type) {
-            $info = array();
-            $info['type'] = $default_type;
-            $info['tmp']  = $base;
+        if(!$dir && $found_files > 0 && !$found_info_txt && $default_type) {
+            $info            = array();
+            $info['type']    = $default_type;
+            $info['tmp']     = $base;
             $result['old'][] = $info;
             return true;
         }
 
         foreach ($found_dirs as $found_dir) {
             // if top level add to dir list for old method, then recurse
-            if(!$dir){
-                $info = array();
-                $info['type'] = ($default_type ? $default_type : 'plugin');
-                $info['tmp']  = "$base$found_dir";
+            if(!$dir) {
+                $info            = array();
+                $info['type']    = ($default_type ? $default_type : 'plugin');
+                $info['tmp']     = "$base$found_dir";
                 $result['old'][] = $info;
             }
             $this->find_folders($result,$base,$default_type,"$found_dir");
@@ -297,11 +296,11 @@ class pm_download_action extends pm_base_action {
         global $conf;
 
         // decompression library doesn't like target folders ending in "/"
-        if (substr($target, -1) == "/") $target = substr($target, 0, -1);
+        if(substr($target, -1) == "/") $target = substr($target, 0, -1);
 
         $ext = $this->guess_archive($file);
-        if (in_array($ext, array('tar','bz','gz'))) {
-            switch($ext){
+        if(in_array($ext, array('tar','bz','gz'))) {
+            switch($ext) {
                 case 'bz':
                     $compress_type = TarLib::COMPRESS_BZIP;
                     break;
@@ -313,32 +312,32 @@ class pm_download_action extends pm_base_action {
             }
 
             $tar = new TarLib($file, $compress_type);
-            if($tar->_initerror < 0){
-                if($conf['allowdebug']){
+            if($tar->_initerror < 0) {
+                if($conf['allowdebug']) {
                     msg('TarLib Error: '.$tar->TarErrorStr($tar->_initerror),-1);
                 }
                 return false;
             }
             $ok = $tar->Extract(TarLib::FULL_ARCHIVE, $target, '', 0777);
 
-            if($ok<1){
-                if($conf['allowdebug']){
+            if($ok < 1) {
+                if($conf['allowdebug']) {
                     msg('TarLib Error: '.$tar->TarErrorStr($ok),-1);
                 }
                 return false;
             }
             return true;
-        } else if ($ext == 'zip') {
+        } elseif($ext == 'zip') {
 
             $zip = new ZipLib();
-            $ok = $zip->Extract($file, $target);
+            $ok  = $zip->Extract($file, $target);
 
             // FIXME sort something out for handling zip error messages meaningfully
             return ($ok==-1?false:true);
         }
 
         // unsupported file type
-        if($conf['allowdebug']){
+        if($conf['allowdebug']) {
             msg("Decompress Error: Unsupported file type [$ext]",-1);
         }
         return false;
@@ -353,7 +352,7 @@ class pm_download_action extends pm_base_action {
      * @author Andreas Gohr <andi@splitbrain.org>
      * @returns false if the file can't be read, otherwise an "extension"
      */
-    private function guess_archive($file){
+    private function guess_archive($file) {
         $fh = fopen($file,'rb');
         if(!$fh) return false;
         $magic = fread($fh,5);
@@ -371,12 +370,12 @@ class pm_download_action extends pm_base_action {
     private function dircopy($src, $dst) {
         global $conf;
 
-        if (is_dir($src)) {
-            if (!$dh = @opendir($src)) return false;
+        if(is_dir($src)) {
+            if(!$dh = @opendir($src)) return false;
 
-            if ($ok = io_mkdir_p($dst)) {
+            if($ok = io_mkdir_p($dst)) {
                 while ($ok && (false !== ($f = readdir($dh)))) {
-                    if ($f == '..' || $f == '.') continue;
+                    if($f == '..' || $f == '.') continue;
                     $ok = $this->dircopy("$src/$f", "$dst/$f");
                 }
             }
@@ -387,8 +386,8 @@ class pm_download_action extends pm_base_action {
         } else {
             $exists = @file_exists($dst);
 
-            if (!@copy($src,$dst)) return false;
-            if (!$exists && !empty($conf['fperm'])) chmod($dst, $conf['fperm']);
+            if(!@copy($src,$dst)) return false;
+            if(!$exists && !empty($conf['fperm'])) chmod($dst, $conf['fperm']);
             @touch($dst,filemtime($src));
         }
 

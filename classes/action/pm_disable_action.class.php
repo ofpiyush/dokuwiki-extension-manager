@@ -19,7 +19,7 @@ class pm_disable_action extends pm_base_action {
         if(!$info->can_disable()) return false;
         if($info->is_template) return false;
 
-        if (plugin_disable($info->id)) {
+        if(plugin_disable($info->id)) {
             $this->report(1,$info,'disabled');
             return true;
         } else {
