@@ -176,14 +176,13 @@ class pm_plugins_list_lib {
 
     function make_screenshot($info) {
         if(!empty($info->screenshoturl)) {
-            if($info->screenshoturl[0] == ':') {
+            if(!preg_match('/^https?:\/\/', $info->screenshoturl)) {
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
             }
-            $url = ml($info->screenshoturl, array('cache'=>'recache'));
+            $url = ml($info->screenshoturl, array('cache'=>'recache', 'w'=>120, 'h'=>70));
             $img = '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'">'.
                    '<img alt="'.hsc($info->displayname).'" width="120" src="'.$url.'" />'.
                    '</a>';
-
         } elseif($info->is_template) {
             $img = '<img alt="template" width="120" src="'.DOKU_BASE.'lib/plugins/extension/images/template.png" />';
 
