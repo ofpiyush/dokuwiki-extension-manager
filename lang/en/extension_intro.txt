@@ -1,4 +1,5 @@
 ====== Extension Manager ======
 
-Use this page to enable, disable and update your installed [[doku>plugins|plugins]] and [[doku>templates|templates]].
-You can also search and install additional extensions made public by the DokuWiki community at www.dokuwiki.org.
+Use this page to enable, disable and update your installed [[doku>plugins|plugins]] and [[doku>templates|templates]] or install new ones.
+
+Please be aware that installing 3rd party plugins and templates poses a potential security risk. Refer to [[doku>security#plugin_security|Plugin Security]] on how to assess the risks.
