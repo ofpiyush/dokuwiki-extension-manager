@@ -152,11 +152,7 @@
     border: none;
 }
 
-#extension__manager .legend a.searchlink {
-//    color: __text_alt__ !important;
-}
-
-#extension__manager .legend label {
+#extension__manager .legend h2 strong {
     font-size: 120%;
     font-weight: bold;
     vertical-align: baseline;

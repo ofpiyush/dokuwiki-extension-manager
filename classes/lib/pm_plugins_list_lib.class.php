@@ -195,7 +195,7 @@ class pm_plugins_list_lib {
 
         $return .= '<div>';
         $return .= '<h2>';
-        $return .= '<label for="'.$this->form_id.'_'.hsc($info->html_id).'">'.hsc($info->displayname).'</label>';
+        $return .= '<strong>'.hsc($info->displayname).'</strong>';
         $return .= ' by '.$this->make_author($info);
         $return .= '</h2>';
 
@@ -445,7 +445,7 @@ class pm_plugins_list_lib {
         $classes = 'button '.$action.' '.$extraClass;
         $name    = 'fn['.$action.']['.$revertAction.$info->cmdkey.']';
 
-        return '<input class="'.$classes.'" name="'.$name.'" type="submit" value="'.$text.'" '.$title.'" />';
+        return '<input class="'.$classes.'" name="'.$name.'" type="submit" value="'.$text.'" '.$title.' />';
     }
 
 }
