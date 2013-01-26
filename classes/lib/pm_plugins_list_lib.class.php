@@ -64,7 +64,6 @@ class pm_plugins_list_lib {
             $this->showinfo = ($this->manager->showinfo == $info->repokey);
             $this->rowadded = true;
             $this->start_row($info, $this->make_class($info));
-            $this->populate_column('selection', $this->make_checkbox($info, $checkbox));
             $this->populate_column('legend', $this->make_legend($info));
             $this->populate_column('actions', $this->make_actions($info));
             $this->end_row();
@@ -95,19 +94,15 @@ class pm_plugins_list_lib {
         $cmdButtons = '';
         if($this->rowadded && is_array($actions)) {
             $actions_shown = array_filter($this->actions_shown);
-            $cmdButtons .= '<div class="bottom">';
-            if(!empty($actions_shown)) {
-                $cmdButtons .= '<span class="checks">'.$this->manager->getLang('select').
-                               ' <span class="checkall">'.$this->manager->getLang('select_all').'</span> |'.
-                               ' <span class="checknone">'.$this->manager->getLang('select_none').'</span></span>';
+            $cmdButtons .= '<p class="bottom">';
+            if(array_key_exists('disable', $this->actions)) {
+                //@todo: implement "disable all" action
+                $cmdButtons .= '<input class="button" name="TODO" type="submit" value="TODO: Disable all" />';
             }
-            foreach($this->actions as $value => $text) {
-                if(!in_array($value, $actions) || empty($actions_shown[$value])) continue;
-                $cmdButtons .= '<input class="button" name="fn['.$value.']" type="submit" value="'.hsc($text).'" />';
-            }
-            $cmdButtons .= '</div>';
+            $cmdButtons .= '</p>';
         }
-        $this->form .= $cmdButtons;
+        // @todo: don't display button until "disable all" is implemented
+        //$this->form .= $cmdButtons;
         $this->form .= '</form>';
         $this->form .= '</div>';
     }
@@ -399,13 +394,6 @@ class pm_plugins_list_lib {
             $return .= '<a href="http://www.dokuwiki.org/'.$dokulink.'" title="'.$dokulink.'" class="interwiki iw_doku">'.$link.'</a> ';
         }
         return $return;
-    }
-
-    function make_checkbox($info) {
-        if(!$info->can_select()) return '';
-
-        return '<input id="'.$this->form_id.'_'.hsc($info->html_id).'" type="checkbox"'.
-               ' name="checked[]" value="'.$info->cmdkey.'" /><br />';
     }
 
     function make_actions($info) {

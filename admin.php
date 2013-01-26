@@ -112,9 +112,6 @@ class admin_plugin_extension extends DokuWiki_Admin_Plugin {
         } else {
             $this->cmd = $fn;
         }
-        if(!empty($_REQUEST['checked'])) {
-            $this->selection = $_REQUEST['checked'];
-        }
         // verify $_REQUEST publics and check for security token
         if($this->valid_request()) {
             $this->instantiate($this->cmd, 'action');
