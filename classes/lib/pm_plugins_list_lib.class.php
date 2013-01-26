@@ -180,7 +180,7 @@ class pm_plugins_list_lib {
                 $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
             }
             $url = ml($info->screenshoturl, array('cache'=>'recache', 'w'=>120, 'h'=>70));
-            $img = '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'">'.
+            $img = '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'" target="_blank">'.
                    '<img alt="'.hsc($info->displayname).'" width="120" src="'.$url.'" />'.
                    '</a>';
         } elseif($info->is_template) {
