@@ -50,7 +50,7 @@ class pm_plugins_list_lib {
             }
         }
         $this->add_hidden($hidden);
-        $this->form .= '<table>';
+        $this->form .= '<ul class="extensionList">';
         $this->intable = true;
     }
     /**
@@ -90,7 +90,7 @@ class pm_plugins_list_lib {
      * Add closing tags
      */
     function end_form($actions = null) {
-        if($this->intable) $this->form .= '</table>';
+        if($this->intable) $this->form .= '</ul>';
         $cmdButtons = '';
         if($this->rowadded && is_array($actions)) {
             $actions_shown = array_filter($this->actions_shown);
@@ -112,13 +112,13 @@ class pm_plugins_list_lib {
     }
 
     private function start_row($info, $class) {
-        $this->form .= '<tr id="extensionplugin__'.hsc($info->html_id).'" class="'.$class.'">';
+        $this->form .= '<li id="extensionplugin__'.hsc($info->html_id).'" class="'.$class.'">';
     }
     private function populate_column($class, $html) {
-        $this->form .= '<td class="'.$class.'">'.$html.'</td>';
+        $this->form .= '<div class="'.$class.' col">'.$html.'</div>';
     }
     private function end_row() {
-        $this->form .= '</tr>'.DOKU_LF;
+        $this->form .= '</li>'.DOKU_LF;
     }
 
     /**

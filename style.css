@@ -93,32 +93,37 @@
 #extension__manager a.cl5 { font-size: 1.9em; }
 
 
-#extension__manager table input.button {
+#extension__manager .extensionList input.button {
     margin: 0 .3em .3em 0;
 }
 
 /*
  * extensions table
  */
-#extension__manager table {
-    width: 100%;
-    border-collapse: collapse;
-    border: thin solid __border__;
+#extension__manager .extensionList {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    list-style: none;
 }
 
-#extension__manager table td {
-    vertical-align: middle;
-    border: thin solid __border__;
-    border-style: solid none;
+#extension__manager .extensionList li {
+    margin: 0 0 .5em;
+    padding: 0 0 .5em;
+    color: __text__;
+    border-bottom: 1px solid __border__;
+    overflow: hidden;
 }
 
 #extension__manager .legend {
-    vertical-align: top;
-    padding: 0.3em 0.5em 0.4em 132px;
+    position: relative;
+    width: 75%;
+    float: left;
 }
 
-#extension__manager .legend div {
-    position: relative;
+#extension__manager .legend > div {
+    padding: 0 .5em 0 132px;
+    border-right: 1px solid __background_alt__;
 }
 
 #extension__manager .enabled div.screenshot span {
@@ -163,7 +168,6 @@
 }
 
 #extension__manager .legend span.linkbar {
-    line-height: 1.7em;
     font-size: 85%;
 }
 
@@ -172,13 +176,14 @@
     margin-left: 0.4em;
 }
 
-#extension__manager .legend  input.button {
+#extension__manager .legend input.button {
     background: transparent url(images/up.png) no-repeat 0 0;
     box-shadow: none;
     border-width: 0;
     height: 14px;
     text-indent: -99999px;
     float: right;
+    margin: .5em 0 0;
 }
 
 #extension__manager .legend  input.button.close {
@@ -203,7 +208,7 @@
     padding: 1px;
     width: 5.5em;
     position: absolute;
-    right: 0;
+    right: .5em;
     top: 0.2em;
 }
 
@@ -217,10 +222,11 @@
 }
 
 #extension__manager .actions {
-    background-color: __background_alt__;
-    padding-left: 0.5em;
+    padding: 0;
     font-size: 95%;
     width: 25%;
+    float: right;
+    text-align: right;
 }
 
 #extension__manager .actions .version {
@@ -245,7 +251,7 @@
 #extension__manager dl.details dt {
     clear: left;
     float: left;
-    width: 150px;
+    width: 25%;
     margin: 0;
     text-align: right;
     font-weight: normal;
@@ -253,7 +259,7 @@
 }
 
 #extension__manager dl.details dd {
-    margin-left: 150px;
+    margin-left: 25%;
     font-weight: bold;
     padding: 0.2em 0 0 5px;
 }
