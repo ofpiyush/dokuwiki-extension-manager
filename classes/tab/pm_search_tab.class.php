@@ -84,7 +84,7 @@ class pm_search_tab extends pm_base_tab {
         ptln('<div class="panelHeader">');
         if($this->helper->repo) {
             $summary = sprintf($this->manager->getLang('summary_search'), count($this->helper->repo['data']));
-            ptln('<h3>'.$summary.'</h3>');
+            ptln('<p>'.$summary.'</p>');
         } else {
             echo '<div class="msg error">'.$this->manager->getLang('error_repoempty').'</div>';
         }

@@ -13,9 +13,12 @@
     margin-bottom: 10px;
     padding: 10px;
     text-align: left;
+    /* to counter partly missing border of ul.tabs: */
+    border-top: 1px solid __border__;
+    margin-top: -1px;
 }
 
-#extension__manager .panelHeader h3 {
+#extension__manager .panelHeader p {
     float: left;
     font-weight: normal;
     font-size: 1em;
@@ -49,8 +52,12 @@
 /*
  * search & url download forms
  */
-#extension__manager .panelHeader form {
+#extension__manager form.search,
+#extension__manager form.btn_reload {
     float: right;
+}
+#extension__manager div.search form.search {
+    float: none;
 }
 
 #dw__url,
@@ -124,6 +131,7 @@
 #extension__manager .legend > div {
     padding: 0 .5em 0 132px;
     border-right: 1px solid __background_alt__;
+    overflow: hidden;
 }
 
 #extension__manager .enabled div.screenshot span {

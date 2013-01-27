@@ -51,6 +51,7 @@ abstract class pm_base_tab {
         );
         $selected   = array_key_exists($this->manager->tab, $tabs_array) ? $this->manager->tab : 'plugin';
 
+        ptln('<h3 class="a11y">Extension navigation</h3>');
         ptln('<ul class="tabs">');
         foreach($tabs_array as $tab => $text) {
             if($tab == $selected) {

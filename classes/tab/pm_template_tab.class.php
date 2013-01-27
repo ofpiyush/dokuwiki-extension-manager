@@ -41,11 +41,11 @@ class pm_template_tab extends pm_base_tab {
      * Template tab rendering
      */
     function html() {
+        $this->html_search($this->manager->tab);
         $this->html_menu();
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_template'), count($this->helper->template_list));
-        ptln('<h3>'.$summary.'</h3>');
-        $this->html_search($this->manager->tab);
+        ptln('<p>'.$summary.'</p>');
         $this->html_download_disabled();
         ptln('<div class="clearer"></div></div><!-- panelHeader -->');
 

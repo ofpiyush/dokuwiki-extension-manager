@@ -51,11 +51,11 @@ class pm_plugin_tab extends pm_base_tab {
      * Plugin tab rendering
      */
     function html() {
+        $this->html_search($this->manager->tab);
         $this->html_menu();
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_plugin'), count($this->helper->plugin_list), count($this->plugins['enabled']) + count($this->protected_plugins['enabled']));
-        ptln('<h3>'.$summary.'</h3>');
-        $this->html_search($this->manager->tab);
+        ptln('<p>'.$summary.'</p>');
         $this->html_download_disabled();
         ptln('<div class="clearer"></div></div><!-- panelHeader -->');
 
