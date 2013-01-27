@@ -27,10 +27,13 @@
     padding: 0;
     margin: 0 0 3px;
 }
+[dir=rtl] #extension__manager .panelHeader p {
+    float: right;
+}
 
 #extension__manager ul.tabs div.message {
     display: inline;
-    margin: 0 0 0 0.5em;
+    margin: 0 .5em;
 }
 
 /*
@@ -42,13 +45,20 @@
 
 #extension__manager a.taglink {
     padding: 1px 4px;
-    background-color: #DEDEDE;
+    background-color: __background_neu__;
     border-radius: 3px;
+}
+[dir=rtl] #extension__manager a.taglink {
+    display: inline-block;
+    line-height: 1.2;
 }
 
 #extension__manager .panelHeader div.error {
     margin-top: 0;
     float: left;
+}
+[dir=rtl] #extension__manager .panelHeader div.error {
+    float: right;
 }
 
 /*
@@ -58,6 +68,11 @@
 #extension__manager form.btn_reload {
     float: right;
 }
+[dir=rtl] #extension__manager form.search,
+[dir=rtl] #extension__manager form.btn_reload {
+    float: left;
+}
+
 #extension__manager div.search form.search {
     float: none;
 }
@@ -72,14 +87,21 @@
     float: left;
     margin: 0 0.5em 1em 0;
 }
+[dir=rtl] #extension__manager .tagcloud {
+    float: right;
+    margin: 0 0 1em .5em;
+}
 
-#extension__manager .tagcloud  a.taglink {
+#extension__manager .tagcloud a.taglink {
     background-color: inherit;
 }
 
 #extension__manager div.search {
     width: 44%;
     float: left;
+}
+[dir=rtl] #extension__manager div.search {
+    float: right;
 }
 
 #extension__manager fieldset {
@@ -105,6 +127,9 @@
 #extension__manager .extensionList input.button {
     margin: 0 .3em .3em 0;
 }
+[dir=rtl] #extension__manager .extensionList input.button {
+    margin: 0 0 .3em .3em;
+}
 
 /*
  * extensions table
@@ -129,11 +154,19 @@
     width: 75%;
     float: left;
 }
+[dir=rtl] #extension__manager .legend {
+    float: right;
+}
 
 #extension__manager .legend > div {
     padding: 0 .5em 0 132px;
     border-right: 1px solid __background_alt__;
     overflow: hidden;
+}
+[dir=rtl] #extension__manager .legend > div {
+    padding: 0 132px 0 .5em;
+    border-left: 1px solid __background_alt__;
+    border-right-width: 0;
 }
 
 #extension__manager .enabled div.screenshot span {
@@ -150,21 +183,33 @@
     max-width: 120px;
     float: left;
 }
+[dir=rtl] #extension__manager .legend div.screenshot {
+    margin-left: 0;
+    margin-right: -132px;
+    float: right;
+}
 
 #extension__manager .legend div.screenshot span {
-    min-height: 48px;
-    min-width: 48px;
+    min-height: 24px;
+    min-width: 24px;
     position: absolute;
-    left: 0px;
+    left: 0;
+}
+[dir=rtl] #extension__manager .legend div.screenshot span {
+    left: auto;
+    right: 0;
 }
 
 #extension__manager .legend h2 {
     width: 100%;
     float: right;
-    margin: 0.2em 0em 0.5em;
+    margin: 0.2em 0 0.5em;
     font-size: 100%;
     font-weight: normal;
     border: none;
+}
+[dir=rtl] #extension__manager .legend h2 {
+    float: left;
 }
 
 #extension__manager .legend h2 strong {
@@ -181,9 +226,17 @@
     font-size: 85%;
 }
 
-#extension__manager .legend span.linkbar a.urlextern+a.taglink,
-#extension__manager .legend span.linkbar a.interwiki+a.taglink {
+#extension__manager .legend span.linkbar a.urlextern + a.taglink,
+#extension__manager .legend span.linkbar a.interwiki + a.taglink {
     margin-left: 0.4em;
+}
+[dir=rtl] #extension__manager .legend span.linkbar a.urlextern + a.taglink,
+[dir=rtl] #extension__manager .legend span.linkbar a.interwiki + a.taglink {
+    margin-left: 0;
+}
+[dir=rtl] #extension__manager .legend span.linkbar a.urlextern,
+[dir=rtl] #extension__manager .legend span.linkbar a.interwiki {
+    margin-left: .4em;
 }
 
 #extension__manager .legend input.button {
@@ -195,19 +248,13 @@
     float: right;
     margin: .5em 0 0;
 }
+[dir=rtl] #extension__manager .legend input.button {
+    float: left;
+    margin: .5em 0 0;
+}
 
 #extension__manager .legend  input.button.close {
     background: transparent url(images/down.png) no-repeat 0 0;
-}
-
-#extension__manager div.status.maybe {background-color: #FC1;}
-#extension__manager div.status.probably {background-color: yellow;}
-#extension__manager div.status.compatible {background-color: #BFB;}
-#extension__manager div.status {
-    padding: 0em 0.3em;
-    margin: 0em 0.3em;
-    font-size: 80%;
-    float: right;
 }
 
 #extension__manager .legend div.popularity {
@@ -220,6 +267,10 @@
     position: absolute;
     right: .5em;
     top: 0.2em;
+}
+[dir=rtl] #extension__manager .legend div.popularity {
+    right: auto;
+    left: .5em;
 }
 
 #extension__manager .legend div.popularity div {
@@ -238,13 +289,17 @@
     float: right;
     text-align: right;
 }
+[dir=rtl] #extension__manager .actions {
+    float: left;
+    text-align: left;
+}
 
 #extension__manager .actions .version {
     display: block;
 }
 
 #extension__manager .actions p {
-    margin: 0.2em 0em;
+    margin: 0.2em 0;
     text-align: center;
 }
 
@@ -267,26 +322,29 @@
     font-weight: normal;
     padding: 0.2em 5px 0 0;
 }
+[dir=rtl] #extension__manager dl.details dt {
+    clear: right;
+    float: right;
+    text-align: left;
+    padding: 0.2em 0 0 5px;
+}
 
 #extension__manager dl.details dd {
     margin-left: 25%;
     font-weight: bold;
     padding: 0.2em 0 0 5px;
 }
+[dir=rtl] #extension__manager dl.details dd {
+    margin-left: 0;
+    margin-right: 25%;
+    padding: 0.2em 5px 0 0 ;
+}
 
 #extension__manager dl.details dd a {
     font-weight: normal;
 }
 
-#extension__manager a.donate {
-    background: transparent url(images/donate.png) no-repeat 0 0;
-    margin-left: 4px;
-    padding: 16px 32px 0 0;
-    position: relative;
-    top: -24px;
-}
-
-#extension__manager div#info__popup {
+#extension__manager #info__popup {
     z-index: 20;
     overflow: hidden;
     opacity: 0.9;
@@ -294,6 +352,9 @@
     background-color: __border__; /*background_other__;*/
     text-align: left;
     padding: 0.2em;
+}
+[dir=rtl] #extension__manager #info__popup {
+    text-align: right;
 }
 
 #extension__manager div.msg {
@@ -303,6 +364,10 @@
 #extension__manager ul.tabs div.msg {
     display: inline;
     margin-left: 0.4em;
+}
+[dir=rtl] #extension__manager ul.tabs div.msg {
+    margin-left: 0;
+    margin-right: 0.4em;
 }
 
 /* end admin plugin styles */
