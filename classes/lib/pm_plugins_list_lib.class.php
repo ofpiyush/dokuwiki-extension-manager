@@ -193,7 +193,7 @@ class pm_plugins_list_lib {
     function make_legend($info) {
         global $lang;
 
-        $return .= '<div>';
+        $return  = '<div>';
         $return .= '<h2>';
         $return .= '<strong>'.hsc($info->displayname).'</strong>';
         $return .= ' by '.$this->make_author($info);
@@ -229,7 +229,7 @@ class pm_plugins_list_lib {
     }
 
     function make_linkbar($info) {
-        $return .= '<span class="linkbar">';
+        $return  = '<span class="linkbar">';
         $return .= $this->make_homepagelink($info);
         if ($info->bugtracker) {
             $return .= ' <a href="'.hsc($info->bugtracker).'" title="'.hsc($info->bugtracker).'" class ="interwiki iw_dokubug">'.$this->manager->getLang('bugs_features').'</a>';
@@ -247,6 +247,7 @@ class pm_plugins_list_lib {
      * Notice area
      */
     function make_noticearea($info) {
+        $return = '';
         if($info->missing_dependency()) {
             $return .= '<div class="msg error">'.
                             sprintf($this->manager->getLang('missing_dependency'), implode(', ', array_map(array($this->helper, 'make_extensionsearchlink'), $info->missing_dependency))).
@@ -388,6 +389,7 @@ class pm_plugins_list_lib {
     }
 
     function make_linklist($links) {
+        $return = '';
         foreach ($links as $link) {
             $dokulink = hsc($link);
             if (strpos($link, 'template:') !== 0) $dokulink = 'plugin:'.$dokulink;
@@ -397,6 +399,7 @@ class pm_plugins_list_lib {
     }
 
     function make_actions($info) {
+        $return = '';
         foreach($this->actions as $act => $text) {
             if($info->{"can_".$act}()) {
                 $this->actions_shown[$act] = true;

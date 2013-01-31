@@ -21,7 +21,7 @@
  * @property string $author Author of the plugin/ template
  * @property string $email Email if of the author
  * @property string $installed RFC 2822 date Time of install if done via the plugin manager
- * @property string $installed RFC 2822 date time of update
+ * @property string $updated RFC 2822 date time of update
  * @property string $downloadurl URL for download
  * @property string $base "base" from *.info.txt defaults to "id"
  */
