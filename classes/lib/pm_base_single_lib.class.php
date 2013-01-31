@@ -355,7 +355,9 @@ abstract class pm_base_single_lib {
      * error notice when plugin/template folder doesn't match *.info.txt data (overridden in pm_search_single_lib)
      */
     function wrong_folder() {
-        if(!empty($this->info['base']) && $this->info['base'] != $this->id) return true;
+        if(!empty($this->info['base']) &&
+            preg_match('/^'.DOKU_PLUGIN_NAME_REGEX.'$/', $this->info['base']) &&
+            $this->info['base'] != $this->id) return true;
         return false;
     }
 
