@@ -171,18 +171,14 @@ class pm_plugins_list_lib {
 
     function make_screenshot($info) {
         if(!empty($info->screenshoturl)) {
-            if(!preg_match('/^https?:\/\/', $info->screenshoturl)) {
-                $info->screenshoturl = 'http://www.dokuwiki.org/_media/'.$info->screenshoturl;
-            }
-            $url = ml($info->screenshoturl, array('cache'=>'recache', 'w'=>120, 'h'=>70));
             $img = '<a title="'.hsc($info->displayname).'" href="'.$info->screenshoturl.'" target="_blank">'.
-                   '<img alt="'.hsc($info->displayname).'" width="120" src="'.$url.'" />'.
+                   '<img alt="'.hsc($info->displayname).'" width="120" height="70" src="'.$info->thumbnailurl.'" />'.
                    '</a>';
         } elseif($info->is_template) {
-            $img = '<img alt="template" width="120" src="'.DOKU_BASE.'lib/plugins/extension/images/template.png" />';
+            $img = '<img alt="template" width="120" height="70" src="'.DOKU_BASE.'lib/plugins/extension/images/template.png" />';
 
         } else {
-            $img = '<img alt="plugin" width="120" src="'.DOKU_BASE.'lib/plugins/extension/images/plugin.png" />';
+            $img = '<img alt="plugin" width="120" height="70" src="'.DOKU_BASE.'lib/plugins/extension/images/plugin.png" />';
         }
         return '<div class="screenshot" >'.$img.'<span></span></div>';
     }
