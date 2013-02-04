@@ -62,10 +62,6 @@ $lang['select']                 = 'Select:';
 $lang['select_all']             = 'All';
 $lang['select_none']            = 'None';
 
-$lang['status_compatible']      = 'Compatible with this DokuWiki release';
-$lang['status_probably']        = 'Probably compatible with this DokuWiki release (works with earlier releases)';
-$lang['status_maybe']           = 'Compatible with later DokuWiki releases (upgrade your installation)';
-
 $lang['homepage_link']          = 'Docs';
 $lang['bugs_features']          = 'Bugs';
 $lang['author_hint']            = 'Search extensions by this author';

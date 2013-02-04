@@ -202,11 +202,6 @@ class pm_plugins_list_lib {
             $progressWidth = round(100*$progressCount/$this->helper->repo['maxpop']);
             $return .= '<div class="popularity" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
         }
-// TODO: add better compatible indication
-//        $compatible = $info->compatible_status($this->helper->dokuwiki_version['date']);
-//        if ($compatible) {
-//            $return .= '<div class="status '.$compatible.'" title="'.$this->manager->getLang('status_'.$compatible).'">'.$this->helper->dokuwiki_version['name'].'</div>';
-//        }
 
         $return .= '<p>';
         if(!empty($info->description)) {

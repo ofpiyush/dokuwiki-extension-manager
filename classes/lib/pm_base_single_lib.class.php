@@ -370,13 +370,4 @@ abstract class pm_base_single_lib {
         return true;
     }
 
-    function compatible_status($current) {
-        if (!$current) return null;
-        if ($this->is_bundled) return 'compatible';
-        if (!$this->compatible) return null;
-        if (in_array($current,(array)$this->compatible['release'])) return 'compatible';
-        if ($current > $this->compatible['release'][0]) return 'probably';
-        return 'maybe';
-    }
-
 }
