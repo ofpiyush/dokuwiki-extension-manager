@@ -51,10 +51,6 @@ var extension_manager = {
         return vars;
     },
 
-
-    setCheckState : function (clickSelector,bool) {
-        jQuery(clickSelector).show();
-    },
     confirmDelete : function (delSelector) {
         jQuery(delSelector).click(function(e) {
             if(!confirm(LANG.plugins['extension']['confirm_del'])) { e.preventDefault(); }});
