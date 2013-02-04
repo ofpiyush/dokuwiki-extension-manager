@@ -59,9 +59,26 @@ class pm_plugin_tab extends pm_base_tab {
         $this->html_download_disabled();
         ptln('<div class="clearer"></div></div><!-- panelHeader -->');
 
+        $this->html_disable_all_button();
         ptln('<div class="panelContent">');
         $this->html_extensionlist();
         ptln('</div><!-- panelContent -->');
+    }
+
+    function html_disable_all_button() {
+        global $ID;
+
+        if (is_array($this->plugins) && count($this->plugins)) {
+            $params = array(
+                'do'     => 'admin',
+                'page'   => 'extension',
+                'tab'    => 'plugin',
+                'fn'     => 'disable_all',
+                'sectok' => getSecurityToken()
+            );
+
+            echo html_btn('disable_all', $ID, '', $params, 'post', '', $this->manager->getLang('btn_disable_all'));
+        }
     }
 
     function html_extensionlist() {

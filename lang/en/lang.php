@@ -52,6 +52,7 @@ $lang['btn_update']             = 'Update';
 $lang['btn_delete']             = 'Delete';
 $lang['btn_enable']             = 'Enable';
 $lang['btn_disable']            = 'Disable';
+$lang['btn_disable_all']        = 'Disable all';
 $lang['btn_settings']           = 'Settings';
 $lang['btn_download']           = 'Download';
 $lang['btn_reinstall']          = 'Re-install';

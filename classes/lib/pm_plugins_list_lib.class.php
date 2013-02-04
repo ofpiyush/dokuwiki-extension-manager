@@ -91,18 +91,6 @@ class pm_plugins_list_lib {
      */
     function end_form($actions = null) {
         if($this->intable) $this->form .= '</ul>';
-        $cmdButtons = '';
-        if($this->rowadded && is_array($actions)) {
-            $actions_shown = array_filter($this->actions_shown);
-            $cmdButtons .= '<p class="bottom">';
-            if(array_key_exists('disable', $this->actions)) {
-                //@todo: implement "disable all" action
-                $cmdButtons .= '<input class="button" name="TODO" type="submit" value="TODO: Disable all" />';
-            }
-            $cmdButtons .= '</p>';
-        }
-        // @todo: don't display button until "disable all" is implemented
-        //$this->form .= $cmdButtons;
         $this->form .= '</form>';
         $this->form .= '</div>';
     }
