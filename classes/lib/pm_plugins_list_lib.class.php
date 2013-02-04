@@ -8,7 +8,6 @@
 
 class pm_plugins_list_lib {
 
-    var $rowadded = false;
     protected $form = null;
     protected $actions = array();
     protected $possible_errors = array();
@@ -17,7 +16,6 @@ class pm_plugins_list_lib {
     protected $manager = null;
     protected $helper = null;
     protected $columns = array();
-    protected $intable = false;
     protected $actions_shown = array();
     protected $showinfo = false;
 
@@ -51,7 +49,6 @@ class pm_plugins_list_lib {
         }
         $this->add_hidden($hidden);
         $this->form .= '<ul class="extensionList">';
-        $this->intable = true;
     }
     /**
      * Build single row of plugin table
@@ -60,14 +57,11 @@ class pm_plugins_list_lib {
      * @param array  $checkbox the optional parameters to be passed in for the checkbox (use-case disabling downloads)
      */
     function add_row($info) {
-        if($this->intable) {
-            $this->showinfo = ($this->manager->showinfo == $info->repokey);
-            $this->rowadded = true;
-            $this->start_row($info, $this->make_class($info));
-            $this->populate_column('legend', $this->make_legend($info));
-            $this->populate_column('actions', $this->make_actions($info));
-            $this->end_row();
-        }
+        $this->showinfo = ($this->manager->showinfo == $info->repokey);
+        $this->start_row($info, $this->make_class($info));
+        $this->populate_column('legend', $this->make_legend($info));
+        $this->populate_column('actions', $this->make_actions($info));
+        $this->end_row();
     }
 
     function add_header($id, $header, $level = 2) {
@@ -92,7 +86,6 @@ class pm_plugins_list_lib {
     function end_form($actions = null) {
         if($this->intable) $this->form .= '</ul>';
         $this->form .= '</form>';
-        $this->form .= '</div>';
     }
 
     function render() {
