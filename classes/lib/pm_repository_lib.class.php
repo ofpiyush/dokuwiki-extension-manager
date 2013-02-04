@@ -60,7 +60,6 @@ class pm_repository_lib {
             }
         }
         if($error) {
-            $this->repo_cache->storeCache(serialize(null));
             msg('www.dokuwiki.org extension repository unavailable', -1);
         }
     }
