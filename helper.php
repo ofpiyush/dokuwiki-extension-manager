@@ -282,7 +282,7 @@ class helper_plugin_extension extends DokuWiki_Plugin {
             'q'    => 'id:'.$id,
         );
         $url    = wl($ID, $params);
-        return '<a href="'.$url.'" class="searchlink" title="'.hsc($id).'">'.hsc(ucfirst($id)).'</a>';
+        return '<a href="'.$url.'" title="'.hsc($id).'">'.hsc(ucfirst($id)).'</a>';
     }
 
 }

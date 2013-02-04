@@ -164,7 +164,7 @@ class pm_plugins_list_lib {
                 'q'=>'author:'.$info->author
             );
             $url = wl($ID, $params);
-            return '<a href="'.$url.'" class="searchlink" title="'.$this->manager->getLang('author_hint').'" >'.hsc($info->author).'</a>';
+            return '<a href="'.$url.'" title="'.$this->manager->getLang('author_hint').'" >'.hsc($info->author).'</a>';
         }
         return "<em>".$this->manager->getLang('unknown')."</em>";
     }
