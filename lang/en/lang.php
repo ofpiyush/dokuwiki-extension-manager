@@ -60,10 +60,6 @@ $lang['btn_disdown']            = 'Download as Disabled';
 $lang['btn_dependown']          = 'Download with dependencies';
 
 $lang['popularity']             = 'Popularity:';
-$lang['select']                 = 'Select:';
-$lang['select_all']             = 'All';
-$lang['select_none']            = 'None';
-
 $lang['homepage_link']          = 'Docs';
 $lang['bugs_features']          = 'Bugs';
 $lang['author_hint']            = 'Search extensions by this author';
