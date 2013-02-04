@@ -59,6 +59,7 @@ $lang['btn_reinstall']          = 'Re-install';
 $lang['btn_disdown']            = 'Download as Disabled';
 $lang['btn_dependown']          = 'Download with dependencies';
 
+$lang['popularity']             = 'Popularity:';
 $lang['select']                 = 'Select:';
 $lang['select_all']             = 'All';
 $lang['select_none']            = 'None';

@@ -181,7 +181,8 @@ class pm_plugins_list_lib {
         if ($info->popularity && !$info->is_bundled) {
             $progressCount = $info->popularity;
             $progressWidth = round(100*$progressCount/$this->helper->repo['maxpop']);
-            $return .= '<div class="popularity" title="'.$progressCount.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
+            $popularityText = $this->manager->getLang('popularity').' '.$progressCount.'/'.$this->helper->repo['maxpop'];
+            $return .= '<div class="popularity" title="'.$popularityText.'"><div style="width: '.$progressWidth.'%;"><span>'.$progressCount.'</span></div></div>';
         }
 
         $return .= '<p>';
