@@ -16,9 +16,6 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
     /** @var pm_plugin_tab $handler */
     public $handler = null;
 
-    /** @var string $query temporary query holder */
-    protected $query = '';
-
     /**
      * Constructor.
      *
@@ -50,38 +47,7 @@ class action_plugin_extension extends DokuWiki_Action_Plugin {
 
         if($_POST['fn']) {
             $this->extension_details();
-        } else {
-            $this->search_extension();
         }
-    }
-
-    /**
-     * Search for extension id's containing query, used for quicksearch
-     */
-    protected function search_extension() {
-        $this->query = hsc($_POST['q']); //todo is it correct to escape this here?
-        $repo        = $this->hlp->get_filtered_repo($_POST['type']);
-        $hits        = array_filter($repo, array($this, 'search_check'));
-
-        echo '<strong>'.$this->getLang('matching_extensions').'</strong>';
-        echo '<ul>';
-        foreach($hits as $info) {
-            $id = explode('/', $info["id"]);
-            echo '<li>'.$this->hlp->make_extensionsearchlink($id[0]).'</li>';
-        }
-        echo '</ul>';
-    }
-
-    /**
-     * Callback for array_filter
-     *
-     * Used to filter quick results
-     *
-     * @param $info
-     * @return bool
-     */
-    protected function search_check($info) {
-        return stripos($info["id"], $this->query) !== false;
     }
 
     /**
