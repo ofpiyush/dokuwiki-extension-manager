@@ -65,7 +65,7 @@ abstract class pm_base_tab {
         ptln('</ul>');
     }
 
-    protected function html_download_disabled() {
+    protected function html_download_disabled_msg() {
         if($this->manager->getConf('allow_download')) return;
 
         echo '<div class="clearer"></div>';

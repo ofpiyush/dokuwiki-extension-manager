@@ -89,7 +89,7 @@ class pm_search_tab extends pm_base_tab {
             echo '<div class="msg error">'.$this->manager->getLang('error_repoempty').'</div>';
         }
         $this->reload_repo_link();
-        $this->html_download_disabled();
+        $this->html_download_disabled_msg();
         ptln('<div class="clearer"></div></div><!-- panelHeader -->');
 
         ptln('<div class="tagcloud">');

@@ -56,7 +56,7 @@ class pm_plugin_tab extends pm_base_tab {
         ptln('<div class="panelHeader">');
         $summary = sprintf($this->manager->getLang('summary_plugin'), count($this->helper->plugin_list), count($this->plugins['enabled']) + count($this->protected_plugins['enabled']));
         ptln('<p>'.$summary.'</p>');
-        $this->html_download_disabled();
+        $this->html_download_disabled_msg();
         ptln('<div class="clearer"></div></div><!-- panelHeader -->');
 
         $this->html_disable_all_button();
